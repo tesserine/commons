@@ -6,14 +6,6 @@ Shared principles and standards for the pentaxis93 ecosystem.
 
 This repo holds the bedrock principles and architectural decision records (ADRs) that shape all pentaxis93 projects. Every ecosystem repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
 
-## Ecosystem repos
-
-- **[agentd](https://github.com/pentaxis93/agentd)** — the daemon providing infrastructure
-- **[runa](https://github.com/pentaxis93/runa)** — the cognitive runtime for contract enforcement and artifact tracking
-- **[groundwork](https://github.com/pentaxis93/groundwork)** — the first methodology plugin
-
-Future pentaxis93 repos inherit these principles by default.
-
 ## Contents
 
 - **[PRINCIPLES.md](PRINCIPLES.md)** — seven bedrock principles organized as a topology (sovereignty, sequence, grounding, obligation to dissent, recursive improvement, transmission, verifiable completion)
