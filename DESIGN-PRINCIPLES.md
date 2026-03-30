@@ -1,6 +1,6 @@
 # Design Principles
 
-Engineering judgment for the pentaxis93 ecosystem. These principles sit
+Engineering judgment for the ecosystem. These principles sit
 between the bedrock principles (PRINCIPLES.md) and project-specific ADRs —
 they govern how we think about code across all repos.
 
