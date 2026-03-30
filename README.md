@@ -1,10 +1,10 @@
 # governance
 
-Shared principles and governance for the pentaxis93 ecosystem.
+Shared principles and governance for the ecosystem.
 
 ## What this is
 
-This repo holds the bedrock principles, design principles, and architectural decision records (ADRs) that govern all pentaxis93 projects. Every ecosystem repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
+This repo holds the bedrock principles, design principles, and architectural decision records (ADRs) that govern all projects in this ecosystem. Every repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
 
 ## Governed repos
 
@@ -12,7 +12,7 @@ This repo holds the bedrock principles, design principles, and architectural dec
 - **[runa](https://github.com/pentaxis93/runa)** — the cognitive runtime for contract enforcement and artifact tracking
 - **[groundwork](https://github.com/pentaxis93/groundwork)** — the first methodology plugin
 
-Future pentaxis93 repos inherit these principles by default.
+Future repos inherit these principles by default.
 
 ## Contents
 
