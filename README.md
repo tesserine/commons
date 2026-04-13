@@ -1,16 +1,17 @@
-# governance
+# commons
 
-Shared principles and governance for the ecosystem.
+Shared principles and standards for the Tesserine ecosystem.
 
 ## What this is
 
-This repo holds the bedrock principles, design principles, and architectural decision records (ADRs) that govern all projects in this ecosystem. Every repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
+This repo holds the bedrock principles, design principles, and architectural decision records (ADRs) that define standards across all Tesserine components. Every repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
 
-## Governed repos
+## Ecosystem repos
 
-- **[agentd](https://github.com/pentaxis93/agentd)** — the daemon providing infrastructure
-- **[runa](https://github.com/pentaxis93/runa)** — the cognitive runtime for contract enforcement and artifact tracking
-- **[groundwork](https://github.com/pentaxis93/groundwork)** — the first methodology plugin
+- **[agentd](https://github.com/tesserine/agentd)** — container lifecycle daemon for autonomous agent sessions
+- **[runa](https://github.com/tesserine/runa)** — cognitive runtime enforcing methodology topologies
+- **[groundwork](https://github.com/tesserine/groundwork)** — contributor methodology plugin (first methodology)
+- **[base](https://github.com/tesserine/base)** — reference container image for agent sessions
 
 Future repos inherit these principles by default.
 
