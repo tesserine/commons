@@ -12,6 +12,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `EXIT-CODES.md`, defining the shared session-outcome exit code
   convention for runners and callers, including survey findings, reserved
   POSIX ranges, caller/runner guidance, and forward-compatibility rules.
+- Added `REQUEST.md` and `schemas/request/v1/request.schema.json` as the
+  canonical request artifact spec (version `1.0.0`). REQUEST.md is the
+  prose authority; the versioned JSON Schema is the machine-checkable
+  realization.
+- Added ADR-0005, formalizing commons as the spec authority for
+  system-level cross-component artifact types: canonicalization criteria,
+  the prose-plus-versioned-schema canonical form, semver rules across
+  directory and full-version levels, immutable-reference requirements for
+  conformance, methodology vendoring with provenance, and the runtime
+  boundary (methodologies serve runtime; commons serves authoring).
 
 ### Changed
 
