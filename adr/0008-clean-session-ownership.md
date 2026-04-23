@@ -1,40 +1,149 @@
-# ADR-0008: Clean Session Ownership Architecture
+# ADR-0008: Component Orthogonality in Session Composition
 
 **Status:** Accepted
-**Traces to:** Principle 1 (Sovereignty) — primary; Principle 2 (Everything Earns Its Place) — secondary
+**Traces to:** Principle 1 (Sovereignty) — primary
 
 ## Decision
 
-In an agentd-managed session, agentd owns session state. Runa consumes session state but does not create or initialize it. The profile declares intent; agentd composes execution. Shell-wrapper scripts inside profile configuration are not a supported mechanism — the profile surface is declarative, and a clean sovereignty boundary between "what the operator wants" (profile) and "how it is composed into a running session" (agentd) produces surfaces that do not need imperative glue.
+In an agentd-managed session, agentd composes the session runtime; runa
+owns `.runa/` content; the profile declares intent. Each component's
+surface is orthogonal to the others at clean boundaries: the profile
+declares what the operator wants; agentd composes how that intent
+becomes a running container; runa initializes and orchestrates its own
+artifact tree. No component reaches into another's named domain, and
+the profile carries no imperative glue.
 
 ## Context
 
-This ADR is motivated by a concrete failure: Phase E integration testing surfaced that the architecture as-built had ambiguous session-state ownership. Runa's `runa init` command creates `.runa/`, `.runa/store/`, `.runa/workspace/`, and writes `.runa/config.toml`. Agentd's container setup creates `.runa/` as a symlink into its root-owned audit directory and materializes invocation input into `.runa/workspace/<type>/<id>.json`. When both ran in sequence inside a session container — agentd's setup first as root, then the profile's `runa init` as the unprivileged session user — they collided on ownership of the same directory tree. The unprivileged `runa init` failed with permission errors trying to create directories under agentd's root-owned symlink target.
+Phase E integration testing on April 23, 2026 surfaced a session
+failure that initially appeared to be an ownership collision between
+runa and agentd. Runa's `runa init` (executed as the unprivileged
+session user) failed with permission errors against `.runa/` — a
+symlink agentd's container setup had created pointing into a
+root-owned audit directory.
 
-The failure was not a bug in either component independently. Each behaves correctly in the context for which it was designed. The failure was an architecture that allowed both to reach for the same responsibility without either authoritatively owning it.
+The first architectural framing located the problem as ambiguous
+ownership: both runa and agentd reaching for session-state
+initialization without clear authority. A proposed resolution moved
+all `.runa/` content writing into agentd, excluding runa from its own
+directory in agentd-managed contexts. Further reckoning showed that
+framing misidentified the defect.
 
-Adjacent to the ownership ambiguity: the profile's `command` field accepts an arbitrary shell script. The April-12-era site-builder profile used that shell-script slot to synthesize request artifacts, write `runa init`, append config, and finally `exec runa run`. Each of those pieces of logic was compensating for something the architecture did not supply declaratively. A shell script inside declarative config is almost always a signal that the declarative layer is missing a concept — the escape hatch is absorbing work that should be the main path.
+The actual defect was narrower. Runa's init works correctly when
+invoked against a session-user-writable working directory — as the
+April 12 standalone test confirmed. The April 23 failure was
+specifically about container-setup permissions: agentd configured the
+audit directory target under ownership the session user could not
+write to, then expected runa init to operate there. That is a
+container-setup bug, not a sovereignty crisis.
 
-The architectural principle that makes both problems go away is a clean sovereignty boundary on session state. When one component authoritatively owns session initialization, collisions do not arise. When the profile surface is purely declarative — naming the agent, the methodology, the repo, the credentials, and nothing more — there is no shell-script slot to absorb missing concepts, and the absence of that slot forces the architecture to surface its concepts properly.
+Separately, the April-12-era profile used its `command` field as a
+shell-script slot that stitched together `runa init`, config
+appending, workspace synthesis, and the final `runa run` exec. A
+shell-script slot inside declarative config is a signal that the
+declarative layer is missing concepts; the escape hatch absorbs work
+that should be the main path.
 
-This ADR formalizes the commitment so future sessions are composed cleanly and future contributors understand where responsibilities lie.
+Resolving these two concerns — the permission collision and the
+escape hatch — does not require collapsing responsibilities. It
+requires each component's surface to be orthogonal to the others:
+
+- The profile expresses operator intent declaratively; it holds no
+  shell program.
+- agentd composes the container runtime, including setting up
+  `.runa/` with ownership the session user can write to.
+- runa initializes `.runa/` content via `runa init`, invoked as the
+  session user from agentd's composed container script — not from
+  an operator-supplied shell wrapper.
+- `.runa/` content — its schema, format, and structure — remains
+  runa's concern. agentd does not serialize runa's file formats.
+
+This architecture closes the permission collision (agentd sets up
+writable ownership before invoking runa init) and removes the escape
+hatch (the profile becomes purely declarative; glue moves into
+agentd's composition code, where it belongs) without any component
+reaching into another's domain.
 
 ## Consequences
 
-**Agentd owns session state.** For every agentd-managed session, agentd's container setup is responsible for: creating the session container; cloning the repository; creating the `.runa/` directory tree with appropriate ownership (which in the current audit-capture design is a symlink into the audit root); writing `.runa/config.toml` with the methodology path and agent configuration declared in the profile; materializing any operator-supplied invocation input at the canonical workspace path; and finally invoking `runa run` under the session user. None of these responsibilities are owned by the profile, the session agent, or runa itself in an agentd-managed context.
+**agentd composes session runtime.** For every agentd-managed
+session, agentd's container setup creates the session container, the
+session user, the cloned repository, and the `.runa/` path — whether
+as a symlink into audit storage or otherwise — with ownership the
+session user can write to. agentd's composed container script then
+invokes `runa init` as the session user with the methodology path
+and agent configuration declared by the profile, materializes any
+operator-supplied invocation input at the canonical workspace path,
+and invokes `runa run`. None of this is owned by the profile; none
+of `.runa/` content schema is owned by agentd.
 
-**Runa consumes session state, does not create it.** Runa in an agentd-managed session expects `.runa/config.toml` and the workspace tree to already exist, configured correctly. Runa's responsibility is to read the methodology manifest, evaluate protocol readiness against the workspace state, and orchestrate agent execution. Runa does not `init` anything inside an agentd-managed session. This is a change in role: `runa init` remains a valid user-facing tool for developers bootstrapping a project outside agentd, but is not called inside agentd-managed session containers.
+**runa owns `.runa/` content.** `runa init` remains the
+authoritative initializer for the `.runa/` tree —
+`.runa/config.toml`, `.runa/state.toml`, `.runa/store/`,
+`.runa/workspace/`, and anything future runa versions add. In
+agentd-managed sessions, agentd invokes `runa init` rather than
+writing runa's files directly. Runa's file formats, invariants, and
+evolution remain runa's concern.
 
-**Profile surface is declarative.** A profile declares the operator's intent for a class of session. Fields include: name; base image; methodology directory; repo; agent command; credentials; mounts; schedule. The profile does not include a `command` field that accepts shell script. Agentd composes the execution from the declared fields. If the operator needs something the declarative surface cannot express, the correct response is to extend the declarative surface — not to smuggle imperative logic through an escape hatch. The absence of shell-script customization is a deliberate architectural commitment, not an oversight.
+**Profile surface is declarative.** A profile declares the
+operator's intent for a class of session. Fields include: name;
+base image; methodology directory; repo; agent command; credentials;
+mounts; schedule. The profile does not include a `command` field
+accepting shell script. Agentd composes the container runtime from
+the declared fields. If the operator needs something the declarative
+surface cannot express, the correct response is to extend the
+declarative surface — not to smuggle imperative logic through an
+escape hatch.
 
-**Declarative surfaces as signal of clean sovereignty.** A surface that requires imperative glue to be useful is a surface where sovereignty has not been fully assigned. When an operator must write shell scripts to make a tool work, the tool has delegated design work to its users. When a configuration format accepts arbitrary code to compose what could have been declarative, that code is absorbing responsibility that belongs to the tool. The inverse holds: when the surface is cleanly declarative, every needed concept has been named and owned; the user declares intent, the tool composes. This principle — declarative surfaces indicate clean sovereignty boundaries — generalizes beyond session composition and is worth carrying forward into future architectural decisions.
+**Runa init accepts agent configuration at invocation time.** Today
+`runa init` accepts `--methodology PATH`. To support single-shot
+initialization with complete config, runa init gains an agent-config
+input (e.g. `--agent-command <argv>` or equivalent) so that agentd's
+composed container script can invoke init once and produce a
+complete `.runa/config.toml`. Tracked as a separate runa issue;
+gates the agentd-side implementation.
 
-**The agent command is declared, not scripted.** A profile declares `agent.command` as an array of argv elements to exec inside the session. Agentd composes the execution such that this command runs as the session user, with the working directory at the cloned repo, with `.runa/` initialized, and with `runa run` orchestrating — the common pattern being that the agent command is invoked indirectly through `runa run`'s agent-invocation path, not directly from the container script. The profile does not express this orchestration imperatively; it declares the agent and agentd composes the runtime.
+**Invocation input is agentd's concern.** The
+`.runa/workspace/<type>/<id>.json` materialized from operator
+`--request` input is agentd's write — it enters the system via the
+agentd CLI and is per-invocation, not part of session shape. This
+is a clean boundary straddle: runa init creates the workspace
+directory skeleton; agentd populates per-invocation files inside
+it. Two writers, two distinct concerns, no format overlap.
 
-**Breaking change to profile schema.** Existing profiles that use `command = [...shell script...]` require migration. Pre-1.0 latitude per ADR-0007's embrace of change; the right time to make this movement is while the foundation is most movable. Migration pattern: move the `exec <agent> <args>` line of the old shell script into the new declarative `agent.command` field; drop the `runa init`, config-append, and workspace-synthesis lines entirely (agentd owns those now); drop the shell wrapper itself.
+**Breaking change to profile schema.** Existing profiles that use
+`command = [...shell script...]` require migration. Pre-1.0 latitude
+per ADR-0007's embrace of change; the right time to make this
+movement is while the foundation is most movable. Migration pattern:
+drop the shell wrapper; declare the agent command as structured
+data; the methodology path moves out of shell invocation into a
+declarative field; agentd's code handles the composition.
 
-**Runa `init` failure modes need actionable error surface.** Outside of agentd-managed sessions, a developer running `runa init` may still encounter directories where `.runa/` pre-exists under ownership that prevents init from proceeding (agentd left an artifact, a previous `sudo` attempt, a mount that replaced the directory). Runa should surface such failures with an actionable message naming the ownership mismatch, rather than a cryptic permission error. This is not in scope for this ADR but is filed as a runa issue for hygiene.
+**Component orthogonality as a general principle.** Each component
+in the ecosystem owns the surface that bears its name. `.runa/`
+belongs to runa. The profile is the operator's declarative surface.
+Session runtime composition — what it takes to turn operator intent
+into a running container — is agentd's. When a component starts
+writing another component's file formats, serializing another
+component's structures, or expecting an operator to stitch together
+concerns that should be infrastructure, sovereignty has blurred.
+The corrective is to name each surface cleanly and let each
+component own what its name implies.
 
-**What this means for the builder agent:** When proposing changes to profile surface, resist adding imperative fields; the declarative constraint is load-bearing. When composing session lifecycle work, locate it in agentd's container setup, not in profile shell scripts or runa init paths. When reviewing existing architecture for cleanliness, check for imperative glue in declarative configs — each such glue is a signal of missing architectural concepts that should be surfaced and owned. When sessions fail with permission errors on shared state, check for ownership ambiguity — two components reaching for the same responsibility is the root cause class.
+**What this means for the builder agent.** When proposing changes
+to profile surface, resist adding imperative fields; the declarative
+constraint is load-bearing. When composing session lifecycle work,
+compose in agentd's container-script code — do not smuggle through
+profile shell or duplicate runa's initialization logic. When
+reviewing existing architecture for cleanliness, check whether a
+component is reaching into another component's named surface; each
+such reach is a sovereignty violation worth correcting.
 
-**What this does not mean.** This is not a ban on runa's `init` command. `runa init` remains valid and useful for developers working directly with a methodology outside agentd. This is not a ban on profile customization — profiles continue to declare mounts, credentials, schedules, agents, and whatever declarative dimensions emerge. This is not a claim that agentd's current audit-symlink design is final — that design is a Day One snapshot, available for improvement (the symlink is today's realization of the audit-capture commitment; tomorrow may find a better realization). The commitment this ADR makes is ownership, not mechanism: agentd owns session state, by whatever mechanism best serves that ownership at each moment in Tesserine's continuing construction.
+**What this does not mean.** This is not a claim that agentd's
+current audit-symlink design is final — that design is a Day One
+snapshot, available for improvement as better realizations emerge.
+This is not a restriction on runa's `init` command; `runa init`
+remains valid both inside and outside agentd-managed sessions. The
+commitment this ADR makes is about component orthogonality at
+surfaces — each tool owning what its name names — not about any
+single mechanism.
