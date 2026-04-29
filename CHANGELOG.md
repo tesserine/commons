@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   agentd's chosen command into runa without shell-script slots in
   declarative config.
 - Added ADR-0006 Release Discipline and `RELEASE.md`, establishing
-  `cargo-release` as the canonical release tool for tesserine
+  `cargo-release` as the canonical release tool for Tesserine
   cargo-workspace repos and codifying the workspace-version
   invariant — the code at the tag self-reports the version the tag
   names. commons owns the convention; per-repo adoption (agentd,
