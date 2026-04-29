@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   declaratively. The `runa run --agent-command` override carries
   agentd's chosen command into runa without shell-script slots in
   declarative config.
+- Added ADR-0006 Release Discipline and `RELEASE.md`, establishing
+  `cargo-release` as the canonical release tool for tesserine
+  cargo-workspace repos and codifying the workspace-version
+  invariant — the code at the tag self-reports the version the tag
+  names. commons owns the convention; per-repo adoption (agentd,
+  runa) is tracked separately.
 
 ## [0.1.1] — 2026-04-21
 

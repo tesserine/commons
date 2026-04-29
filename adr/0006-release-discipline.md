@@ -1,0 +1,42 @@
+# ADR-0006: Release Discipline for Cargo-Workspace Repos
+
+**Status:** Accepted
+**Traces to:** Principle 1 (Sovereignty) — primary; Principle 7 (Verifiable Completion) — secondary
+
+## Decision
+
+`cargo-release` is the canonical release tool for tesserine cargo-workspace repos. A release is a single atomic operation that bumps the workspace `Cargo.toml` version, commits the bump, creates an annotated tag, and pushes — driven by one `cargo release <level>` invocation. The cargo-workspace-version invariant — the workspace `Cargo.toml` version at tag `vX.Y.Z` is exactly `X.Y.Z` — is the minimum integrity requirement for any tesserine release. The version-bump commit precedes the tag; a tag whose commit violates the invariant is invalid and must be deleted, not amended.
+
+commons owns the convention: this ADR plus a prose `RELEASE.md` at the repo root that walks an operator through the release process. Each cargo-workspace repo owns its own `release.toml` configuration and the act of adopting the tool, tracked as separate per-repo issues.
+
+## Context
+
+On 2026-04-22, deploying tesserine v0.1.1 to babbie surfaced that `runa --version` reported `0.1.0` from a fresh build of the v0.1.1 tag. Investigation confirmed both `runa` and `agentd` had cut their v0.1.1 tags without bumping the workspace `Cargo.toml`. The code at the tag was materially v0.1.1; the binary self-reported v0.1.0. Same pattern in both repos.
+
+The remediation — re-cutting the tags against bump commits — worked only because v0.1.1 was hours old with no external consumers. That escape hatch closes the moment a release has downstream readers. The same gap will recur on every future release of every cargo-workspace repo unless the discipline is tool-enforced.
+
+The defect is structural, not personal. GitHub's "create ref" and "create release" operations don't interact with the crate-level version metadata at all. A manual release process that treats "tag the commit" and "bump the crate version" as separable concerns will eventually emit a tag that misrepresents the code it points at. The gap is a property of the process, not of any operator.
+
+Two alternatives were considered and rejected. `release-please` is CI-driven and oriented toward multi-maintainer projects with merge-train discipline; tesserine is single-operator pre-1.0, and the CI surface adds cost without buying applicable value. A hand-rolled shell script per repo invites every repo to drift from every other; the convention's purpose is precisely to prevent that.
+
+## Consequences
+
+**Canonical tool.** `cargo-release` is the only sanctioned release driver for tesserine cargo-workspace repos. New cargo-workspace repos in the ecosystem adopt it at initialization; existing repos adopt it via a tracked per-repo issue. The convention rules out hand-rolled tagging procedures; it does not rule out future replacement of `cargo-release` itself if a better tool emerges and a successor convention supersedes this one.
+
+**Atomic release operation.** A release is one `cargo release <level>` invocation that bumps the workspace version, commits the bump, creates an annotated tag pointing at that commit, and pushes — as a single indivisible step from the operator's perspective. Operators do not perform any of these steps independently. Splitting the operation reintroduces the gap this convention closes.
+
+**Workspace-version invariant.** The workspace `Cargo.toml` version at tag `vX.Y.Z` is `X.Y.Z`. This is the minimum integrity requirement for a tesserine release: the binary built from the tag must self-report the version the tag names. A tag whose commit violates this invariant is invalid. The remediation is to delete the tag and re-release; amending the tagged commit is not a remediation, because tags that have been pushed are public data and rewriting them is a separate, larger problem.
+
+**Version-bump precedes tag.** The commit that bumps the workspace version is the commit the tag points at. Bumping after tagging produces a tag pointing at the previous version's code; bumping in a separate commit unrelated to the tag produces ambiguity about which commit the release names. `cargo-release` enforces the ordering by construction.
+
+**Convention/adoption boundary.** commons owns the convention: this ADR and `RELEASE.md`. Each cargo-workspace repo owns its own `release.toml`, its own `CHANGELOG.md`, and the act of adopting the tool. Per-repo adoption is tracked in separate GitHub issues filed against each repo. commons does not vendor `release.toml` content; the convention specifies the tool and the invariant, not a single shared configuration file.
+
+**Clean working tree is a precondition, not an override.** Releases run from a clean tree on the integration branch. `--allow-dirty` is not part of the release path. A working tree that is not clean is a signal to resolve the discrepancy before releasing, not to flag past it.
+
+**Out of scope.** This convention defines release discipline at the cargo-workspace-version layer. CHANGELOG authoring discipline (what entries qualify, voice, granularity), release-note authoring standards, artifact signing, and pre-release identifier handling (`-rc.N`, `-beta.N`) are related concerns that may become their own conventions later. None of them is in scope for ADR-0006. The convention also does not apply to non-cargo repos in the ecosystem (commons itself, base, groundwork) — those have different versioning surfaces and warrant separate treatment if and when they need it.
+
+**Fractal application of sovereignty.** Principle 1 declares sovereignty fractal across the interfaces it lists — human-agent, agent-agent, skill-skill, stage-stage. This convention extends the same boundary discipline to a release-scale interface: operator declares the version intent (the WHAT), the tool executes version-bump + commit + tag + push as one indivisible operation (the HOW). The v0.1.1 incident is the canonical case of that boundary failing — the operator absorbed the executor role, the executor work was incomplete, and the implementation drifted from the intent. The convention restores the boundary at release scale by giving the executor role to a tool that cannot perform it incompletely.
+
+**Mechanical completion criterion.** Principle 7 requires every unit of work to have mechanically verifiable completion criteria. Under this convention, "release vX.Y.Z is complete" reduces to "the workspace `Cargo.toml` at the commit tagged vX.Y.Z names version X.Y.Z." That is a file gate: observable, pass/fail, not subjective. `cargo-release`'s atomic operation makes the gate inviolable by construction — there is no reachable state under the convention where the tag exists and the invariant fails.
+
+**What this means for the builder agent.** When asked to "tag a release" on a cargo-workspace repo where `cargo-release` is not configured, surface the convention rather than tagging by hand — the per-repo adoption is the prerequisite, and bypassing it reintroduces the gap. When proposing a new cargo-workspace repo for the ecosystem, adopt `cargo-release` at the same time the repo is initialized, not after the first release. When reviewing a release that has already been cut, verify the workspace-version invariant against the tag before treating the release as complete; a tag whose commit violates the invariant is a defect to surface, not to work around.
