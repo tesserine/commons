@@ -36,7 +36,7 @@ The operator does not perform any of these steps independently. Splitting the op
 
 ## Verification
 
-After the push, on a fresh clone of the tag, build the workspace and check that the binary self-reports the version the tag names:
+After the push, on a fresh clone of the tag, build the workspace and check that every shipped binary self-reports the version the tag names:
 
 ```
 checkdir=$(mktemp -d)
@@ -46,7 +46,7 @@ cargo build --release
 ./target/release/<binary> --version
 ```
 
-The output must include `X.Y.Z`. If it does not, the workspace-version invariant has been violated and the release is invalid; see *Failure modes* below.
+For each binary the workspace ships, the output must include `X.Y.Z`. If any binary reports otherwise, the workspace-version invariant has been violated and the release is invalid; see *Failure modes* below.
 
 ## Failure modes
 
