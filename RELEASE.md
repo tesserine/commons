@@ -58,7 +58,12 @@ For each binary the workspace ships, the output must include `X.Y.Z`. If any bin
 
 **Tag already exists upstream.** The release was attempted twice or the tag was created out of band. If the existing tag has no external consumers, delete it locally and remotely (`git tag -d vX.Y.Z && git push origin :refs/tags/vX.Y.Z`) and re-release. If the tag has external consumers, treat it as immutable: cut the next version instead. Public-tag rewriting is a larger problem with consequences beyond this document.
 
-**Workspace-version invariant violated.** The binary at the tag self-reports the wrong version. Do not amend the tagged commit. The remediation path is the same as for "Tag already exists upstream" and inherits the same external-consumer constraint: if no external consumers exist, delete the tag (locally and remotely), correct `Cargo.toml`, and re-release; if external consumers exist, the invalid tag enters the public record and the remediation is to cut the next version, because public-tag rewriting is a larger problem with consequences beyond this document.
+**Workspace-version invariant violated.** The binary at the tag self-reports the wrong version. Do not amend the tagged commit. Diagnose the source before remediating; the violation has two possible sources:
+
+- **Cargo.toml source.** The workspace `Cargo.toml` at the tagged commit names the wrong version. Remediation: correct `Cargo.toml` and re-release.
+- **Binary source.** The workspace `Cargo.toml` is correct, but a binary derives `--version` from something other than `CARGO_PKG_VERSION` (or an equivalent mechanism resolving to the workspace `Cargo.toml` version at build time). The workspace-source compliance property was unmet. Remediation: correct the binary's version derivation and re-release; re-releasing without this correction reproduces the symptom.
+
+Both cases inherit the external-consumer constraint: if no external consumers exist, delete the tag (locally and remotely) before re-releasing; if external consumers exist, the invalid tag enters the public record and the remediation is to cut the next version, because public-tag rewriting is a larger problem with consequences beyond this document.
 
 **`cargo release` aborts mid-operation.** A network failure between commit and push can leave the local repo bumped and tagged without the push having landed. Confirm the commit and tag are present locally and not yet upstream, then `git push --follow-tags` to complete the in-flight operation. If the remote already received the commit but not the tag, `git push origin vX.Y.Z` finishes the push. Do not re-run `cargo release`; this is not a new release, it is the same one finishing.
 
