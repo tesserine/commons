@@ -43,10 +43,12 @@ distinct from any public API listener. A public listener must not serve
 
 **Loopback default.** The default operator bind host or interface is loopback.
 Operators may override it when the scraper runs outside the product's host or
-container namespace. Products must reject configurations that make the public
-and operator listeners the same socket endpoint: the same bind host or IP
-address and port after configuration resolution. Binding both listeners to
-loopback on different ports is valid.
+container namespace. Products must reject configurations that create an
+overlapping bind between the public and operator listeners: the same port and
+bind-address sets that intersect after configuration resolution. Wildcard
+binds such as `0.0.0.0` and `::` contain specific addresses in their address
+families, so they conflict with loopback or other specific addresses on the
+same port. Binding both listeners to loopback on different ports is valid.
 
 **Network placement as access boundary.** Metrics are protected by deployment
 topology: loopback binding, firewall policy, reverse-proxy policy, service mesh
