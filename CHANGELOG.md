@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ADR-0009 Operator Metrics Convention, establishing separate
+  loopback-default operator listeners, network placement as the metrics access
+  boundary, Prometheus text exposition, ecosystem metric naming, and bounded
+  label cardinality policy.
 - Added ADR-0007 Day-One Stance, formalizing the default orientation
   toward foundational movability: artifacts are scaffolding for what
   comes next, proxies serve the foundation rather than replacing it,
