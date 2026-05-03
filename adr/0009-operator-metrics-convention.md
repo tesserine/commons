@@ -38,13 +38,15 @@ when an operator queries them together.
 ## Consequences
 
 **Separate operator surface.** Products expose metrics on an operator listener
-distinct from any public API listener. A public listener should not serve
+distinct from any public API listener. A public listener must not serve
 `/metrics` unless a later ADR explicitly changes the convention.
 
-**Loopback default.** The default bind address is loopback. Operators may
-override it when the scraper runs outside the product's host or container
-namespace. Products must reject configurations that bind the public and
-operator listeners to the same address.
+**Loopback default.** The default operator bind host or interface is loopback.
+Operators may override it when the scraper runs outside the product's host or
+container namespace. Products must reject configurations that make the public
+and operator listeners the same socket endpoint: the same bind host or IP
+address and port after configuration resolution. Binding both listeners to
+loopback on different ports is valid.
 
 **Network placement as access boundary.** Metrics are protected by deployment
 topology: loopback binding, firewall policy, reverse-proxy policy, service mesh
