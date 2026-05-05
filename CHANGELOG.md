@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ADR-0010 Deployment Release Candidates and expanded `RELEASE.md` with
+  the `vX.Y.Z-rc.N` convention for immutable deployment refs across cargo and
+  non-cargo ecosystem repos.
 - Added ADR-0009 Operator Metrics Convention, establishing separate
   loopback-default operator listeners, network placement as the metrics access
   boundary, Prometheus text exposition, ecosystem metric naming, and bounded
