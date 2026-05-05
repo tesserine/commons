@@ -1,8 +1,18 @@
 # Release Process
 
-This document describes how to cut a release of a Tesserine cargo-workspace repo under the convention established by [ADR-0006](adr/0006-release-discipline.md). The ADR explains *why* the convention exists; this document explains *how* an operator executes it.
+This document describes how to cut releases and deployment release candidates
+for Tesserine repos. Stable cargo-workspace releases follow the convention
+established by [ADR-0006](adr/0006-release-discipline.md). Deployment release
+candidates follow [ADR-0010](adr/0010-deployment-release-candidates.md).
 
-The audience is an operator (human or agent) at a cargo-workspace repo where [`cargo-release`](https://github.com/crate-ci/cargo-release) is already installed and configured. This document does not apply to non-cargo repos in the ecosystem (commons, base, groundwork) — those have different versioning surfaces and are out of scope for ADR-0006. Per-repo adoption — installing the tool, authoring `release.toml` — is one-time work tracked in each cargo-workspace repo's adoption issue and is not covered here.
+The stable-release audience is an operator (human or agent) at a cargo-workspace
+repo where [`cargo-release`](https://github.com/crate-ci/cargo-release) is
+already installed and configured. Non-cargo repos in the ecosystem (commons,
+base, groundwork) have different stable-release surfaces and remain out of
+scope for ADR-0006; they are covered here only for deployment release-candidate
+tags. Per-repo cargo-release adoption — installing the tool, authoring
+`release.toml` — is one-time work tracked in each cargo-workspace repo's
+adoption issue and is not covered here.
 
 ## Preconditions
 
@@ -12,7 +22,7 @@ Before invoking the release command, the following must hold:
 - The branch is up to date with the remote: `git pull --ff-only`.
 - `cargo-release` is installed and a `release.toml` exists at the workspace root.
 - `CHANGELOG.md`'s `[Unreleased]` section reflects everything shipping in this release. Do not manually convert `[Unreleased]` to a versioned heading; `cargo-release` rolls it into `[X.Y.Z] — YYYY-MM-DD` as part of the release operation.
-- The version level is decided: `patch` for fixes, `minor` for additive changes, `major` for breaking changes.
+- The version level is decided: `patch` for fixes, `minor` for additive changes, `major` for breaking changes, or `rc` for a deployment release candidate.
 
 If any precondition fails, resolve the discrepancy before releasing. `--allow-dirty` is not part of the release path.
 
@@ -33,6 +43,36 @@ Where `<level>` is `patch`, `minor`, or `major`. The command performs, in order,
 5. Pushes the commit and the tag to the remote.
 
 The operator does not perform any of these steps independently. Splitting the operation reintroduces the gap this convention closes.
+
+## Deployment release candidates
+
+Deployment release candidates provide immutable refs for integration testing
+before a stable release is cut. They use SemVer pre-release tags in the form
+`vX.Y.Z-rc.N`, where `X.Y.Z` is the next intended stable version and `N`
+starts at `1`.
+
+Cargo-workspace repos that have adopted ADR-0006 cut release candidates through
+the same configured release tool:
+
+```
+cargo release --config release.toml --isolated rc --execute
+```
+
+The command bumps the workspace version to `X.Y.Z-rc.N`, commits the bump,
+creates annotated tag `vX.Y.Z-rc.N`, and pushes the commit and tag. The same
+workspace-version invariant applies: binaries built from the tag must
+self-report the version named by the tag.
+
+Non-cargo repos use annotated tags at clean, up-to-date commits:
+
+```
+git tag -a vX.Y.Z-rc.N -m "Release vX.Y.Z-rc.N"
+git push origin vX.Y.Z-rc.N
+```
+
+A deployment ref must be an immutable tag or a full commit SHA. Branch names
+such as `main` are not deployment refs, because container build caches key on
+the ref argument value while branch tips move.
 
 ## Verification
 
@@ -56,7 +96,7 @@ For each binary the workspace ships, the output must include `X.Y.Z`. If any bin
 
 **Dirty working tree.** `cargo-release` refuses to run. Resolve the dirty state — commit, stash, or discard — and retry. Do not pass `--allow-dirty`.
 
-**Tag already exists upstream.** The release was attempted twice or the tag was created out of band. If the existing tag has no external consumers, delete it locally and remotely (`git tag -d vX.Y.Z && git push origin :refs/tags/vX.Y.Z`) and re-release. If the tag has external consumers, treat it as immutable: cut the next version instead. Public-tag rewriting is a larger problem with consequences beyond this document.
+**Tag already exists upstream.** The release was attempted twice or the tag was created out of band. If the existing tag has no external consumers, delete it locally and remotely (`git tag -d vX.Y.Z && git push origin :refs/tags/vX.Y.Z`) and re-release. If the tag has external consumers, treat it as immutable: cut the next version instead. Public-tag rewriting is a larger problem with consequences beyond this document. For release candidates, the next version means the next RC number.
 
 **Workspace-version invariant violated.** The binary at the tag self-reports the wrong version. Do not amend the tagged commit. Diagnose the source before remediating; the violation has two possible sources:
 
@@ -74,5 +114,4 @@ The following are not part of this document and are intentionally excluded:
 - **GitHub release notes.** Whether and how to author a release on GitHub is a separate concern; the tag is the canonical release artifact, the GitHub release is presentation.
 - **Registry publishing.** The release operation does not push to crates.io or any other registry. If the ecosystem decides to publish to a registry, that becomes a separate convention. The tag is the canonical release artifact.
 - **Artifact signing.** Not currently practiced; if and when introduced, signing becomes its own convention.
-- **Pre-release identifiers** (`-rc.N`, `-beta.N`). Deferred until the ecosystem needs them.
 - **CHANGELOG authoring** — what entries qualify, voice, granularity. This document covers only the operational roll of `[Unreleased]` into a versioned section at release time.
