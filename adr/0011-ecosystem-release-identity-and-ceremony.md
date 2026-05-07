@@ -137,15 +137,20 @@ release heading, schema metadata, a manifest version field, or another
 source-controlled release metadata field, so long as the repo's release check
 can mechanically compare it to the tag.
 
-**Current non-cargo surfaces.** `groundwork`'s methodology version of record
-is a top-level `version = "X.Y.Z"` field in `manifest.toml`. `ops` records
-deployed component identity through deployment manifest `ref` fields; the
-ecosystem release version itself lives in the `commons` release manifest.
-`base` reports image identity through the labels already required by ADR-0010.
-`commons` currently has no `Cargo.toml`, so its release check verifies its
-docs, schemas, changelog, and release-manifest identity rather than cargo
-metadata; for the release manifest itself, the commit under verification is the
-manifest-containing commit. If `commons` later gains a cargo workspace, that
+**Non-cargo version-of-record surfaces.** The current artifacts and Phase 2
+release-check responsibilities are distinct. `base` already reports image
+identity through the labels required by ADR-0010. `ops` deployment manifests
+already record deployed component identity through `ref` fields; Phase 2 makes
+those fields part of the `ops` release check when a deployment manifest
+represents a release deployment, while the ecosystem release version lives in
+the Phase 3 `commons` release manifest. `commons` currently has no
+`Cargo.toml`; Phase 2 verifies its docs, schemas, changelog, and
+release-manifest identity rather than cargo metadata, and for the release
+manifest itself the commit under verification is the manifest-containing
+commit. `groundwork` does not currently expose a top-level release version in
+`manifest.toml`; Phase 2 establishes the top-level `version = "X.Y.Z"` field
+in that manifest as the methodology version-of-record surface and verifies it
+mechanically against the tag. If `commons` later gains a cargo workspace, that
 surface also falls under ADR-0006.
 
 **Phase boundary.** This ADR defines the release identity rules. Phase 2
