@@ -19,15 +19,17 @@ manifest committed to `tesserine/commons`. The manifest is the canonical
 artifact that states:
 
 ```text
-Tesserine vX.Y.Z = {agentd@vX.Y.Z, base@vX.Y.Z, runa@vX.Y.Z,
-                   groundwork@vX.Y.Z, commons@vX.Y.Z, ops@vX.Y.Z}
+Tesserine vX.Y.Z =
+  commons@vX.Y.Z at the manifest-containing commit
+  plus {agentd, base, runa, groundwork, ops}@vX.Y.Z at declared commits
 ```
 
 The lockstep repositories use the same tag string as the ecosystem release
 version. Publication of the verified manifest is the atomic ecosystem release
 boundary. An ecosystem release is not complete until every referenced tag
-exists, every tag points at the manifest-declared commit, and every referenced
-repository passes its own release check at that tag.
+exists, every non-`commons` tag points at the manifest-declared commit, the
+`commons` tag points at the commit containing the manifest, and every
+referenced repository passes its own release check at that tag.
 
 ## Context
 
@@ -63,8 +65,10 @@ authority, so the release identity artifact belongs there.
 ecosystem release identity is a convention-level artifact. Phase 3 defines the
 exact manifest path, schema, and verification command, but not the authority:
 the canonical manifest is committed in `commons`. The manifest records each
-lockstep repository, tag, and commit. A release without a published manifest
-is a set of component tags, not a Tesserine ecosystem release.
+non-`commons` lockstep repository, tag, and commit. For `commons`, the manifest
+records the repository and tag; the commit is the manifest's containing commit.
+A release without a published manifest is a set of component tags, not a
+Tesserine ecosystem release.
 
 **Uniform lockstep versions.** The lockstep set for v0.1.2 is `agentd`,
 `base`, `runa`, `groundwork`, `commons`, and `ops`. An ecosystem release
@@ -78,11 +82,21 @@ too narrow.
 
 **Manifest publication is the atomic boundary.** Git cannot tag six
 repositories atomically. The ecosystem analogue of ADR-0006's atomic operation
-is the verified publication of the release manifest. Before manifest
-publication, an invalid component tag is corrected under the owning repo's
-release discipline: cargo repos inherit ADR-0006, and RC or image-bearing
-deployment surfaces inherit ADR-0010. After manifest publication, the ecosystem
-release identity is immutable.
+is the verified publication of a complete, self-consistent release manifest.
+The manifest must be valid at the moment it is committed: it cannot depend on a
+post-commit amendment, and it cannot embed a future hash of its own contents.
+Before manifest publication, an invalid component tag is corrected under the
+owning repo's release discipline: cargo repos inherit ADR-0006, and RC or
+image-bearing deployment surfaces inherit ADR-0010. After manifest
+publication, the ecosystem release identity is immutable.
+
+**Home-repository identity is implicit.** The `commons` manifest lives inside a
+checkout of `commons`, so the home repository's commit is already identified by
+the commit that contains the manifest. Recording that same commit inside the
+manifest would be redundant and impossible, because the commit hash depends on
+the manifest contents. This asymmetry is part of the identity model: external
+lockstep repositories need explicit commit fields, while the home repository's
+commit is derived from location.
 
 **Invalid published releases move forward.** If a published stable ecosystem
 manifest is later found invalid, the correction is the next patch release on
@@ -93,7 +107,9 @@ the next `rc.N` tag. Public release history records the bad release and its
 successor rather than pretending the bad release never existed.
 
 **All-or-nothing verification.** If the ecosystem manifest references a tag
-that is missing, points at a different commit, or fails that repo's
+that is missing, if a non-`commons` tag points at a commit other than the one
+declared in the manifest, if the `commons` tag points at a commit other than
+the manifest-containing commit, or if any referenced repo fails its
 release-check, the ecosystem release fails as a whole. There is no partially
 published ecosystem release, no partial rollback, and no deployment from a
 failed manifest. The failure output must identify the repository, tag, and
@@ -128,21 +144,25 @@ ecosystem release version itself lives in the `commons` release manifest.
 `base` reports image identity through the labels already required by ADR-0010.
 `commons` currently has no `Cargo.toml`, so its release check verifies its
 docs, schemas, changelog, and release-manifest identity rather than cargo
-metadata. If `commons` later gains a cargo workspace, that surface also falls
-under ADR-0006.
+metadata; for the release manifest itself, the commit under verification is the
+manifest-containing commit. If `commons` later gains a cargo workspace, that
+surface also falls under ADR-0006.
 
 **Phase boundary.** This ADR defines the release identity rules. Phase 2
 adopts per-repo release ceremony tooling that verifies each repository's
 version-of-record surface. Phase 3 defines the concrete manifest schema,
-canonical path in `commons`, and cross-repo verifier. Phase 4 uses those
-pieces to publish the first ceremony-blessed release.
+canonical path in `commons`, and cross-repo verifier. That schema inherits this
+ADR's home-repository rule: explicit commit identity is required for
+non-`commons` entries and derived from the containing commit for `commons`.
+Phase 4 uses those pieces to publish the first ceremony-blessed release.
 
 **What this means for the builder agent.** When asked to cut or verify a
 Tesserine ecosystem release, do not infer release identity from deployment
 state, GitHub releases, or a set of convenient tags. Find the `commons`
-release manifest and verify it. Do not hand-tag around ADR-0006 or ADR-0010.
-Do not treat a failed cross-repo verification as partial success. Do not
-deploy a release by mixing component refs from multiple ecosystem manifests.
+release manifest and verify it against its containing commit. Do not hand-tag
+around ADR-0006 or ADR-0010. Do not treat a failed cross-repo verification as
+partial success. Do not deploy a release by mixing component refs from multiple
+ecosystem manifests.
 
 **What this does not mean.** This ADR does not define the manifest file format,
 the verifier implementation, registry publishing, signing, or release-note
