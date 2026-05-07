@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ADR-0011 Ecosystem Release Identity and Ceremony, defining
+  `commons` release manifests as the canonical multi-repo release identity,
+  uniform lockstep tags across release-boundary repos, deployment-manifest
+  alignment with published manifests, non-cargo version-of-record surfaces,
+  and recovery rules for invalid published ecosystem releases.
 - Added ADR-0010 Deployment Release Candidates and expanded `RELEASE.md` with
   the `vX.Y.Z-rc.N` convention for immutable deployment refs across cargo and
   non-cargo ecosystem repos.
