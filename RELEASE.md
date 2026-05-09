@@ -4,6 +4,10 @@ This document describes how to cut releases and deployment release candidates
 for Tesserine repos. Stable cargo-workspace releases follow the convention
 established by [ADR-0006](adr/0006-release-discipline.md). Deployment release
 candidates follow [ADR-0010](adr/0010-deployment-release-candidates.md).
+Release tag version strings follow [ADR-0012](adr/0012-ecosystem-release-version-grammar.md):
+stable tags are `vMAJOR.MINOR.PATCH`, release-candidate tags are
+`vMAJOR.MINOR.PATCH-rc.N`, numeric identifiers do not use leading zeroes, and
+other SemVer prerelease forms are outside the Tesserine release surface.
 
 The stable-release audience is an operator (human or agent) at a cargo-workspace
 repo where [`cargo-release`](https://github.com/crate-ci/cargo-release) is
@@ -47,8 +51,8 @@ The operator does not perform any of these steps independently. Splitting the op
 ## Deployment release candidates
 
 Deployment release candidates provide immutable refs for integration testing
-before a stable release is cut. They use SemVer pre-release tags in the form
-`vX.Y.Z-rc.N`, where `X.Y.Z` is the next intended stable version and `N`
+before a stable release is cut. They use the ADR-0012 release-candidate tag
+form `vX.Y.Z-rc.N`, where `X.Y.Z` is the next intended stable version and `N`
 starts at `1`.
 
 Cargo-workspace repos that have adopted ADR-0006 cut release candidates through

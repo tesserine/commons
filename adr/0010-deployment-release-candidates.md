@@ -7,7 +7,9 @@
 
 Tesserine deployment testing uses immutable release-candidate tags instead of
 mutable branch refs. Release candidates are tagged as `vX.Y.Z-rc.N`, where
-`X.Y.Z` is the next intended stable version and `N` starts at `1`.
+`X.Y.Z` is the next intended stable version and `N` starts at `1`. The tag
+string follows the release-candidate grammar defined by
+[ADR-0012](0012-ecosystem-release-version-grammar.md).
 
 Cargo-workspace repos with ADR-0006 release adoption create release candidates
 through their configured `cargo-release` path. Non-cargo repos create annotated
@@ -35,7 +37,8 @@ contents move.
 
 **RC naming.** The first deployment candidate for the next stable release is
 `vX.Y.Z-rc.1`; later candidates increment the final number. A bad or superseded
-candidate is not rewritten after publication. Cut the next RC instead.
+candidate is not rewritten after publication. Cut the next RC instead. Numeric
+identifiers do not use leading zeroes under ADR-0012.
 
 **Cargo workspace invariant.** For cargo-workspace repos, a release-candidate
 tag carries the same source-version requirement as a stable release: the
