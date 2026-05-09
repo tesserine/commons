@@ -25,11 +25,13 @@ Tesserine vX.Y.Z =
 ```
 
 The lockstep repositories use the same tag string as the ecosystem release
-version. Publication of the verified manifest is the atomic ecosystem release
-boundary. An ecosystem release is not complete until every referenced tag
-exists, every non-`commons` tag points at the manifest-declared commit, the
-`commons` tag points at the commit containing the manifest, and every
-referenced repository passes its own release check at that tag.
+version. Release tag grammar is defined by
+[ADR-0012](0012-ecosystem-release-version-grammar.md). Publication of the
+verified manifest is the atomic ecosystem release boundary. An ecosystem
+release is not complete until every referenced tag exists, every non-`commons`
+tag points at the manifest-declared commit, the `commons` tag points at the
+commit containing the manifest, and every referenced repository passes its own
+release check at that tag.
 
 ## Context
 
@@ -72,13 +74,13 @@ Tesserine ecosystem release.
 
 **Uniform lockstep versions.** The lockstep set for v0.1.2 is `agentd`,
 `base`, `runa`, `groundwork`, `commons`, and `ops`. An ecosystem release
-`vX.Y.Z` references tag `vX.Y.Z` in every lockstep repo. Per-repo versions may
-exist outside the lockstep set, but a repository inside the set does not
-advance under an independent version number for an ecosystem release. Future
-repositories join lockstep when a Tesserine release cannot truthfully be
-declared, deployed, or verified without pinning that repository's revision.
-Runtime dependency alone is too broad; deployment-manifest inclusion alone is
-too narrow.
+`vX.Y.Z` references tag `vX.Y.Z` in every lockstep repo, using the ADR-0012
+stable tag grammar. Per-repo versions may exist outside the lockstep set, but
+a repository inside the set does not advance under an independent version
+number for an ecosystem release. Future repositories join lockstep when a
+Tesserine release cannot truthfully be declared, deployed, or verified without
+pinning that repository's revision. Runtime dependency alone is too broad;
+deployment-manifest inclusion alone is too narrow.
 
 **Manifest publication is the atomic boundary.** Git cannot tag six
 repositories atomically. The ecosystem analogue of ADR-0006's atomic operation

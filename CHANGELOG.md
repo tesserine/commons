@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ADR-0012 Ecosystem Release Version Grammar, codifying SemVer 2.0.0 as
+  the release tag grammar for stable `vMAJOR.MINOR.PATCH` tags and
+  `vMAJOR.MINOR.PATCH-rc.N` release-candidate tags across the ecosystem.
 - Added ADR-0011 Ecosystem Release Identity and Ceremony, defining
   `commons` release manifests as the canonical multi-repo release identity,
   uniform lockstep tags across release-boundary repos, deployment-manifest
