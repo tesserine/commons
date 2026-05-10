@@ -1,0 +1,64 @@
+name: Release Metadata
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "CHANGELOG.md"
+      - "RELEASING.md"
+      - "requirements.txt"
+      - "adr/**"
+      - "schemas/**"
+      - "scripts/release-check"
+      - "scripts/release-cut"
+      - "scripts/test-release-check"
+      - "scripts/verify-release-adoption.sh"
+      - ".github/workflows/release.yml"
+      - ".github/workflows/release-metadata.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "CHANGELOG.md"
+      - "RELEASING.md"
+      - "requirements.txt"
+      - "adr/**"
+      - "schemas/**"
+      - "scripts/release-check"
+      - "scripts/release-cut"
+      - "scripts/test-release-check"
+      - "scripts/verify-release-adoption.sh"
+      - ".github/workflows/release.yml"
+      - ".github/workflows/release-metadata.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  metadata:
+    name: Release metadata
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Python dependencies
+        run: |
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python3 -m pip install -r requirements.txt
+
+      - name: Check release metadata
+        run: |
+          . .venv/bin/activate
+          ./scripts/release-check metadata
+
+      - name: Run release-check tests
+        run: |
+          . .venv/bin/activate
+          ./scripts/test-release-check
+
+      - name: Verify release adoption
+        run: |
+          . .venv/bin/activate
+          ./scripts/verify-release-adoption.sh

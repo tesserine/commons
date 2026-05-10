@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+source "$script_dir/release-check"
+release_check_error_prefix="release-cut"
+
+usage() {
+    cat <<'EOF'
+usage:
+  scripts/release-cut vX.Y.Z[-rc.N]
+EOF
+}
+
+die_release_cut() {
+    printf 'release-cut: %s\n' "$*" >&2
+    exit 1
+}
+
+roll_changelog() {
+    local version="$1"
+    local today="$2"
+    local changelog="$repo_root/CHANGELOG.md"
+
+    python3 - "$changelog" "$version" "$today" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+version = sys.argv[2]
+today = sys.argv[3]
+text = path.read_text(encoding="utf-8")
+heading = f"## [{version}] — "
+if heading in text:
+    print(f"release-cut: CHANGELOG.md already has a [{version}] release heading", file=sys.stderr)
+    sys.exit(1)
+
+marker = "## [Unreleased]"
+if text.count(marker) != 1:
+    print("release-cut: CHANGELOG.md must contain exactly one ## [Unreleased] heading", file=sys.stderr)
+    sys.exit(1)
+
+text = text.replace(marker, f"{marker}\n\n## [{version}] — {today}", 1)
+path.write_text(text, encoding="utf-8")
+PY
+}
+
+changelog_has_release_heading() {
+    local version="$1"
+    local changelog="$repo_root/CHANGELOG.md"
+
+    awk -v prefix="## [$version] — " '
+        index($0, prefix) == 1 {
+            date = substr($0, length(prefix) + 1)
+            if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
+                found = 1
+            }
+        }
+        END {
+            exit found ? 0 : 1
+        }
+    ' "$changelog"
+}
+
+main() {
+    [[ "$#" == 1 ]] || {
+        usage >&2
+        exit 2
+    }
+
+    local tag="$1"
+    local version today branch upstream changelog_backup rolled_changelog
+    version="$(release_from_tag "$tag")"
+
+    branch="$(git -C "$repo_root" branch --show-current)"
+    [[ "$branch" == "main" ]] || die_release_cut "release-cut must run on main, not $branch"
+
+    [[ -z "$(git -C "$repo_root" status --short)" ]] \
+        || die_release_cut "working tree must be clean"
+
+    git -C "$repo_root" fetch origin refs/heads/main:refs/remotes/origin/main
+    upstream="$(git -C "$repo_root" rev-parse refs/remotes/origin/main)"
+
+    if git -C "$repo_root" rev-parse --verify --quiet "refs/tags/$tag" >/dev/null; then
+        die_release_cut "tag already exists locally: $tag"
+    fi
+
+    if git -C "$repo_root" ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null 2>&1; then
+        die_release_cut "tag already exists upstream: $tag"
+    fi
+
+    run_metadata
+
+    rolled_changelog=0
+    today="$(date +%F)"
+    if changelog_has_release_heading "$version"; then
+        git -C "$repo_root" merge-base --is-ancestor "$upstream" HEAD \
+            || die_release_cut "main must contain origin/main before publishing a pre-curated release"
+    else
+        [[ "$(git -C "$repo_root" rev-parse HEAD)" == "$upstream" ]] \
+            || die_release_cut "main must be up to date with origin/main"
+
+        changelog_backup="$(mktemp)"
+        cp "$repo_root/CHANGELOG.md" "$changelog_backup"
+        roll_changelog "$version" "$today"
+        rolled_changelog=1
+    fi
+
+    if ! (run_release "$tag"); then
+        if [[ "$rolled_changelog" -eq 1 ]]; then
+            cp "$changelog_backup" "$repo_root/CHANGELOG.md"
+            rm -f "$changelog_backup"
+        fi
+        exit 1
+    fi
+
+    if [[ "$rolled_changelog" -eq 1 ]]; then
+        rm -f "$changelog_backup"
+        git -C "$repo_root" add CHANGELOG.md
+        git -C "$repo_root" commit -m "chore(release): $tag"
+    fi
+
+    git -C "$repo_root" tag -a "$tag" -m "Release $tag"
+
+    if ! git -C "$repo_root" push --atomic origin HEAD:refs/heads/main "refs/tags/$tag"; then
+        die_release_cut "atomic push failed; remote refs were not partially published"
+    fi
+}
+
+main "$@"
