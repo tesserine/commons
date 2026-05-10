@@ -72,8 +72,8 @@ assert_release_state() {
         exit 1
     fi
 
-    if ! grep -Fq "## [$version] — $(date +%F)" "$source_repo/CHANGELOG.md"; then
-        printf 'CHANGELOG.md was not rolled to [%s] with today'\''s date\n' "$version" >&2
+    if ! grep -Fq "## [$version] — " "$source_repo/CHANGELOG.md"; then
+        printf 'CHANGELOG.md has no release heading for [%s]\n' "$version" >&2
         exit 1
     fi
 
@@ -89,6 +89,17 @@ assert_release_state() {
 
     if [[ -n "$(git -C "$source_repo" status --short)" ]]; then
         printf 'release-cut left a dirty working tree\n' >&2
+        exit 1
+    fi
+}
+
+assert_release_heading_uses_today() {
+    local source_repo="$1"
+    local tag="$2"
+    local version="${tag#v}"
+
+    if ! grep -Fq "## [$version] — $(date +%F)" "$source_repo/CHANGELOG.md"; then
+        printf 'CHANGELOG.md was not rolled to [%s] with today'\''s date\n' "$version" >&2
         exit 1
     fi
 }
@@ -162,6 +173,7 @@ assert_rc_to_stable_requires_curated_notes() {
 
     run_release_cut "$source_repo" v1.2.3-rc.1
     assert_release_state "$source_repo" "$remote_repo" v1.2.3-rc.1
+    assert_release_heading_uses_today "$source_repo" v1.2.3-rc.1
     rc_head="$(git -C "$source_repo" rev-parse HEAD)"
     remote_main_before="$(git --git-dir="$remote_repo" rev-parse refs/heads/main)"
     changelog_before="$(git -C "$source_repo" show HEAD:CHANGELOG.md)"
@@ -218,6 +230,7 @@ from pathlib import Path
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
 marker = "## [0.1.1] — "
+# Fixed date models operator-authored notes, which need not be curated today.
 section = """## [1.2.3] — 2026-05-10
 
 ### Added
@@ -248,6 +261,7 @@ seed_release_repo "$stable_source" "$stable_remote"
 prepare_release_env "$stable_source"
 run_release_cut "$stable_source" v1.2.3
 assert_release_state "$stable_source" "$stable_remote" v1.2.3
+assert_release_heading_uses_today "$stable_source" v1.2.3
 verify_fresh_checkout "$stable_remote" v1.2.3
 printf 'verified stable release adoption for v1.2.3\n'
 
@@ -257,6 +271,7 @@ seed_release_repo "$rc_source" "$rc_remote"
 prepare_release_env "$rc_source"
 run_release_cut "$rc_source" v1.2.3-rc.1
 assert_release_state "$rc_source" "$rc_remote" v1.2.3-rc.1
+assert_release_heading_uses_today "$rc_source" v1.2.3-rc.1
 verify_fresh_checkout "$rc_remote" v1.2.3-rc.1
 printf 'verified RC release adoption for v1.2.3-rc.1\n'
 
