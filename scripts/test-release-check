@@ -209,6 +209,59 @@ assert_failure_contains \
     "version must match ADR-0012" \
     run_in_fixture "$bad_changelog" metadata
 
+duplicate_changelog="$(make_valid_fixture duplicate-changelog)"
+cat >"$duplicate_changelog/CHANGELOG.md" <<'EOF'
+# Changelog
+
+## [Unreleased]
+
+## [1.2.3] — 2026-05-09
+
+### Added
+
+- First release body.
+
+## [1.2.3] — 2026-05-10
+
+### Added
+
+- Duplicate release body.
+EOF
+assert_failure_contains \
+    "metadata rejects duplicate changelog release headings" \
+    "CHANGELOG.md has duplicate release heading for [1.2.3]" \
+    run_in_fixture "$duplicate_changelog" metadata
+assert_failure_contains \
+    "notes rejects duplicate changelog release headings" \
+    "CHANGELOG.md has duplicate release heading for [1.2.3]" \
+    run_in_fixture "$duplicate_changelog" notes v1.2.3
+
+unknown_schema="$(make_valid_fixture unknown-schema)"
+cat >"$unknown_schema/schemas/request/v1/request.schema.json" <<'EOF'
+{
+  "$schema": "http://json-schema.org/draft-99/schema#",
+  "title": "Request",
+  "type": "object"
+}
+EOF
+assert_failure_contains \
+    "metadata rejects schemas with unknown declared drafts" \
+    'declares unknown $schema URI: http://json-schema.org/draft-99/schema#; supported drafts:' \
+    run_in_fixture "$unknown_schema" metadata
+
+empty_schema_uri="$(make_valid_fixture empty-schema-uri)"
+cat >"$empty_schema_uri/schemas/request/v1/request.schema.json" <<'EOF'
+{
+  "$schema": "",
+  "title": "Request",
+  "type": "object"
+}
+EOF
+assert_failure_contains \
+    "metadata rejects empty schema URI as missing schema identity" \
+    'missing string $schema' \
+    run_in_fixture "$empty_schema_uri" metadata
+
 if [[ "$failures" -ne 0 ]]; then
     printf '%d release-check test(s) failed\n' "$failures" >&2
     exit 1

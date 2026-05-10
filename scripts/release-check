@@ -41,6 +41,7 @@ check_changelog_structure() {
         || die "CHANGELOG.md must contain exactly one ## [Unreleased] heading"
 
     local seen_release=0
+    local -A seen_versions=()
     local line heading version
     while IFS= read -r line; do
         [[ "$line" == "## "* ]] || continue
@@ -55,6 +56,9 @@ check_changelog_structure() {
             || die "CHANGELOG.md release heading is malformed: $line"
         version="${BASH_REMATCH[1]}"
         check_version_shape "$version"
+        [[ -z "${seen_versions[$version]+seen}" ]] \
+            || die "CHANGELOG.md has duplicate release heading for [$version]"
+        seen_versions["$version"]=1
         seen_release=1
     done <"$changelog"
 }
@@ -171,12 +175,22 @@ except json.JSONDecodeError as error:
     print(f"release-check: {path}: not valid JSON: {error}", file=sys.stderr)
     sys.exit(1)
 
-if not isinstance(data.get("$schema"), str):
+schema_uri = data.get("$schema")
+if not isinstance(schema_uri, str) or schema_uri == "":
     print(f"release-check: {path}: missing string $schema", file=sys.stderr)
     sys.exit(1)
 
+validator = jsonschema.validators.validator_for(data, default=None)
+if validator is None:
+    supported_drafts = ", ".join(sorted(jsonschema.validators._META_SCHEMAS))
+    print(
+        f"release-check: {path} declares unknown $schema URI: {schema_uri}; "
+        f"supported drafts: {supported_drafts}",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
 try:
-    validator = jsonschema.validators.validator_for(data)
     validator.check_schema(data)
 except Exception as error:
     detail = getattr(error, "message", str(error))
@@ -227,7 +241,9 @@ main() {
             ;;
         notes)
             [[ "$#" == 2 ]] || die "notes requires exactly one vX.Y.Z[-rc.N] argument"
-            emit_notes "$(release_from_tag "$2")"
+            version="$(release_from_tag "$2")"
+            check_changelog_structure
+            emit_notes "$version"
             ;;
         release)
             [[ "$#" == 2 ]] || die "release requires exactly one vX.Y.Z[-rc.N] argument"
