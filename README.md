@@ -22,6 +22,7 @@ Future repos inherit these principles by default.
 - **[EXIT-CODES.md](EXIT-CODES.md)** — shared session-outcome exit code contract for runners and callers across the ecosystem
 - **[REQUEST.md](REQUEST.md)** — canonical contract for the request artifact, the entry point that triggers a session
 - **[RELEASE.md](RELEASE.md)** — release process for Tesserine cargo-workspace repos, formalized by [ADR-0006](adr/0006-release-discipline.md)
+- **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository
 - **[schemas/](schemas/)** — versioned JSON Schemas that are the machine-checkable realizations of canonical artifact specs
 - **[adr/](adr/)** — architectural decision records that operationalize the principles
 

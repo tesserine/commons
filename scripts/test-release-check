@@ -1,0 +1,215 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+release_check_source="$workspace_root/scripts/release-check"
+scratch="$(mktemp -d)"
+trap 'rm -rf "$scratch"' EXIT
+
+failures=0
+
+fail() {
+    printf 'not ok - %s\n' "$*" >&2
+    failures=$((failures + 1))
+}
+
+pass() {
+    printf 'ok - %s\n' "$*"
+}
+
+run_in_fixture() {
+    local fixture="$1"
+    shift
+
+    (cd "$fixture" && bash "$fixture/scripts/release-check" "$@")
+}
+
+assert_success() {
+    local name="$1"
+    shift
+
+    if output="$("$@" 2>&1)"; then
+        pass "$name"
+    else
+        fail "$name"
+        printf '%s\n' "$output" >&2
+    fi
+}
+
+assert_failure_contains() {
+    local name="$1"
+    local expected="$2"
+    shift 2
+
+    set +e
+    output="$("$@" 2>&1)"
+    status=$?
+    set -e
+
+    if [[ "$status" -eq 0 ]]; then
+        fail "$name"
+        printf 'command unexpectedly succeeded\n' >&2
+        return
+    fi
+
+    if [[ "$output" != *"$expected"* ]]; then
+        fail "$name"
+        printf 'expected output to contain: %s\nactual output:\n%s\n' "$expected" "$output" >&2
+        return
+    fi
+
+    pass "$name"
+}
+
+make_valid_fixture() {
+    local name="$1"
+    local version="${2:-1.2.3}"
+    local root="$scratch/$name"
+
+    mkdir -p "$root/adr" "$root/schemas/request/v1" "$root/scripts"
+    cp "$release_check_source" "$root/scripts/release-check"
+    cat >"$root/CHANGELOG.md" <<EOF
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+
+## [$version] — 2026-05-09
+
+### Added
+
+- Release ceremony tooling.
+EOF
+
+    cat >"$root/adr/0001-first.md" <<'EOF'
+# ADR-0001: First
+
+**Status:** Accepted
+EOF
+
+    cat >"$root/adr/0002-second.md" <<'EOF'
+# ADR-0002: Second
+
+**Status:** Accepted
+EOF
+
+    cat >"$root/schemas/request/v1/request.schema.json" <<'EOF'
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "object",
+  "required": ["description"],
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "type": "string"
+    }
+  }
+}
+EOF
+
+    printf '%s\n' "$root"
+}
+
+valid="$(make_valid_fixture metadata-valid)"
+assert_success \
+    "metadata accepts coherent changelog, ADR, and schema substrate" \
+    run_in_fixture "$valid" metadata
+
+notes="$(make_valid_fixture notes-valid)"
+assert_success \
+    "notes emits the matching changelog section" \
+    run_in_fixture "$notes" notes v1.2.3
+notes_output="$(run_in_fixture "$notes" notes v1.2.3)"
+if [[ "$notes_output" == $'### Added\n\n- Release ceremony tooling.' ]]; then
+    pass "notes output is trimmed to the release body"
+else
+    fail "notes output is trimmed to the release body"
+    printf 'actual notes:\n%s\n' "$notes_output" >&2
+fi
+
+rc="$(make_valid_fixture rc-valid 1.2.3-rc.2)"
+assert_success \
+    "release accepts documented RC identity" \
+    run_in_fixture "$rc" release v1.2.3-rc.2
+
+assert_failure_contains \
+    "release rejects leading-zero stable tags" \
+    "release tag must match ADR-0012" \
+    run_in_fixture "$valid" release v01.2.3
+
+assert_failure_contains \
+    "release rejects rc.0 tags" \
+    "release tag must match ADR-0012" \
+    run_in_fixture "$valid" release v1.2.3-rc.0
+
+regex_like="$(make_valid_fixture regex-like 1.2.3-rc.2)"
+cat >"$regex_like/CHANGELOG.md" <<'EOF'
+# Changelog
+
+## [Unreleased]
+
+## [1.2.3-rcZ2] — 2026-05-09
+
+### Added
+
+- Wrong heading that should not literal-match.
+EOF
+assert_failure_contains \
+    "release rejects regex-shaped changelog identity drift before comparison" \
+    "version must match ADR-0012" \
+    run_in_fixture "$regex_like" release v1.2.3-rc.2
+
+if grep -Eq 'grep[[:space:]]+-E.*[$]version|grep[[:space:]]+-Eq.*[$]version' "$release_check_source"; then
+    fail "release heading lookup does not interpolate versions into grep -E"
+else
+    pass "release heading lookup does not interpolate versions into grep -E"
+fi
+
+bad_schema="$(make_valid_fixture bad-schema)"
+cat >"$bad_schema/schemas/request/v1/request.schema.json" <<'EOF'
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Request",
+  "type": "definitely-not-a-json-schema-type"
+}
+EOF
+assert_failure_contains \
+    "metadata rejects schemas that fail meta-schema validation" \
+    "is not a valid JSON Schema" \
+    run_in_fixture "$bad_schema" metadata
+
+bad_adr_gap="$(make_valid_fixture bad-adr-gap)"
+mv "$bad_adr_gap/adr/0002-second.md" "$bad_adr_gap/adr/0003-third.md"
+assert_failure_contains \
+    "metadata rejects ADR numbering gaps" \
+    "ADR sequence gap" \
+    run_in_fixture "$bad_adr_gap" metadata
+
+bad_adr_title="$(make_valid_fixture bad-adr-title)"
+cat >"$bad_adr_title/adr/0002-second.md" <<'EOF'
+# ADR-0003: Wrong Number
+EOF
+assert_failure_contains \
+    "metadata rejects ADR filename and title mismatches" \
+    "ADR title number mismatch" \
+    run_in_fixture "$bad_adr_title" metadata
+
+bad_changelog="$(make_valid_fixture bad-changelog)"
+cat >"$bad_changelog/CHANGELOG.md" <<'EOF'
+# Changelog
+
+## [Unreleased]
+
+## [1.2.3-beta.1] — 2026-05-09
+EOF
+assert_failure_contains \
+    "metadata rejects unsupported changelog prerelease headings" \
+    "version must match ADR-0012" \
+    run_in_fixture "$bad_changelog" metadata
+
+if [[ "$failures" -ne 0 ]]; then
+    printf '%d release-check test(s) failed\n' "$failures" >&2
+    exit 1
+fi

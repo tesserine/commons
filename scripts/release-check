@@ -1,0 +1,248 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "$script_dir/.." && pwd)"
+
+usage() {
+    cat <<'EOF'
+usage:
+  scripts/release-check metadata
+  scripts/release-check notes vX.Y.Z[-rc.N]
+  scripts/release-check release vX.Y.Z[-rc.N]
+EOF
+}
+
+die() {
+    printf 'release-check: %s\n' "$*" >&2
+    exit 1
+}
+
+release_from_tag() {
+    local tag="$1"
+    [[ "$tag" =~ ^v(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)(-rc[.][1-9][0-9]*)?$ ]] \
+        || die "release tag must match ADR-0012 stable vMAJOR.MINOR.PATCH or RC vMAJOR.MINOR.PATCH-rc.N: $tag"
+    printf '%s\n' "${tag#v}"
+}
+
+check_version_shape() {
+    local version="$1"
+    [[ "$version" =~ ^(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)(-rc[.][1-9][0-9]*)?$ ]] \
+        || die "version must match ADR-0012 stable MAJOR.MINOR.PATCH or RC MAJOR.MINOR.PATCH-rc.N: $version"
+}
+
+check_changelog_structure() {
+    local changelog="$repo_root/CHANGELOG.md"
+    [[ -f "$changelog" ]] || die "CHANGELOG.md not found"
+
+    local unreleased_count
+    unreleased_count="$(grep -c '^## \[Unreleased\]$' "$changelog" || true)"
+    [[ "$unreleased_count" == "1" ]] \
+        || die "CHANGELOG.md must contain exactly one ## [Unreleased] heading"
+
+    local seen_release=0
+    local line heading version
+    while IFS= read -r line; do
+        [[ "$line" == "## "* ]] || continue
+
+        if [[ "$line" == "## [Unreleased]" ]]; then
+            [[ "$seen_release" -eq 0 ]] \
+                || die "CHANGELOG.md places ## [Unreleased] after a release heading"
+            continue
+        fi
+
+        [[ "$line" =~ ^##[[:space:]]\[([^]]+)\][[:space:]]—[[:space:]][0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] \
+            || die "CHANGELOG.md release heading is malformed: $line"
+        version="${BASH_REMATCH[1]}"
+        check_version_shape "$version"
+        seen_release=1
+    done <"$changelog"
+}
+
+check_release_heading() {
+    local version="$1"
+    local changelog="$repo_root/CHANGELOG.md"
+
+    awk -v prefix="## [$version] — " '
+        index($0, prefix) == 1 {
+            date = substr($0, length(prefix) + 1)
+            if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
+                found = 1
+            }
+        }
+        END {
+            exit found ? 0 : 1
+        }
+    ' "$changelog" || die "CHANGELOG.md has no release heading for [$version]"
+}
+
+emit_notes() {
+    local version="$1"
+    local changelog="$repo_root/CHANGELOG.md"
+
+    awk -v prefix="## [$version] — " -v version="$version" '
+        index($0, prefix) == 1 {
+            found = 1
+            inside = 1
+            next
+        }
+        inside && /^## / {
+            exit
+        }
+        inside {
+            lines[++line_count] = $0
+        }
+        END {
+            if (!found) {
+                print "release-check: CHANGELOG.md has no release heading for [" version "]" > "/dev/stderr"
+                exit 1
+            }
+
+            first = 1
+            while (first <= line_count && lines[first] == "") {
+                first++
+            }
+
+            last = line_count
+            while (last >= first && lines[last] == "") {
+                last--
+            }
+
+            for (i = first; i <= last; i++) {
+                print lines[i]
+            }
+        }
+    ' "$changelog"
+}
+
+check_adr_integrity() {
+    local adr_dir="$repo_root/adr"
+    [[ -d "$adr_dir" ]] || die "adr/ not found"
+
+    local expected=1
+    local found=0
+    local file base number expected_number first_line title_number
+    while IFS= read -r file; do
+        found=1
+        base="$(basename -- "$file")"
+        [[ "$base" =~ ^([0-9]{4})-[a-z0-9][a-z0-9-]*[.]md$ ]] \
+            || die "ADR filename is malformed: adr/$base"
+
+        number="${BASH_REMATCH[1]}"
+        expected_number="$(printf '%04d' "$expected")"
+        [[ "$number" == "$expected_number" ]] \
+            || die "ADR sequence gap: expected $expected_number, found $number"
+
+        IFS= read -r first_line <"$file" || first_line=""
+        [[ "$first_line" =~ ^#[[:space:]]ADR-([0-9]{4}):[[:space:]].+ ]] \
+            || die "ADR title is malformed: adr/$base"
+        title_number="${BASH_REMATCH[1]}"
+        [[ "$title_number" == "$number" ]] \
+            || die "ADR title number mismatch: adr/$base names ADR-$title_number"
+
+        expected=$((expected + 1))
+    done < <(find "$adr_dir" -maxdepth 1 -type f -name '*.md' | sort)
+
+    [[ "$found" -eq 1 ]] || die "adr/ contains no ADR markdown files"
+}
+
+check_schema_file() {
+    local schema="$1"
+
+    python3 - "$schema" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+
+try:
+    import jsonschema.validators
+except ModuleNotFoundError:
+    print(
+        "release-check: jsonschema is required; install with python3 -m pip install -r requirements.txt",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+
+try:
+    data = json.loads(path.read_text(encoding="utf-8"))
+except json.JSONDecodeError as error:
+    print(f"release-check: {path}: not valid JSON: {error}", file=sys.stderr)
+    sys.exit(1)
+
+if not isinstance(data.get("$schema"), str):
+    print(f"release-check: {path}: missing string $schema", file=sys.stderr)
+    sys.exit(1)
+
+try:
+    validator = jsonschema.validators.validator_for(data)
+    validator.check_schema(data)
+except Exception as error:
+    detail = getattr(error, "message", str(error))
+    print(f"release-check: {path} is not a valid JSON Schema: {detail}", file=sys.stderr)
+    sys.exit(1)
+PY
+}
+
+check_schema_integrity() {
+    local schema_dir="$repo_root/schemas"
+    [[ -d "$schema_dir" ]] || die "schemas/ not found"
+
+    local found=0
+    local schema
+    while IFS= read -r schema; do
+        found=1
+        check_schema_file "$schema"
+    done < <(find "$schema_dir" -type f -name '*.schema.json' | sort)
+
+    [[ "$found" -eq 1 ]] || die "schemas/ contains no *.schema.json files"
+}
+
+run_metadata() {
+    check_changelog_structure
+    check_adr_integrity
+    check_schema_integrity
+}
+
+run_release() {
+    local tag="$1"
+    local version
+    version="$(release_from_tag "$tag")"
+
+    run_metadata
+    check_release_heading "$version"
+}
+
+main() {
+    [[ "$#" -ge 1 ]] || {
+        usage >&2
+        exit 2
+    }
+
+    case "$1" in
+        metadata)
+            [[ "$#" == 1 ]] || die "metadata takes no arguments"
+            run_metadata
+            ;;
+        notes)
+            [[ "$#" == 2 ]] || die "notes requires exactly one vX.Y.Z[-rc.N] argument"
+            emit_notes "$(release_from_tag "$2")"
+            ;;
+        release)
+            [[ "$#" == 2 ]] || die "release requires exactly one vX.Y.Z[-rc.N] argument"
+            run_release "$2"
+            ;;
+        -h|--help|help)
+            usage
+            ;;
+        *)
+            usage >&2
+            exit 2
+            ;;
+    esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+    main "$@"
+fi
