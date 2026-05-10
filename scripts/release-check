@@ -3,6 +3,7 @@ set -euo pipefail
 
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd -- "$script_dir/.." && pwd)"
+release_check_error_prefix="${release_check_error_prefix:-release-check}"
 
 usage() {
     cat <<'EOF'
@@ -14,7 +15,7 @@ EOF
 }
 
 die() {
-    printf 'release-check: %s\n' "$*" >&2
+    printf '%s: %s\n' "$release_check_error_prefix" "$*" >&2
     exit 1
 }
 
@@ -63,28 +64,14 @@ check_changelog_structure() {
     done <"$changelog"
 }
 
-check_release_heading() {
+release_section_body() {
     local version="$1"
     local changelog="$repo_root/CHANGELOG.md"
 
-    awk -v prefix="## [$version] — " '
-        index($0, prefix) == 1 {
-            date = substr($0, length(prefix) + 1)
-            if (date ~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
-                found = 1
-            }
-        }
-        END {
-            exit found ? 0 : 1
-        }
-    ' "$changelog" || die "CHANGELOG.md has no release heading for [$version]"
-}
-
-emit_notes() {
-    local version="$1"
-    local changelog="$repo_root/CHANGELOG.md"
-
-    awk -v prefix="## [$version] — " -v version="$version" '
+    awk \
+        -v prefix="## [$version] — " \
+        -v version="$version" \
+        -v tool="$release_check_error_prefix" '
         index($0, prefix) == 1 {
             found = 1
             inside = 1
@@ -98,18 +85,38 @@ emit_notes() {
         }
         END {
             if (!found) {
-                print "release-check: CHANGELOG.md has no release heading for [" version "]" > "/dev/stderr"
+                print tool ": CHANGELOG.md has no release heading for [" version "]" > "/dev/stderr"
                 exit 1
             }
 
             first = 1
-            while (first <= line_count && lines[first] == "") {
+            while (first <= line_count && lines[first] ~ /^[[:space:]]*$/) {
                 first++
             }
 
             last = line_count
-            while (last >= first && lines[last] == "") {
+            while (last >= first && lines[last] ~ /^[[:space:]]*$/) {
                 last--
+            }
+
+            body_has_content = 0
+            for (i = first; i <= last; i++) {
+                if (lines[i] ~ /[^[:space:]]/) {
+                    body_has_content = 1
+                }
+            }
+
+            if (!body_has_content) {
+                print tool ": CHANGELOG.md ## [" version "] section is empty" > "/dev/stderr"
+                if (tool == "release-cut") {
+                    print tool " requires explicit release-note content. To proceed, either:" > "/dev/stderr"
+                    if (version !~ /-rc[.][0-9]+$/) {
+                        print "  - copy content from the most recent ## [" version "-rc.N] section into ## [" version "], if this stable promotes an existing RC;" > "/dev/stderr"
+                    }
+                    print "  - add release notes describing what is in this release, if it includes work beyond the RC;" > "/dev/stderr"
+                    print "  - revert the roll and add Unreleased entries before retrying." > "/dev/stderr"
+                }
+                exit 1
             }
 
             for (i = first; i <= last; i++) {
@@ -225,7 +232,7 @@ run_release() {
     version="$(release_from_tag "$tag")"
 
     run_metadata
-    check_release_heading "$version"
+    release_section_body "$version" >/dev/null
 }
 
 main() {
@@ -243,7 +250,7 @@ main() {
             [[ "$#" == 2 ]] || die "notes requires exactly one vX.Y.Z[-rc.N] argument"
             version="$(release_from_tag "$2")"
             check_changelog_structure
-            emit_notes "$version"
+            release_section_body "$version"
             ;;
         release)
             [[ "$#" == 2 ]] || die "release requires exactly one vX.Y.Z[-rc.N] argument"

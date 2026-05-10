@@ -58,6 +58,21 @@ or:
 The helper rolls `CHANGELOG.md`'s `[Unreleased]` section into the requested
 release heading, commits that roll, creates an annotated tag, verifies the
 release surface, and publishes the branch plus tag with one atomic Git push.
+The rolled release heading must contain release-note content; an empty section
+is rejected before any commit, tag, or push is created.
+
+When cutting a stable release after one or more release candidates, do not rely
+on the helper to promote RC notes. Curate the stable `## [X.Y.Z] — YYYY-MM-DD`
+section explicitly in `CHANGELOG.md`, commit that changelog update on `main`,
+and then run:
+
+```sh
+./scripts/release-cut vX.Y.Z
+```
+
+If the curated stable heading already exists and contains notes, the helper
+verifies that section, creates the annotated tag at the curation commit, and
+publishes the commit plus tag atomically.
 
 ## Post-Release Gate
 
@@ -85,6 +100,12 @@ command.
 If `scripts/release-cut` fails before the atomic push, no remote release has
 been published. Resolve the reported local problem and retry from a clean main
 branch.
+
+If the failure reports an empty `CHANGELOG.md` release section, make the
+release intent explicit in the changelog before retrying. For a stable release
+that promotes an RC, copy or rewrite the relevant RC notes into the stable
+section. For a release that includes additional work beyond the RC, add notes
+that describe the stable contents.
 
 If the atomic push fails, remote refs were not partially published. The local
 release commit and annotated tag may exist; inspect them, remove them locally if
