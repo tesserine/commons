@@ -24,6 +24,7 @@ runa_commit=3333333333333333333333333333333333333333
 groundwork_commit=4444444444444444444444444444444444444444
 ops_commit=5555555555555555555555555555555555555555
 commons_commit=6666666666666666666666666666666666666666
+later_checkout_commit=7777777777777777777777777777777777777777
 
 write_manifest() {
     local path="$1"
@@ -232,6 +233,19 @@ else
 fi
 EOF
     chmod +x "$bin_dir/gh"
+
+    cat >"$bin_dir/git" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "\$1" == "rev-parse" && "\${2:-}" == "HEAD" ]]; then
+    printf '%s\n' "$later_checkout_commit"
+else
+    printf 'unknown fake git command: %s\n' "\$*" >&2
+    exit 1
+fi
+EOF
+    chmod +x "$bin_dir/git"
 }
 
 assert_success() {
@@ -282,6 +296,11 @@ assert_success \
     env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT="$commons_commit" \
     "$verifier" "$valid_manifest"
 
+assert_success \
+    "verifier derives commons identity from the manifest tag, not checkout HEAD" \
+    env PATH="$fake_bin:$PATH" \
+    "$verifier" "$valid_manifest"
+
 bad_schema="$scratch/bad-schema.json"
 cat >"$bad_schema" <<'EOF'
 {
@@ -327,7 +346,7 @@ assert_failure_contains \
 wrong_commons_home="$scratch/wrong-commons-home.json"
 write_manifest "$wrong_commons_home"
 assert_failure_contains \
-    "verifier derives commons identity from the containing checkout" \
+    "verifier honors an explicit commons identity override" \
     "commons v0.1.2 tag-commit: expected 0000000000000000000000000000000000000000, actual $commons_commit" \
     env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT=0000000000000000000000000000000000000000 \
     "$verifier" "$wrong_commons_home"
