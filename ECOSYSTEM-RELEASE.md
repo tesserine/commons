@@ -26,8 +26,8 @@ tags that compose that release:
 The manifest schema is
 [`schemas/ecosystem-release-manifest.schema.json`](schemas/ecosystem-release-manifest.schema.json).
 Non-`commons` components declare the exact commit their tag must point at.
-The `commons` commit is derived from the commit that contains the manifest, as
-required by ADR-0011.
+For `commons`, the verifier confirms the local manifest content is identical
+to the manifest published at the `commons` tag, as required by ADR-0011.
 
 ## Verification
 
@@ -42,7 +42,10 @@ The verifier checks:
 - the manifest validates against the schema;
 - each lockstep repo appears exactly once;
 - each component tag follows ADR-0012 and matches the manifest version;
-- each GitHub tag exists and points at the expected commit;
+- each GitHub tag exists;
+- each non-`commons` GitHub tag points at the manifest-declared commit;
+- the `commons` tag publishes content identical to the manifest being
+  verified;
 - each repo's release workflow succeeded for the named tag at the tagged
   commit;
 - `base` builds from the same `runa` repository and release ref declared by

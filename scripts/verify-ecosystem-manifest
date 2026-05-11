@@ -2,8 +2,8 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
-import os
 import re
 import shlex
 import subprocess
@@ -95,10 +95,6 @@ def command_json(args: list[str]) -> Any:
         raise RuntimeError(f"invalid JSON from {' '.join(args)}: {error}")
 
 
-def commons_home_commit_override() -> str | None:
-    return os.environ.get("COMMONS_RELEASE_MANIFEST_HOME_COMMIT")
-
-
 def tag_commit(repo: str, tag: str) -> str:
     ref = command_json(["gh", "api", f"repos/{repo}/git/ref/tags/{tag}"])
     obj = ref.get("object")
@@ -166,8 +162,8 @@ def release_workflow_succeeded(repo: str, tag: str, commit: str) -> tuple[bool, 
     return False, detail
 
 
-def repo_file(repo: str, path: str, commit: str) -> str:
-    payload = command_json(["gh", "api", f"repos/{repo}/contents/{path}?ref={commit}"])
+def repo_file_bytes(repo: str, path: str, ref: str) -> bytes:
+    payload = command_json(["gh", "api", f"repos/{repo}/contents/{path}?ref={ref}"])
     if not isinstance(payload, dict):
         raise RuntimeError(f"{path} response is not an object")
 
@@ -177,12 +173,19 @@ def repo_file(repo: str, path: str, commit: str) -> str:
         raise RuntimeError(f"{path} response has no content")
     if encoding == "base64":
         try:
-            return base64.b64decode(content).decode("utf-8")
+            return base64.b64decode(content)
         except Exception as error:
-            raise RuntimeError(f"{path} content is not valid base64 UTF-8: {error}") from error
+            raise RuntimeError(f"{path} content is not valid base64: {error}") from error
     if encoding in {None, "utf-8"}:
-        return content
+        return content.encode("utf-8")
     raise RuntimeError(f"{path} uses unsupported encoding: {encoding}")
+
+
+def repo_file(repo: str, path: str, commit: str) -> str:
+    try:
+        return repo_file_bytes(repo, path, commit).decode("utf-8")
+    except UnicodeDecodeError as error:
+        raise RuntimeError(f"{path} content is not valid UTF-8: {error}") from error
 
 
 def github_url(repo: str, *, git_suffix: bool = False) -> str:
@@ -237,14 +240,6 @@ def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], 
     return components, errors
 
 
-def expected_commit(
-    component: Component, tag_target: str, commons_override: str | None
-) -> str | None:
-    if component.name == "commons":
-        return commons_override or tag_target
-    return component.commit
-
-
 def verify_component_shape(component: Component, version: str) -> list[str]:
     errors: list[str] = []
     expected_repo = LOCKSTEP_COMPONENTS.get(component.name)
@@ -259,10 +254,26 @@ def verify_component_shape(component: Component, version: str) -> list[str]:
             f"{component.name} {component.tag} tag: expected {expected_tag}, actual {component.tag}"
         )
     if component.name == "commons" and component.commit is not None:
-        errors.append(f"commons {component.tag} commit: commons commit is derived from the manifest tag")
+        errors.append(f"commons {component.tag} commit: commons identity is verified from published manifest content")
     if component.name != "commons" and component.commit is None:
         errors.append(f"{component.name} {component.tag} commit: non-commons components must declare commit")
     return errors
+
+
+def verify_commons_published_manifest(
+    component: Component, manifest_path: Path, manifest_content: bytes
+) -> str | None:
+    published_path = f"releases/ecosystem/{manifest_path.name}"
+    try:
+        published_content = repo_file_bytes(component.repo, published_path, component.tag)
+    except RuntimeError as error:
+        return f"{published_path} at {component.tag}: {error}"
+
+    published_hash = hashlib.sha256(published_content).hexdigest()
+    local_hash = hashlib.sha256(manifest_content).hexdigest()
+    if published_hash != local_hash:
+        return f"expected {published_hash}, actual {local_hash}"
+    return None
 
 
 def verify_cross_repo_identity(components: dict[str, Component], version: str) -> list[str]:
@@ -340,13 +351,12 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
     return errors
 
 
-def verify_manifest(manifest: dict[str, Any]) -> list[str]:
+def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_content: bytes) -> list[str]:
     errors = validate_schema(manifest)
     if errors:
         return errors
 
     version = str(manifest["version"])
-    commons_override = commons_home_commit_override()
     components, component_errors = components_by_name(manifest)
     errors.extend(component_errors)
 
@@ -362,12 +372,19 @@ def verify_manifest(manifest: dict[str, Any]) -> list[str]:
         except RuntimeError as error:
             errors.append(f"{component.name} {component.tag} tag-exists: {error}")
             continue
-        expected = expected_commit(component, actual, commons_override)
-        if expected is None:
-            continue
-        if actual != expected:
+
+        if component.name == "commons":
+            published_manifest_error = verify_commons_published_manifest(
+                component, manifest_path, manifest_content
+            )
+            if published_manifest_error is not None:
+                errors.append(
+                    f"commons {component.tag} published-manifest: {published_manifest_error}"
+                )
+                continue
+        elif actual != component.commit:
             errors.append(
-                f"{component.name} {component.tag} tag-commit: expected {expected}, actual {actual}"
+                f"{component.name} {component.tag} tag-commit: expected {component.commit}, actual {actual}"
             )
             continue
 
@@ -390,7 +407,8 @@ def main(argv: list[str]) -> int:
 
     manifest_path = Path(argv[0])
     manifest = load_json(manifest_path)
-    errors = verify_manifest(manifest)
+    manifest_content = manifest_path.read_bytes()
+    errors = verify_manifest(manifest, manifest_path, manifest_content)
     if errors:
         for error in errors:
             print(f"verify-ecosystem-manifest: {error}", file=sys.stderr)

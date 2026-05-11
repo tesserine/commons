@@ -53,6 +53,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Tightened ecosystem manifest verification so release workflow evidence is
   scoped to the named tag, and deployment/base cross-repo checks compare
   repository identity as well as refs.
+- Changed `commons` ecosystem manifest verification to compare local manifest
+  content with the manifest published at the `commons` tag, removing the
+  checkout-dependent home-commit override from the default identity check.
 
 ## [0.1.1] — 2026-04-21
 
