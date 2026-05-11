@@ -48,6 +48,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   names. commons owns the convention; per-repo adoption (agentd,
   runa) is tracked separately.
 
+### Changed
+
+- Tightened ecosystem manifest verification so release workflow evidence is
+  scoped to the named tag, and deployment/base cross-repo checks compare
+  repository identity as well as refs.
+
 ## [0.1.1] — 2026-04-21
 
 ### Added

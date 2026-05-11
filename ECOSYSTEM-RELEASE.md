@@ -43,9 +43,12 @@ The verifier checks:
 - each lockstep repo appears exactly once;
 - each component tag follows ADR-0012 and matches the manifest version;
 - each GitHub tag exists and points at the expected commit;
-- each repo's release workflow succeeded for the tagged commit;
-- `base` builds from the same `runa` release ref declared by the manifest;
-- `ops/deployments/babbie.toml` matches the manifest's deployment subset.
+- each repo's release workflow succeeded for the named tag at the tagged
+  commit;
+- `base` builds from the same `runa` repository and release ref declared by
+  the manifest;
+- `ops/deployments/babbie.toml` matches the manifest's deployment subset by
+  repository URL and ref.
 
 Failures identify the component, tag, check, expected value, and actual value
 where applicable. A failed manifest is not a partial ecosystem release.

@@ -5,6 +5,7 @@ workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 verifier="$workspace_root/scripts/verify-ecosystem-manifest"
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
+PYTHON="${PYTHON:-python3}"
 
 failures=0
 
@@ -79,9 +80,11 @@ write_fake_gh() {
     local bin_dir="$1"
     mkdir -p "$bin_dir"
 
-    local dockerfile_good dockerfile_bad babbie_good babbie_bad
+    local dockerfile_good dockerfile_bad checkout_runa_ref_good checkout_runa_ref_bad babbie_good babbie_bad babbie_bad_repo
     dockerfile_good="$(printf 'ARG RUNA_REF=v0.1.2\n')"
     dockerfile_bad="$(printf 'ARG RUNA_REF=v0.1.1\n')"
+    checkout_runa_ref_good="$(printf 'default_runa_repo="https://github.com/tesserine/runa.git"\n')"
+    checkout_runa_ref_bad="$(printf 'default_runa_repo="https://github.com/wrong/runa.git"\n')"
     local babbie_good_file="$scratch/babbie-good.toml"
     cat >"$babbie_good_file" <<'TOML'
 schema_version = 1
@@ -113,11 +116,18 @@ TOML
         printf '%s\n' "$babbie_good" \
             | awk 'in_base && /^ref = / { sub(/v0[.]1[.]2/, "v0.1.1"); in_base = 0 } /^\[base\]$/ { in_base = 1 } { print }'
     )"
+    babbie_bad_repo="$(
+        printf '%s\n' "$babbie_good" \
+            | awk 'in_agentd && /^repo = / { sub(/tesserine/, "wrong"); in_agentd = 0 } /^\[agentd\]$/ { in_agentd = 1 } { print }'
+    )"
 
     dockerfile_good_b64="$(printf '%s' "$dockerfile_good" | base64 | tr -d '\n')"
     dockerfile_bad_b64="$(printf '%s' "$dockerfile_bad" | base64 | tr -d '\n')"
+    checkout_runa_ref_good_b64="$(printf '%s' "$checkout_runa_ref_good" | base64 | tr -d '\n')"
+    checkout_runa_ref_bad_b64="$(printf '%s' "$checkout_runa_ref_bad" | base64 | tr -d '\n')"
     babbie_good_b64="$(printf '%s' "$babbie_good" | base64 | tr -d '\n')"
     babbie_bad_b64="$(printf '%s' "$babbie_bad" | base64 | tr -d '\n')"
+    babbie_bad_repo_b64="$(printf '%s' "$babbie_bad_repo" | base64 | tr -d '\n')"
 
     cat >"$bin_dir/gh" <<EOF
 #!/usr/bin/env bash
@@ -169,9 +179,18 @@ if [[ "\$1" == "api" ]]; then
                 printf '{"encoding":"base64","content":"$dockerfile_good_b64"}'
             fi
             ;;
+        repos/tesserine/base/contents/scripts/checkout-runa-ref?ref=$base_commit)
+            if [[ "\${FAKE_GH_BAD_BASE_RUNA_REPO:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$checkout_runa_ref_bad_b64"}'
+            else
+                printf '{"encoding":"base64","content":"$checkout_runa_ref_good_b64"}'
+            fi
+            ;;
         repos/tesserine/ops/contents/deployments/babbie.toml?ref=$ops_commit)
             if [[ "\${FAKE_GH_BAD_BABBIE_REF:-}" == "1" ]]; then
                 printf '{"encoding":"base64","content":"$babbie_bad_b64"}'
+            elif [[ "\${FAKE_GH_BAD_BABBIE_REPO:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$babbie_bad_repo_b64"}'
             else
                 printf '{"encoding":"base64","content":"$babbie_good_b64"}'
             fi
@@ -200,10 +219,12 @@ elif [[ "\$1" == "run" && "\$2" == "list" ]]; then
         esac
     done
 
-    if [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_FAIL_BASE_RELEASE:-}" == "1" ]]; then
-        printf '[{"status":"completed","conclusion":"failure","url":"https://example.invalid/base-failure"}]'
+    if [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_AMBIGUOUS_BASE_RELEASE:-}" == "1" ]]; then
+        printf '[{"headBranch":"v0.1.2-rc.1","status":"completed","conclusion":"success","url":"https://example.invalid/base-rc-success"},{"headBranch":"v0.1.2","status":"completed","conclusion":"failure","url":"https://example.invalid/base-stable-failure"}]'
+    elif [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_FAIL_BASE_RELEASE:-}" == "1" ]]; then
+        printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"failure","url":"https://example.invalid/base-failure"}]'
     else
-        printf '[{"status":"completed","conclusion":"success","url":"https://example.invalid/%s/%s"}]' "\$repo" "\$commit"
+        printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"success","url":"https://example.invalid/%s/%s"}]' "\$repo" "\$commit"
     fi
 else
     printf 'unknown fake gh command: %s\n' "\$*" >&2
@@ -355,6 +376,14 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT="$commons_commit" FAKE_GH_BAD_BASE_RUNA_REF=1 \
     "$verifier" "$wrong_base_runa"
 
+wrong_base_runa_repo="$scratch/wrong-base-runa-repo.json"
+write_manifest "$wrong_base_runa_repo"
+assert_failure_contains \
+    "verifier rejects base source built from a different runa repo" \
+    "base v0.1.2 runa-repo: expected https://github.com/tesserine/runa.git, actual https://github.com/wrong/runa.git" \
+    env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT="$commons_commit" FAKE_GH_BAD_BASE_RUNA_REPO=1 \
+    "$verifier" "$wrong_base_runa_repo"
+
 wrong_deployment="$scratch/wrong-deployment.json"
 write_manifest "$wrong_deployment"
 assert_failure_contains \
@@ -362,6 +391,35 @@ assert_failure_contains \
     "ops v0.1.2 deployment:babbie:base-ref: expected v0.1.2, actual v0.1.1" \
     env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT="$commons_commit" FAKE_GH_BAD_BABBIE_REF=1 \
     "$verifier" "$wrong_deployment"
+
+wrong_deployment_repo="$scratch/wrong-deployment-repo.json"
+write_manifest "$wrong_deployment_repo"
+assert_failure_contains \
+    "verifier rejects deployment repos that drift from the manifest" \
+    "ops v0.1.2 deployment:babbie:agentd-repo: expected https://github.com/tesserine/agentd, actual https://github.com/wrong/agentd" \
+    env PATH="$fake_bin:$PATH" COMMONS_RELEASE_MANIFEST_HOME_COMMIT="$commons_commit" FAKE_GH_BAD_BABBIE_REPO=1 \
+    "$verifier" "$wrong_deployment_repo"
+
+assert_success \
+    "release workflow success is scoped to the triggering tag" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_AMBIGUOUS_BASE_RELEASE=1 "$PYTHON" - "$verifier" "$base_commit" <<'PY'
+import runpy
+import sys
+
+verifier_path, base_commit = sys.argv[1:]
+namespace = runpy.run_path(verifier_path, run_name="verify_ecosystem_manifest")
+release_workflow_succeeded = namespace["release_workflow_succeeded"]
+
+stable_succeeded, stable_detail = release_workflow_succeeded("tesserine/base", "v0.1.2", base_commit)
+if stable_succeeded:
+    raise SystemExit("stable tag accepted release success from a different tag")
+if "workflow did not succeed" not in stable_detail:
+    raise SystemExit(f"stable tag failure detail was unclear: {stable_detail}")
+
+rc_succeeded, rc_detail = release_workflow_succeeded("tesserine/base", "v0.1.2-rc.1", base_commit)
+if not rc_succeeded:
+    raise SystemExit(f"rc tag success was not accepted: {rc_detail}")
+PY
 
 if [[ "$failures" -ne 0 ]]; then
     printf '%d ecosystem manifest test(s) failed\n' "$failures" >&2

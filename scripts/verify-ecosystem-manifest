@@ -5,6 +5,7 @@ import base64
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tomllib
@@ -153,7 +154,7 @@ def release_workflow_succeeded(repo: str, tag: str, commit: str) -> tuple[bool, 
             "--commit",
             commit,
             "--json",
-            "status,conclusion,url",
+            "headBranch,status,conclusion,url",
             "--limit",
             "20",
         ]
@@ -161,16 +162,21 @@ def release_workflow_succeeded(repo: str, tag: str, commit: str) -> tuple[bool, 
     if not isinstance(runs, list) or not runs:
         return False, "no release workflow run found"
 
-    for run in runs:
-        if not isinstance(run, dict):
-            continue
+    expected_branches = {tag, f"refs/tags/{tag}"}
+    tag_runs = [
+        run
+        for run in runs
+        if isinstance(run, dict) and run.get("headBranch") in expected_branches
+    ]
+    if not tag_runs:
+        return False, f"no release workflow run found for {repo}@{tag}"
+
+    for run in tag_runs:
         if run.get("status") == "completed" and run.get("conclusion") == "success":
             return True, str(run.get("url", "release workflow succeeded"))
 
     url = ""
-    first = runs[0] if isinstance(runs[0], dict) else {}
-    if isinstance(first, dict):
-        url = str(first.get("url", ""))
+    url = str(tag_runs[0].get("url", ""))
     detail = f"workflow did not succeed for {repo}@{tag}"
     if url:
         detail = f"{detail} ({url})"
@@ -194,6 +200,27 @@ def repo_file(repo: str, path: str, commit: str) -> str:
     if encoding in {None, "utf-8"}:
         return content
     raise RuntimeError(f"{path} uses unsupported encoding: {encoding}")
+
+
+def github_url(repo: str, *, git_suffix: bool = False) -> str:
+    suffix = ".git" if git_suffix else ""
+    return f"https://github.com/{repo}{suffix}"
+
+
+def shell_assignment_values(text: str, name: str) -> list[str]:
+    values: list[str] = []
+    pattern = re.compile(rf"(?m)^[ \t]*{re.escape(name)}=(.+)$")
+    for match in pattern.finditer(text):
+        raw = match.group(1).strip()
+        try:
+            parsed = shlex.split(raw, comments=True, posix=True)
+        except ValueError:
+            parsed = []
+        if parsed:
+            values.append(parsed[0])
+        else:
+            values.append(raw.strip("\"'"))
+    return values
 
 
 def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], list[str]]:
@@ -275,6 +302,20 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
                     errors.append(
                         f"base {base.tag} runa-ref: expected {expected_tag}, actual {runa_ref}"
                     )
+        try:
+            checkout_runa_ref = repo_file(base.repo, "scripts/checkout-runa-ref", base.commit)
+        except RuntimeError as error:
+            errors.append(f"base {base.tag} runa-repo: {error}")
+        else:
+            expected_runa_repo = github_url(LOCKSTEP_COMPONENTS["runa"], git_suffix=True)
+            runa_repos = shell_assignment_values(checkout_runa_ref, "default_runa_repo")
+            if not runa_repos:
+                errors.append(f"base {base.tag} runa-repo: expected {expected_runa_repo}, actual None")
+            for runa_repo in sorted(set(runa_repos)):
+                if runa_repo != expected_runa_repo:
+                    errors.append(
+                        f"base {base.tag} runa-repo: expected {expected_runa_repo}, actual {runa_repo}"
+                    )
 
     ops = components.get("ops")
     if ops is not None and ops.commit is not None:
@@ -290,16 +331,26 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
                 errors.append(
                     f"ops {ops.tag} deployment:{name}:version: expected {version}, actual {deployed_version}"
                 )
-            deployment_refs = {
-                "agentd": deployment.get("agentd", {}).get("ref"),
-                "base": deployment.get("base", {}).get("ref"),
-                "runa": deployment.get("runa", {}).get("ref"),
-                "groundwork": deployment.get("methodologies", {}).get("groundwork", {}).get("ref"),
+            deployment_identities = {
+                "agentd": deployment.get("agentd", {}),
+                "base": deployment.get("base", {}),
+                "runa": deployment.get("runa", {}),
+                "groundwork": deployment.get("methodologies", {}).get("groundwork", {}),
             }
-            for ref_name, actual in deployment_refs.items():
-                if actual != expected_tag:
+            for component_name, actual_identity in deployment_identities.items():
+                if not isinstance(actual_identity, dict):
+                    actual_identity = {}
+                component = components[component_name]
+                expected_repo = github_url(component.repo)
+                actual_repo = actual_identity.get("repo")
+                if actual_repo != expected_repo:
                     errors.append(
-                        f"ops {ops.tag} deployment:{name}:{ref_name}-ref: expected {expected_tag}, actual {actual}"
+                        f"ops {ops.tag} deployment:{name}:{component_name}-repo: expected {expected_repo}, actual {actual_repo}"
+                    )
+                actual_ref = actual_identity.get("ref")
+                if actual_ref != expected_tag:
+                    errors.append(
+                        f"ops {ops.tag} deployment:{name}:{component_name}-ref: expected {expected_tag}, actual {actual_ref}"
                     )
     return errors
 
