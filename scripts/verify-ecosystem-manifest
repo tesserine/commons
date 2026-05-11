@@ -1,0 +1,368 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import base64
+import json
+import os
+import re
+import subprocess
+import sys
+import tomllib
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+import jsonschema
+
+
+LOCKSTEP_COMPONENTS = {
+    "agentd": "tesserine/agentd",
+    "base": "tesserine/base",
+    "runa": "tesserine/runa",
+    "groundwork": "tesserine/groundwork",
+    "commons": "tesserine/commons",
+    "ops": "tesserine/ops",
+}
+
+
+@dataclass(frozen=True)
+class Component:
+    name: str
+    repo: str
+    tag: str
+    commit: str | None
+    raw: dict[str, Any]
+
+
+def die(message: str, status: int = 1) -> None:
+    print(f"verify-ecosystem-manifest: {message}", file=sys.stderr)
+    raise SystemExit(status)
+
+
+def repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def load_json(path: Path) -> dict[str, Any]:
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        die(f"{path} not found")
+    except json.JSONDecodeError as error:
+        die(f"{path}: invalid JSON: {error}")
+
+    if not isinstance(data, dict):
+        die(f"{path}: manifest root must be a JSON object")
+    return data
+
+
+def validate_schema(manifest: dict[str, Any]) -> list[str]:
+    schema_path = repo_root() / "schemas" / "ecosystem-release-manifest.schema.json"
+    schema = load_json(schema_path)
+    validator_class = jsonschema.validators.validator_for(schema)
+    validator_class.check_schema(schema)
+    validator = validator_class(schema)
+
+    errors = []
+    for error in sorted(validator.iter_errors(manifest), key=lambda item: list(item.path)):
+        location = ".".join(str(part) for part in error.path)
+        if location:
+            errors.append(f"schema: {location}: {error.message}")
+        else:
+            errors.append(f"schema: {error.message}")
+    return errors
+
+
+def command_json(args: list[str]) -> Any:
+    try:
+        completed = subprocess.run(
+            args,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+    except FileNotFoundError:
+        raise RuntimeError(f"{args[0]} is required")
+    except subprocess.CalledProcessError as error:
+        detail = error.stderr.strip() or error.stdout.strip() or f"exit {error.returncode}"
+        raise RuntimeError(detail)
+
+    try:
+        return json.loads(completed.stdout)
+    except json.JSONDecodeError as error:
+        raise RuntimeError(f"invalid JSON from {' '.join(args)}: {error}")
+
+
+def git_head() -> str:
+    env_commit = os.environ.get("COMMONS_RELEASE_MANIFEST_HOME_COMMIT")
+    if env_commit:
+        return env_commit
+
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            cwd=repo_root(),
+        )
+    except subprocess.CalledProcessError as error:
+        detail = error.stderr.strip() or error.stdout.strip() or f"exit {error.returncode}"
+        die(f"commons home commit could not be derived: {detail}")
+
+    return completed.stdout.strip()
+
+
+def tag_commit(repo: str, tag: str) -> str:
+    ref = command_json(["gh", "api", f"repos/{repo}/git/ref/tags/{tag}"])
+    obj = ref.get("object")
+    if not isinstance(obj, dict):
+        raise RuntimeError("tag ref response has no object")
+
+    obj_type = obj.get("type")
+    sha = obj.get("sha")
+    if not isinstance(sha, str):
+        raise RuntimeError("tag ref response has no sha")
+
+    if obj_type == "commit":
+        return sha
+    if obj_type == "tag":
+        tag_obj = command_json(["gh", "api", f"repos/{repo}/git/tags/{sha}"])
+        target = tag_obj.get("object")
+        if not isinstance(target, dict) or not isinstance(target.get("sha"), str):
+            raise RuntimeError("tag object response has no target commit")
+        return target["sha"]
+
+    raise RuntimeError(f"unsupported tag object type: {obj_type}")
+
+
+def release_workflow_succeeded(repo: str, tag: str, commit: str) -> tuple[bool, str]:
+    runs = command_json(
+        [
+            "gh",
+            "run",
+            "list",
+            "-R",
+            repo,
+            "--workflow",
+            "release.yml",
+            "--event",
+            "push",
+            "--commit",
+            commit,
+            "--json",
+            "status,conclusion,url",
+            "--limit",
+            "20",
+        ]
+    )
+    if not isinstance(runs, list) or not runs:
+        return False, "no release workflow run found"
+
+    for run in runs:
+        if not isinstance(run, dict):
+            continue
+        if run.get("status") == "completed" and run.get("conclusion") == "success":
+            return True, str(run.get("url", "release workflow succeeded"))
+
+    url = ""
+    first = runs[0] if isinstance(runs[0], dict) else {}
+    if isinstance(first, dict):
+        url = str(first.get("url", ""))
+    detail = f"workflow did not succeed for {repo}@{tag}"
+    if url:
+        detail = f"{detail} ({url})"
+    return False, detail
+
+
+def repo_file(repo: str, path: str, commit: str) -> str:
+    payload = command_json(["gh", "api", f"repos/{repo}/contents/{path}?ref={commit}"])
+    if not isinstance(payload, dict):
+        raise RuntimeError(f"{path} response is not an object")
+
+    content = payload.get("content")
+    encoding = payload.get("encoding")
+    if not isinstance(content, str):
+        raise RuntimeError(f"{path} response has no content")
+    if encoding == "base64":
+        try:
+            return base64.b64decode(content).decode("utf-8")
+        except Exception as error:
+            raise RuntimeError(f"{path} content is not valid base64 UTF-8: {error}") from error
+    if encoding in {None, "utf-8"}:
+        return content
+    raise RuntimeError(f"{path} uses unsupported encoding: {encoding}")
+
+
+def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], list[str]]:
+    components: dict[str, Component] = {}
+    errors: list[str] = []
+
+    for raw in manifest.get("components", []):
+        if not isinstance(raw, dict):
+            continue
+        name = raw.get("name")
+        if not isinstance(name, str):
+            continue
+        if name in components:
+            errors.append(f"{name}: component appears more than once")
+            continue
+        components[name] = Component(
+            name=name,
+            repo=str(raw.get("repo", "")),
+            tag=str(raw.get("tag", "")),
+            commit=raw.get("commit") if isinstance(raw.get("commit"), str) else None,
+            raw=raw,
+        )
+
+    missing = sorted(set(LOCKSTEP_COMPONENTS) - set(components))
+    extra = sorted(set(components) - set(LOCKSTEP_COMPONENTS))
+    for name in missing:
+        errors.append(f"{name}: component is missing from manifest")
+    for name in extra:
+        errors.append(f"{name}: component is not part of the lockstep set")
+
+    return components, errors
+
+
+def expected_commit(component: Component, home_commit: str) -> str | None:
+    if component.name == "commons":
+        return home_commit
+    return component.commit
+
+
+def verify_component_shape(component: Component, version: str) -> list[str]:
+    errors: list[str] = []
+    expected_repo = LOCKSTEP_COMPONENTS.get(component.name)
+    expected_tag = f"v{version}"
+
+    if component.repo != expected_repo:
+        errors.append(
+            f"{component.name} {component.tag} repo: expected {expected_repo}, actual {component.repo}"
+        )
+    if component.tag != expected_tag:
+        errors.append(
+            f"{component.name} {component.tag} tag: expected {expected_tag}, actual {component.tag}"
+        )
+    if component.name == "commons" and component.commit is not None:
+        errors.append(f"commons {component.tag} commit: commons commit is derived from the manifest commit")
+    if component.name != "commons" and component.commit is None:
+        errors.append(f"{component.name} {component.tag} commit: non-commons components must declare commit")
+    return errors
+
+
+def verify_cross_repo_identity(components: dict[str, Component], version: str) -> list[str]:
+    errors: list[str] = []
+    expected_tag = f"v{version}"
+
+    base = components.get("base")
+    if base is not None and base.commit is not None:
+        try:
+            dockerfile = repo_file(base.repo, "Dockerfile", base.commit)
+        except RuntimeError as error:
+            errors.append(f"base {base.tag} runa-ref: {error}")
+        else:
+            runa_refs = [
+                match.group(1).strip().strip('"')
+                for match in re.finditer(r"(?m)^[ \t]*ARG[ \t]+RUNA_REF=([^ \t\r\n#]+)", dockerfile)
+            ]
+            if not runa_refs:
+                errors.append(f"base {base.tag} runa-ref: expected {expected_tag}, actual None")
+            for runa_ref in sorted(set(runa_refs)):
+                if runa_ref != expected_tag:
+                    errors.append(
+                        f"base {base.tag} runa-ref: expected {expected_tag}, actual {runa_ref}"
+                    )
+
+    ops = components.get("ops")
+    if ops is not None and ops.commit is not None:
+        try:
+            babbie = repo_file(ops.repo, "deployments/babbie.toml", ops.commit)
+            deployment = tomllib.loads(babbie)
+        except Exception as error:
+            errors.append(f"ops {ops.tag} deployment:babbie: {error}")
+        else:
+            name = "babbie"
+            deployed_version = deployment.get("deployment", {}).get("version")
+            if deployed_version != version:
+                errors.append(
+                    f"ops {ops.tag} deployment:{name}:version: expected {version}, actual {deployed_version}"
+                )
+            deployment_refs = {
+                "agentd": deployment.get("agentd", {}).get("ref"),
+                "base": deployment.get("base", {}).get("ref"),
+                "runa": deployment.get("runa", {}).get("ref"),
+                "groundwork": deployment.get("methodologies", {}).get("groundwork", {}).get("ref"),
+            }
+            for ref_name, actual in deployment_refs.items():
+                if actual != expected_tag:
+                    errors.append(
+                        f"ops {ops.tag} deployment:{name}:{ref_name}-ref: expected {expected_tag}, actual {actual}"
+                    )
+    return errors
+
+
+def verify_manifest(manifest: dict[str, Any]) -> list[str]:
+    errors = validate_schema(manifest)
+    if errors:
+        return errors
+
+    version = str(manifest["version"])
+    home_commit = git_head()
+    components, component_errors = components_by_name(manifest)
+    errors.extend(component_errors)
+
+    for component in components.values():
+        errors.extend(verify_component_shape(component, version))
+
+    if errors:
+        return errors
+
+    for component in components.values():
+        expected = expected_commit(component, home_commit)
+        if expected is None:
+            continue
+        try:
+            actual = tag_commit(component.repo, component.tag)
+        except RuntimeError as error:
+            errors.append(f"{component.name} {component.tag} tag-exists: {error}")
+            continue
+        if actual != expected:
+            errors.append(
+                f"{component.name} {component.tag} tag-commit: expected {expected}, actual {actual}"
+            )
+            continue
+
+        try:
+            succeeded, detail = release_workflow_succeeded(component.repo, component.tag, actual)
+        except RuntimeError as error:
+            errors.append(f"{component.name} {component.tag} release-check: {error}")
+            continue
+        if not succeeded:
+            errors.append(f"{component.name} {component.tag} release-check: {detail}")
+
+    errors.extend(verify_cross_repo_identity(components, version))
+    return errors
+
+
+def main(argv: list[str]) -> int:
+    if len(argv) != 1 or argv[0] in {"-h", "--help", "help"}:
+        print("usage: scripts/verify-ecosystem-manifest MANIFEST", file=sys.stderr)
+        return 2
+
+    manifest_path = Path(argv[0])
+    manifest = load_json(manifest_path)
+    errors = verify_manifest(manifest)
+    if errors:
+        for error in errors:
+            print(f"verify-ecosystem-manifest: {error}", file=sys.stderr)
+        return 1
+
+    print(f"verified ecosystem release manifest: {manifest_path}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

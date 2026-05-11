@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tesserine/commons/schemas/ecosystem-release-manifest.schema.json",
+  "title": "Tesserine Ecosystem Release Manifest",
+  "description": "Canonical schema for the manifest that declares which repository tags compose a Tesserine ecosystem release.",
+  "type": "object",
+  "required": ["schema_version", "ecosystem", "version", "components"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "ecosystem": {
+      "const": "tesserine"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-rc\\.[1-9][0-9]*)?$"
+    },
+    "components": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "$ref": "#/$defs/component"
+      }
+    }
+  },
+  "$defs": {
+    "commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "tag": {
+      "type": "string",
+      "pattern": "^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-rc\\.[1-9][0-9]*)?$"
+    },
+    "component": {
+      "type": "object",
+      "required": ["name", "repo", "tag"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": ["agentd", "base", "runa", "groundwork", "commons", "ops"]
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^tesserine/[a-z][a-z0-9-]*$"
+        },
+        "tag": {
+          "$ref": "#/$defs/tag"
+        },
+        "commit": {
+          "$ref": "#/$defs/commit"
+        }
+      }
+    }
+  }
+}
