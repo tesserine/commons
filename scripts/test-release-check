@@ -3,6 +3,7 @@ set -euo pipefail
 
 workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 release_check_source="$workspace_root/scripts/release-check"
+release_metadata_workflow="$workspace_root/.github/workflows/release-metadata.yml"
 scratch="$(mktemp -d)"
 trap 'rm -rf "$scratch"' EXIT
 
@@ -59,6 +60,55 @@ assert_failure_contains() {
     fi
 
     pass "$name"
+}
+
+assert_workflow_path_filter_contains() {
+    local event="$1"
+    local required_path="$2"
+
+    if python3 - "$release_metadata_workflow" "$event" "$required_path" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+workflow, event, required_path = sys.argv[1:]
+inside_event = False
+inside_paths = False
+paths = []
+
+for line in Path(workflow).read_text(encoding="utf-8").splitlines():
+    if line == f"  {event}:":
+        inside_event = True
+        inside_paths = False
+        continue
+
+    if not inside_event:
+        continue
+
+    if re.match(r"^  [A-Za-z_]+:", line):
+        break
+
+    if line == "    paths:":
+        inside_paths = True
+        continue
+
+    if not inside_paths:
+        continue
+
+    if line.startswith("      - "):
+        paths.append(line.split("-", 1)[1].strip().strip("\"'"))
+    elif line.strip() and not line.startswith("      "):
+        inside_paths = False
+
+if required_path not in paths:
+    print(f"{workflow} {event}.paths does not include {required_path}", file=sys.stderr)
+    sys.exit(1)
+PY
+    then
+        pass "release metadata $event paths include $required_path"
+    else
+        fail "release metadata $event paths include $required_path"
+    fi
 }
 
 make_valid_fixture() {
@@ -184,6 +234,9 @@ if grep -Eq 'grep[[:space:]]+-E.*[$]version|grep[[:space:]]+-Eq.*[$]version' "$r
 else
     pass "release heading lookup does not interpolate versions into grep -E"
 fi
+
+assert_workflow_path_filter_contains push "releases/ecosystem/**"
+assert_workflow_path_filter_contains pull_request "releases/ecosystem/**"
 
 bad_schema="$(make_valid_fixture bad-schema)"
 cat >"$bad_schema/schemas/request/v1/request.schema.json" <<'EOF'
