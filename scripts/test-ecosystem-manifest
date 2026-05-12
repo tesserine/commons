@@ -76,6 +76,15 @@ write_manifest() {
 EOF
 }
 
+manifest_path() {
+    local name="$1"
+    local version="${2:-0.1.2}"
+    local dir="$scratch/$name"
+
+    mkdir -p "$dir"
+    printf '%s/v%s.json' "$dir" "$version"
+}
+
 write_fake_gh() {
     local bin_dir="$1"
     mkdir -p "$bin_dir"
@@ -303,11 +312,57 @@ assert_failure_contains() {
     pass "$name"
 }
 
+assert_failure_contains_without_file() {
+    local name="$1"
+    local expected="$2"
+    local forbidden_file="$3"
+    shift 3
+
+    rm -f "$forbidden_file"
+
+    set +e
+    output="$("$@" 2>&1)"
+    status=$?
+    set -e
+
+    if [[ "$status" -eq 0 ]]; then
+        fail "$name"
+        printf 'command unexpectedly succeeded\n' >&2
+        return
+    fi
+
+    if [[ "$output" != *"$expected"* ]]; then
+        fail "$name"
+        printf 'expected output to contain: %s\nactual output:\n%s\n' "$expected" "$output" >&2
+        return
+    fi
+
+    if [[ -e "$forbidden_file" ]]; then
+        fail "$name"
+        printf 'command touched forbidden file: %s\nactual output:\n%s\n' "$forbidden_file" "$output" >&2
+        return
+    fi
+
+    pass "$name"
+}
+
 fake_bin="$scratch/bin"
 write_fake_gh "$fake_bin"
 
-valid_manifest="$scratch/valid.json"
+valid_manifest="$(manifest_path valid)"
 write_manifest "$valid_manifest"
+
+no_gh_bin="$scratch/no-gh-bin"
+mkdir -p "$no_gh_bin"
+cat >"$no_gh_bin/gh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+: >"$FAKE_GH_CALLED_FILE"
+printf 'gh should not be called\n' >&2
+exit 1
+EOF
+chmod +x "$no_gh_bin/gh"
 
 assert_success \
     "verifier accepts a schema-valid identity-consistent manifest" \
@@ -341,7 +396,17 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
     "$verifier" "$bad_version"
 
-wrong_tag_commit="$scratch/wrong-tag-commit.json"
+filename_mismatch="$(manifest_path filename-mismatch 0.1.3)"
+write_manifest "$filename_mismatch" "0.1.2"
+gh_called="$scratch/filename-mismatch-gh-called"
+assert_failure_contains_without_file \
+    "verifier rejects non-canonical manifest filenames before GitHub fetch" \
+    "manifest filename does not match version-derived canonical name: expected v0.1.2.json, actual v0.1.3.json" \
+    "$gh_called" \
+    env PATH="$no_gh_bin:$PATH" FAKE_GH_CALLED_FILE="$gh_called" \
+    "$verifier" "$filename_mismatch"
+
+wrong_tag_commit="$(manifest_path wrong-tag-commit)"
 write_manifest "$wrong_tag_commit"
 python3 - "$wrong_tag_commit" <<'PY'
 import json
@@ -361,9 +426,9 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_tag_commit" \
     "$verifier" "$wrong_tag_commit"
 
-local_manifest_drift="$scratch/local-manifest-drift.json"
+local_manifest_drift="$(manifest_path local-manifest-drift)"
 write_manifest "$local_manifest_drift"
-published_manifest="$scratch/published-manifest.json"
+published_manifest="$(manifest_path published-manifest)"
 write_manifest "$published_manifest"
 python3 - "$local_manifest_drift" <<'PY'
 import sys
@@ -378,7 +443,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$published_manifest" \
     "$verifier" "$local_manifest_drift"
 
-substituted_commons_manifest="$scratch/substituted-commons-manifest.json"
+substituted_commons_manifest="$(manifest_path substituted-commons-manifest)"
 write_manifest "$substituted_commons_manifest"
 assert_failure_contains \
     "verifier rejects different manifest content published at the commons tag" \
@@ -386,7 +451,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$substituted_commons_manifest" FAKE_GH_DIFFERENT_COMMONS_MANIFEST=1 \
     "$verifier" "$substituted_commons_manifest"
 
-missing_commons_manifest="$scratch/missing-commons-manifest.json"
+missing_commons_manifest="$(manifest_path missing-commons-manifest)"
 write_manifest "$missing_commons_manifest"
 assert_failure_contains \
     "verifier rejects missing manifest path at the commons tag" \
@@ -394,7 +459,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_commons_manifest" FAKE_GH_MISSING_COMMONS_MANIFEST=1 \
     "$verifier" "$missing_commons_manifest"
 
-missing_commons_tag="$scratch/missing-commons-tag.json"
+missing_commons_tag="$(manifest_path missing-commons-tag)"
 write_manifest "$missing_commons_tag"
 assert_failure_contains \
     "verifier rejects missing commons GitHub tag" \
@@ -402,7 +467,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_commons_tag" FAKE_GH_MISSING_COMMONS_TAG=1 \
     "$verifier" "$missing_commons_tag"
 
-failed_release_check="$scratch/failed-release-check.json"
+failed_release_check="$(manifest_path failed-release-check)"
 write_manifest "$failed_release_check"
 assert_failure_contains \
     "verifier reports per-repo release workflow failures" \
@@ -410,7 +475,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$failed_release_check" FAKE_GH_FAIL_BASE_RELEASE=1 \
     "$verifier" "$failed_release_check"
 
-duplicate_component="$scratch/duplicate-component.json"
+duplicate_component="$(manifest_path duplicate-component)"
 write_manifest "$duplicate_component"
 python3 - "$duplicate_component" <<'PY'
 import json
@@ -430,7 +495,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$duplicate_component" \
     "$verifier" "$duplicate_component"
 
-missing_tag="$scratch/missing-tag.json"
+missing_tag="$(manifest_path missing-tag 0.1.3)"
 write_manifest "$missing_tag" "0.1.3"
 assert_failure_contains \
     "verifier identifies missing GitHub tags" \
@@ -438,7 +503,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_tag" \
     "$verifier" "$missing_tag"
 
-wrong_base_runa="$scratch/wrong-base-runa.json"
+wrong_base_runa="$(manifest_path wrong-base-runa)"
 write_manifest "$wrong_base_runa"
 assert_failure_contains \
     "verifier rejects base source built from a different runa ref" \
@@ -446,7 +511,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_base_runa" FAKE_GH_BAD_BASE_RUNA_REF=1 \
     "$verifier" "$wrong_base_runa"
 
-wrong_base_runa_repo="$scratch/wrong-base-runa-repo.json"
+wrong_base_runa_repo="$(manifest_path wrong-base-runa-repo)"
 write_manifest "$wrong_base_runa_repo"
 assert_failure_contains \
     "verifier rejects base source built from a different runa repo" \
@@ -454,7 +519,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_base_runa_repo" FAKE_GH_BAD_BASE_RUNA_REPO=1 \
     "$verifier" "$wrong_base_runa_repo"
 
-wrong_deployment="$scratch/wrong-deployment.json"
+wrong_deployment="$(manifest_path wrong-deployment)"
 write_manifest "$wrong_deployment"
 assert_failure_contains \
     "verifier rejects deployment refs that drift from the manifest" \
@@ -462,7 +527,7 @@ assert_failure_contains \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_deployment" FAKE_GH_BAD_BABBIE_REF=1 \
     "$verifier" "$wrong_deployment"
 
-wrong_deployment_repo="$scratch/wrong-deployment-repo.json"
+wrong_deployment_repo="$(manifest_path wrong-deployment-repo)"
 write_manifest "$wrong_deployment_repo"
 assert_failure_contains \
     "verifier rejects deployment repos that drift from the manifest" \

@@ -261,9 +261,9 @@ def verify_component_shape(component: Component, version: str) -> list[str]:
 
 
 def verify_commons_published_manifest(
-    component: Component, manifest_path: Path, manifest_content: bytes
+    component: Component, canonical_filename: str, manifest_content: bytes
 ) -> str | None:
-    published_path = f"releases/ecosystem/{manifest_path.name}"
+    published_path = f"releases/ecosystem/{canonical_filename}"
     try:
         published_content = repo_file_bytes(component.repo, published_path, component.tag)
     except RuntimeError as error:
@@ -357,6 +357,13 @@ def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_cont
         return errors
 
     version = str(manifest["version"])
+    canonical_filename = f"v{version}.json"
+    if manifest_path.name != canonical_filename:
+        return [
+            "manifest filename does not match version-derived canonical name: "
+            f"expected {canonical_filename}, actual {manifest_path.name}"
+        ]
+
     components, component_errors = components_by_name(manifest)
     errors.extend(component_errors)
 
@@ -375,7 +382,7 @@ def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_cont
 
         if component.name == "commons":
             published_manifest_error = verify_commons_published_manifest(
-                component, manifest_path, manifest_content
+                component, canonical_filename, manifest_content
             )
             if published_manifest_error is not None:
                 errors.append(

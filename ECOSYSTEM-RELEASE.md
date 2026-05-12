@@ -40,6 +40,8 @@ Verify a manifest with:
 The verifier checks:
 
 - the manifest validates against the schema;
+- the manifest filename is the version-derived canonical name
+  `vX.Y.Z.json`;
 - each lockstep repo appears exactly once;
 - each component tag follows ADR-0012 and matches the manifest version;
 - each GitHub tag exists;

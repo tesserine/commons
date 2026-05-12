@@ -56,6 +56,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed `commons` ecosystem manifest verification to compare local manifest
   content with the manifest published at the `commons` tag, removing the
   checkout-dependent home-commit override from the default identity check.
+- Tightened ecosystem manifest verification to reject files whose basename
+  does not match the manifest version's canonical `vX.Y.Z.json` name before
+  fetching published release content.
 
 ## [0.1.1] — 2026-04-21
 
