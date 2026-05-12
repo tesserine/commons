@@ -5,13 +5,18 @@ on:
     branches: [main]
     paths:
       - "CHANGELOG.md"
+      - "ECOSYSTEM-RELEASE.md"
+      - "RELEASE.md"
       - "RELEASING.md"
       - "requirements.txt"
       - "adr/**"
+      - "releases/ecosystem/**"
       - "schemas/**"
       - "scripts/release-check"
       - "scripts/release-cut"
       - "scripts/test-release-check"
+      - "scripts/test-ecosystem-manifest"
+      - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
       - ".github/workflows/release.yml"
       - ".github/workflows/release-metadata.yml"
@@ -19,13 +24,18 @@ on:
     branches: [main]
     paths:
       - "CHANGELOG.md"
+      - "ECOSYSTEM-RELEASE.md"
+      - "RELEASE.md"
       - "RELEASING.md"
       - "requirements.txt"
       - "adr/**"
+      - "releases/ecosystem/**"
       - "schemas/**"
       - "scripts/release-check"
       - "scripts/release-cut"
       - "scripts/test-release-check"
+      - "scripts/test-ecosystem-manifest"
+      - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
       - ".github/workflows/release.yml"
       - ".github/workflows/release-metadata.yml"
@@ -57,6 +67,11 @@ jobs:
         run: |
           . .venv/bin/activate
           ./scripts/test-release-check
+
+      - name: Run ecosystem manifest tests
+        run: |
+          . .venv/bin/activate
+          ./scripts/test-ecosystem-manifest
 
       - name: Verify release adoption
         run: |

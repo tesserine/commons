@@ -23,6 +23,7 @@ Future repos inherit these principles by default.
 - **[REQUEST.md](REQUEST.md)** — canonical contract for the request artifact, the entry point that triggers a session
 - **[RELEASE.md](RELEASE.md)** — release process for Tesserine cargo-workspace repos, formalized by [ADR-0006](adr/0006-release-discipline.md)
 - **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository
+- **[ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md)** — ecosystem release manifest format and cross-repo verification contract
 - **[schemas/](schemas/)** — versioned JSON Schemas that are the machine-checkable realizations of canonical artifact specs
 - **[adr/](adr/)** — architectural decision records that operationalize the principles
 

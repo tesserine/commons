@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ecosystem release manifest schema and cross-repo verifier substrate for
+  Phase 3 release coordination, including fixture coverage and operator docs.
 - Added commons release ceremony tooling: release metadata checks, release-cut
   helper, GitHub release workflows, schema meta-schema validation, and
   commons-specific release operator documentation.
@@ -45,6 +47,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   invariant — the code at the tag self-reports the version the tag
   names. commons owns the convention; per-repo adoption (agentd,
   runa) is tracked separately.
+
+### Changed
+
+- Tightened ecosystem manifest verification so release workflow evidence is
+  scoped to the named tag, and deployment/base cross-repo checks compare
+  repository identity as well as refs.
+- Changed `commons` ecosystem manifest verification to compare local manifest
+  content with the manifest published at the `commons` tag, removing the
+  checkout-dependent home-commit override from the default identity check.
+- Tightened ecosystem manifest verification to reject files whose basename
+  does not match the manifest version's canonical `vX.Y.Z.json` name before
+  fetching published release content.
 
 ## [0.1.1] — 2026-04-21
 

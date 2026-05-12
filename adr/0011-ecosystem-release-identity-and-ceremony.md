@@ -98,7 +98,9 @@ the commit that contains the manifest. Recording that same commit inside the
 manifest would be redundant and impossible, because the commit hash depends on
 the manifest contents. This asymmetry is part of the identity model: external
 lockstep repositories need explicit commit fields, while the home repository's
-commit is derived from location.
+commit is derived from location. Operational verification confirms this
+published home-repository identity by comparing the manifest being verified to
+the manifest content published at the named `commons` tag.
 
 **Invalid published releases move forward.** If a published stable ecosystem
 manifest is later found invalid, the correction is the next patch release on
@@ -110,9 +112,9 @@ successor rather than pretending the bad release never existed.
 
 **All-or-nothing verification.** If the ecosystem manifest references a tag
 that is missing, if a non-`commons` tag points at a commit other than the one
-declared in the manifest, if the `commons` tag points at a commit other than
-the manifest-containing commit, or if any referenced repo fails its
-release-check, the ecosystem release fails as a whole. There is no partially
+declared in the manifest, if the `commons` tag publishes manifest content
+different from the manifest being verified, or if any referenced repo fails
+its release-check, the ecosystem release fails as a whole. There is no partially
 published ecosystem release, no partial rollback, and no deployment from a
 failed manifest. The failure output must identify the repository, tag, and
 check that failed so the owning repo can remediate at its boundary.

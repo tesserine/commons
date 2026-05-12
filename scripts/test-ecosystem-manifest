@@ -1,0 +1,562 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+verifier="$workspace_root/scripts/verify-ecosystem-manifest"
+scratch="$(mktemp -d)"
+trap 'rm -rf "$scratch"' EXIT
+PYTHON="${PYTHON:-python3}"
+
+failures=0
+
+fail() {
+    printf 'not ok - %s\n' "$*" >&2
+    failures=$((failures + 1))
+}
+
+pass() {
+    printf 'ok - %s\n' "$*"
+}
+
+agentd_commit=1111111111111111111111111111111111111111
+base_commit=2222222222222222222222222222222222222222
+runa_commit=3333333333333333333333333333333333333333
+groundwork_commit=4444444444444444444444444444444444444444
+ops_commit=5555555555555555555555555555555555555555
+commons_commit=6666666666666666666666666666666666666666
+
+write_manifest() {
+    local path="$1"
+    local version="${2:-0.1.2}"
+    local tag="v$version"
+
+    cat >"$path" <<EOF
+{
+  "schema_version": 1,
+  "ecosystem": "tesserine",
+  "version": "$version",
+  "components": [
+    {
+      "name": "agentd",
+      "repo": "tesserine/agentd",
+      "tag": "$tag",
+      "commit": "$agentd_commit"
+    },
+    {
+      "name": "base",
+      "repo": "tesserine/base",
+      "tag": "$tag",
+      "commit": "$base_commit"
+    },
+    {
+      "name": "runa",
+      "repo": "tesserine/runa",
+      "tag": "$tag",
+      "commit": "$runa_commit"
+    },
+    {
+      "name": "groundwork",
+      "repo": "tesserine/groundwork",
+      "tag": "$tag",
+      "commit": "$groundwork_commit"
+    },
+    {
+      "name": "commons",
+      "repo": "tesserine/commons",
+      "tag": "$tag"
+    },
+    {
+      "name": "ops",
+      "repo": "tesserine/ops",
+      "tag": "$tag",
+      "commit": "$ops_commit"
+    }
+  ]
+}
+EOF
+}
+
+manifest_path() {
+    local name="$1"
+    local version="${2:-0.1.2}"
+    local dir="$scratch/$name"
+
+    mkdir -p "$dir"
+    printf '%s/v%s.json' "$dir" "$version"
+}
+
+write_fake_gh() {
+    local bin_dir="$1"
+    mkdir -p "$bin_dir"
+
+    local dockerfile_good dockerfile_bad checkout_runa_ref_good checkout_runa_ref_bad babbie_good babbie_bad babbie_bad_repo
+    dockerfile_good="$(printf 'ARG RUNA_REF=v0.1.2\n')"
+    dockerfile_bad="$(printf 'ARG RUNA_REF=v0.1.1\n')"
+    checkout_runa_ref_good="$(printf 'default_runa_repo="https://github.com/tesserine/runa.git"\n')"
+    checkout_runa_ref_bad="$(printf 'default_runa_repo="https://github.com/wrong/runa.git"\n')"
+    local babbie_good_file="$scratch/babbie-good.toml"
+    cat >"$babbie_good_file" <<'TOML'
+schema_version = 1
+
+[deployment]
+name = "babbie"
+host = "babbie"
+model = "desired-state"
+version = "0.1.2"
+
+[agentd]
+repo = "https://github.com/tesserine/agentd"
+ref = "v0.1.2"
+
+[base]
+repo = "https://github.com/tesserine/base"
+ref = "v0.1.2"
+
+[runa]
+repo = "https://github.com/tesserine/runa"
+ref = "v0.1.2"
+
+[methodologies.groundwork]
+repo = "https://github.com/tesserine/groundwork"
+ref = "v0.1.2"
+TOML
+    babbie_good="$(cat "$babbie_good_file")"
+    babbie_bad="$(
+        printf '%s\n' "$babbie_good" \
+            | awk 'in_base && /^ref = / { sub(/v0[.]1[.]2/, "v0.1.1"); in_base = 0 } /^\[base\]$/ { in_base = 1 } { print }'
+    )"
+    babbie_bad_repo="$(
+        printf '%s\n' "$babbie_good" \
+            | awk 'in_agentd && /^repo = / { sub(/tesserine/, "wrong"); in_agentd = 0 } /^\[agentd\]$/ { in_agentd = 1 } { print }'
+    )"
+
+    dockerfile_good_b64="$(printf '%s' "$dockerfile_good" | base64 | tr -d '\n')"
+    dockerfile_bad_b64="$(printf '%s' "$dockerfile_bad" | base64 | tr -d '\n')"
+    checkout_runa_ref_good_b64="$(printf '%s' "$checkout_runa_ref_good" | base64 | tr -d '\n')"
+    checkout_runa_ref_bad_b64="$(printf '%s' "$checkout_runa_ref_bad" | base64 | tr -d '\n')"
+    babbie_good_b64="$(printf '%s' "$babbie_good" | base64 | tr -d '\n')"
+    babbie_bad_b64="$(printf '%s' "$babbie_bad" | base64 | tr -d '\n')"
+    babbie_bad_repo_b64="$(printf '%s' "$babbie_bad_repo" | base64 | tr -d '\n')"
+
+    cat >"$bin_dir/gh" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "\$1" == "api" ]]; then
+    endpoint="\$2"
+    case "\$endpoint" in
+        repos/tesserine/agentd/git/ref/tags/v0.1.2)
+            printf '{"object":{"type":"tag","sha":"tag-agentd"}}'
+            ;;
+        repos/tesserine/agentd/git/tags/tag-agentd)
+            printf '{"object":{"sha":"$agentd_commit"}}'
+            ;;
+        repos/tesserine/base/git/ref/tags/v0.1.2)
+            printf '{"object":{"type":"tag","sha":"tag-base"}}'
+            ;;
+        repos/tesserine/base/git/tags/tag-base)
+            printf '{"object":{"sha":"$base_commit"}}'
+            ;;
+        repos/tesserine/runa/git/ref/tags/v0.1.2)
+            printf '{"object":{"type":"tag","sha":"tag-runa"}}'
+            ;;
+        repos/tesserine/runa/git/tags/tag-runa)
+            printf '{"object":{"sha":"$runa_commit"}}'
+            ;;
+        repos/tesserine/groundwork/git/ref/tags/v0.1.2)
+            printf '{"object":{"type":"tag","sha":"tag-groundwork"}}'
+            ;;
+        repos/tesserine/groundwork/git/tags/tag-groundwork)
+            printf '{"object":{"sha":"$groundwork_commit"}}'
+            ;;
+        repos/tesserine/commons/git/ref/tags/v0.1.2)
+            if [[ "\${FAKE_GH_MISSING_COMMONS_TAG:-}" == "1" ]]; then
+                printf 'Not Found\n' >&2
+                exit 1
+            fi
+            printf '{"object":{"type":"tag","sha":"tag-commons"}}'
+            ;;
+        repos/tesserine/commons/git/tags/tag-commons)
+            printf '{"object":{"sha":"$commons_commit"}}'
+            ;;
+        repos/tesserine/commons/contents/releases/ecosystem/*\\?ref=v0.1.2)
+            if [[ "\${FAKE_GH_MISSING_COMMONS_MANIFEST:-}" == "1" ]]; then
+                printf 'Not Found\n' >&2
+                exit 1
+            fi
+            if [[ "\${FAKE_GH_DIFFERENT_COMMONS_MANIFEST:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"%s"}' "\$(printf '{"schema_version":1,"ecosystem":"tesserine","version":"0.1.2","components":[]}\n' | base64 | tr -d '\n')"
+            elif [[ -n "\${FAKE_GH_COMMONS_MANIFEST_FILE:-}" ]]; then
+                printf '{"encoding":"base64","content":"%s"}' "\$(base64 <"\$FAKE_GH_COMMONS_MANIFEST_FILE" | tr -d '\n')"
+            else
+                printf 'FAKE_GH_COMMONS_MANIFEST_FILE is required\n' >&2
+                exit 1
+            fi
+            ;;
+        repos/tesserine/ops/git/ref/tags/v0.1.2)
+            printf '{"object":{"type":"tag","sha":"tag-ops"}}'
+            ;;
+        repos/tesserine/ops/git/tags/tag-ops)
+            printf '{"object":{"sha":"$ops_commit"}}'
+            ;;
+        repos/tesserine/base/contents/Dockerfile?ref=$base_commit)
+            if [[ "\${FAKE_GH_BAD_BASE_RUNA_REF:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$dockerfile_bad_b64"}'
+            else
+                printf '{"encoding":"base64","content":"$dockerfile_good_b64"}'
+            fi
+            ;;
+        repos/tesserine/base/contents/scripts/checkout-runa-ref?ref=$base_commit)
+            if [[ "\${FAKE_GH_BAD_BASE_RUNA_REPO:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$checkout_runa_ref_bad_b64"}'
+            else
+                printf '{"encoding":"base64","content":"$checkout_runa_ref_good_b64"}'
+            fi
+            ;;
+        repos/tesserine/ops/contents/deployments/babbie.toml?ref=$ops_commit)
+            if [[ "\${FAKE_GH_BAD_BABBIE_REF:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$babbie_bad_b64"}'
+            elif [[ "\${FAKE_GH_BAD_BABBIE_REPO:-}" == "1" ]]; then
+                printf '{"encoding":"base64","content":"$babbie_bad_repo_b64"}'
+            else
+                printf '{"encoding":"base64","content":"$babbie_good_b64"}'
+            fi
+            ;;
+        *)
+            printf 'unknown fake gh api endpoint: %s\n' "\$endpoint" >&2
+            exit 1
+            ;;
+    esac
+elif [[ "\$1" == "run" && "\$2" == "list" ]]; then
+    repo=""
+    commit=""
+    while [[ "\$#" -gt 0 ]]; do
+        case "\$1" in
+            -R)
+                repo="\$2"
+                shift 2
+                ;;
+            --commit)
+                commit="\$2"
+                shift 2
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    if [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_AMBIGUOUS_BASE_RELEASE:-}" == "1" ]]; then
+        printf '[{"headBranch":"v0.1.2-rc.1","status":"completed","conclusion":"success","url":"https://example.invalid/base-rc-success"},{"headBranch":"v0.1.2","status":"completed","conclusion":"failure","url":"https://example.invalid/base-stable-failure"}]'
+    elif [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_FAIL_BASE_RELEASE:-}" == "1" ]]; then
+        printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"failure","url":"https://example.invalid/base-failure"}]'
+    else
+        printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"success","url":"https://example.invalid/%s/%s"}]' "\$repo" "\$commit"
+    fi
+else
+    printf 'unknown fake gh command: %s\n' "\$*" >&2
+    exit 1
+fi
+EOF
+    chmod +x "$bin_dir/gh"
+
+    cat >"$bin_dir/git" <<EOF
+#!/usr/bin/env bash
+set -euo pipefail
+
+if [[ "\$1" == "rev-parse" && "\${2:-}" == "HEAD" ]]; then
+    printf 'verifier must not depend on git checkout state\n' >&2
+    exit 1
+else
+    printf 'unknown fake git command: %s\n' "\$*" >&2
+    exit 1
+fi
+EOF
+    chmod +x "$bin_dir/git"
+}
+
+assert_success() {
+    local name="$1"
+    shift
+
+    if output="$("$@" 2>&1)"; then
+        pass "$name"
+    else
+        fail "$name"
+        printf '%s\n' "$output" >&2
+    fi
+}
+
+assert_failure_contains() {
+    local name="$1"
+    local expected="$2"
+    shift 2
+
+    set +e
+    output="$("$@" 2>&1)"
+    status=$?
+    set -e
+
+    if [[ "$status" -eq 0 ]]; then
+        fail "$name"
+        printf 'command unexpectedly succeeded\n' >&2
+        return
+    fi
+
+    if [[ "$output" != *"$expected"* ]]; then
+        fail "$name"
+        printf 'expected output to contain: %s\nactual output:\n%s\n' "$expected" "$output" >&2
+        return
+    fi
+
+    pass "$name"
+}
+
+assert_failure_contains_without_file() {
+    local name="$1"
+    local expected="$2"
+    local forbidden_file="$3"
+    shift 3
+
+    rm -f "$forbidden_file"
+
+    set +e
+    output="$("$@" 2>&1)"
+    status=$?
+    set -e
+
+    if [[ "$status" -eq 0 ]]; then
+        fail "$name"
+        printf 'command unexpectedly succeeded\n' >&2
+        return
+    fi
+
+    if [[ "$output" != *"$expected"* ]]; then
+        fail "$name"
+        printf 'expected output to contain: %s\nactual output:\n%s\n' "$expected" "$output" >&2
+        return
+    fi
+
+    if [[ -e "$forbidden_file" ]]; then
+        fail "$name"
+        printf 'command touched forbidden file: %s\nactual output:\n%s\n' "$forbidden_file" "$output" >&2
+        return
+    fi
+
+    pass "$name"
+}
+
+fake_bin="$scratch/bin"
+write_fake_gh "$fake_bin"
+
+valid_manifest="$(manifest_path valid)"
+write_manifest "$valid_manifest"
+
+no_gh_bin="$scratch/no-gh-bin"
+mkdir -p "$no_gh_bin"
+cat >"$no_gh_bin/gh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+: >"$FAKE_GH_CALLED_FILE"
+printf 'gh should not be called\n' >&2
+exit 1
+EOF
+chmod +x "$no_gh_bin/gh"
+
+assert_success \
+    "verifier accepts a schema-valid identity-consistent manifest" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
+    "$verifier" "$valid_manifest"
+
+assert_success \
+    "verifier does not depend on checkout HEAD for commons identity" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
+    "$verifier" "$valid_manifest"
+
+bad_schema="$scratch/bad-schema.json"
+cat >"$bad_schema" <<'EOF'
+{
+  "schema_version": 1,
+  "ecosystem": "tesserine",
+  "version": "0.1.2"
+}
+EOF
+assert_failure_contains \
+    "verifier rejects manifests missing required components" \
+    "schema: 'components' is a required property" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
+    "$verifier" "$bad_schema"
+
+bad_version="$scratch/bad-version.json"
+write_manifest "$bad_version" "01.2.3"
+assert_failure_contains \
+    "verifier rejects release versions outside ADR-0012 grammar" \
+    "schema:" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
+    "$verifier" "$bad_version"
+
+filename_mismatch="$(manifest_path filename-mismatch 0.1.3)"
+write_manifest "$filename_mismatch" "0.1.2"
+gh_called="$scratch/filename-mismatch-gh-called"
+assert_failure_contains_without_file \
+    "verifier rejects non-canonical manifest filenames before GitHub fetch" \
+    "manifest filename does not match version-derived canonical name: expected v0.1.2.json, actual v0.1.3.json" \
+    "$gh_called" \
+    env PATH="$no_gh_bin:$PATH" FAKE_GH_CALLED_FILE="$gh_called" \
+    "$verifier" "$filename_mismatch"
+
+wrong_tag_commit="$(manifest_path wrong-tag-commit)"
+write_manifest "$wrong_tag_commit"
+python3 - "$wrong_tag_commit" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+manifest = json.loads(path.read_text(encoding="utf-8"))
+for component in manifest["components"]:
+    if component["name"] == "base":
+        component["commit"] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+PY
+assert_failure_contains \
+    "verifier identifies tag commits that do not match the manifest" \
+    "base v0.1.2 tag-commit: expected aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, actual $base_commit" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_tag_commit" \
+    "$verifier" "$wrong_tag_commit"
+
+local_manifest_drift="$(manifest_path local-manifest-drift)"
+write_manifest "$local_manifest_drift"
+published_manifest="$(manifest_path published-manifest)"
+write_manifest "$published_manifest"
+python3 - "$local_manifest_drift" <<'PY'
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+path.write_text(path.read_text(encoding="utf-8") + "\n", encoding="utf-8")
+PY
+assert_failure_contains \
+    "verifier rejects local manifest content drift after publication" \
+    "commons v0.1.2 published-manifest: expected" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$published_manifest" \
+    "$verifier" "$local_manifest_drift"
+
+substituted_commons_manifest="$(manifest_path substituted-commons-manifest)"
+write_manifest "$substituted_commons_manifest"
+assert_failure_contains \
+    "verifier rejects different manifest content published at the commons tag" \
+    "commons v0.1.2 published-manifest: expected" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$substituted_commons_manifest" FAKE_GH_DIFFERENT_COMMONS_MANIFEST=1 \
+    "$verifier" "$substituted_commons_manifest"
+
+missing_commons_manifest="$(manifest_path missing-commons-manifest)"
+write_manifest "$missing_commons_manifest"
+assert_failure_contains \
+    "verifier rejects missing manifest path at the commons tag" \
+    "commons v0.1.2 published-manifest:" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_commons_manifest" FAKE_GH_MISSING_COMMONS_MANIFEST=1 \
+    "$verifier" "$missing_commons_manifest"
+
+missing_commons_tag="$(manifest_path missing-commons-tag)"
+write_manifest "$missing_commons_tag"
+assert_failure_contains \
+    "verifier rejects missing commons GitHub tag" \
+    "commons v0.1.2 tag-exists:" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_commons_tag" FAKE_GH_MISSING_COMMONS_TAG=1 \
+    "$verifier" "$missing_commons_tag"
+
+failed_release_check="$(manifest_path failed-release-check)"
+write_manifest "$failed_release_check"
+assert_failure_contains \
+    "verifier reports per-repo release workflow failures" \
+    "base v0.1.2 release-check: workflow did not succeed" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$failed_release_check" FAKE_GH_FAIL_BASE_RELEASE=1 \
+    "$verifier" "$failed_release_check"
+
+duplicate_component="$(manifest_path duplicate-component)"
+write_manifest "$duplicate_component"
+python3 - "$duplicate_component" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+manifest = json.loads(path.read_text(encoding="utf-8"))
+for component in manifest["components"]:
+    if component["name"] == "runa":
+        component["name"] = "base"
+path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+PY
+assert_failure_contains \
+    "verifier rejects duplicate components before release checks" \
+    "base: component appears more than once" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$duplicate_component" \
+    "$verifier" "$duplicate_component"
+
+missing_tag="$(manifest_path missing-tag 0.1.3)"
+write_manifest "$missing_tag" "0.1.3"
+assert_failure_contains \
+    "verifier identifies missing GitHub tags" \
+    "agentd v0.1.3 tag-exists:" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$missing_tag" \
+    "$verifier" "$missing_tag"
+
+wrong_base_runa="$(manifest_path wrong-base-runa)"
+write_manifest "$wrong_base_runa"
+assert_failure_contains \
+    "verifier rejects base source built from a different runa ref" \
+    "base v0.1.2 runa-ref: expected v0.1.2, actual v0.1.1" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_base_runa" FAKE_GH_BAD_BASE_RUNA_REF=1 \
+    "$verifier" "$wrong_base_runa"
+
+wrong_base_runa_repo="$(manifest_path wrong-base-runa-repo)"
+write_manifest "$wrong_base_runa_repo"
+assert_failure_contains \
+    "verifier rejects base source built from a different runa repo" \
+    "base v0.1.2 runa-repo: expected https://github.com/tesserine/runa.git, actual https://github.com/wrong/runa.git" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_base_runa_repo" FAKE_GH_BAD_BASE_RUNA_REPO=1 \
+    "$verifier" "$wrong_base_runa_repo"
+
+wrong_deployment="$(manifest_path wrong-deployment)"
+write_manifest "$wrong_deployment"
+assert_failure_contains \
+    "verifier rejects deployment refs that drift from the manifest" \
+    "ops v0.1.2 deployment:babbie:base-ref: expected v0.1.2, actual v0.1.1" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_deployment" FAKE_GH_BAD_BABBIE_REF=1 \
+    "$verifier" "$wrong_deployment"
+
+wrong_deployment_repo="$(manifest_path wrong-deployment-repo)"
+write_manifest "$wrong_deployment_repo"
+assert_failure_contains \
+    "verifier rejects deployment repos that drift from the manifest" \
+    "ops v0.1.2 deployment:babbie:agentd-repo: expected https://github.com/tesserine/agentd, actual https://github.com/wrong/agentd" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$wrong_deployment_repo" FAKE_GH_BAD_BABBIE_REPO=1 \
+    "$verifier" "$wrong_deployment_repo"
+
+assert_success \
+    "release workflow success is scoped to the triggering tag" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_AMBIGUOUS_BASE_RELEASE=1 "$PYTHON" - "$verifier" "$base_commit" <<'PY'
+import runpy
+import sys
+
+verifier_path, base_commit = sys.argv[1:]
+namespace = runpy.run_path(verifier_path, run_name="verify_ecosystem_manifest")
+release_workflow_succeeded = namespace["release_workflow_succeeded"]
+
+stable_succeeded, stable_detail = release_workflow_succeeded("tesserine/base", "v0.1.2", base_commit)
+if stable_succeeded:
+    raise SystemExit("stable tag accepted release success from a different tag")
+if "workflow did not succeed" not in stable_detail:
+    raise SystemExit(f"stable tag failure detail was unclear: {stable_detail}")
+
+rc_succeeded, rc_detail = release_workflow_succeeded("tesserine/base", "v0.1.2-rc.1", base_commit)
+if not rc_succeeded:
+    raise SystemExit(f"rc tag success was not accepted: {rc_detail}")
+PY
+
+if [[ "$failures" -ne 0 ]]; then
+    printf '%d ecosystem manifest test(s) failed\n' "$failures" >&2
+    exit 1
+fi

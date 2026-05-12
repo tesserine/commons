@@ -78,6 +78,17 @@ A deployment ref must be an immutable tag or a full commit SHA. Branch names
 such as `main` are not deployment refs, because container build caches key on
 the ref argument value while branch tips move.
 
+## Ecosystem release manifests
+
+Stable ecosystem release identity is declared by a manifest in `commons`, as
+defined by [ADR-0011](adr/0011-ecosystem-release-identity-and-ceremony.md).
+The manifest format, canonical location, and verifier command are documented in
+[ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md).
+
+Phase 3 of the release ceremony provides the manifest schema and verifier.
+Phase 4 produces the real `v0.1.2` manifest after exact stable tag commits
+exist across the lockstep repositories.
+
 ## Verification
 
 After the push, on a fresh clone of the tag, build the workspace and check that every shipped binary — the `[[bin]]` targets declared across the workspace's member crates — self-reports the version the tag names:
