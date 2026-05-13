@@ -58,8 +58,60 @@ The verifier checks:
 Failures identify the component, tag, check, expected value, and actual value
 where applicable. A failed manifest is not a partial ecosystem release.
 
-## v0.1.2 Handoff
+## Integration Verification
 
-Phase 3 provides the schema and verifier substrate. The first real stable
-manifest, `releases/ecosystem/v0.1.2.json`, is produced during Phase 4 after
-the exact `v0.1.2` tag commits exist across all lockstep repositories.
+Integration verification is the release-cycle gate between per-repo release
+candidate ceremonies and ecosystem manifest publication. Each lockstep repo
+first cuts its own `vX.Y.Z-rc.N` tag through its `RELEASING.md` procedure.
+Only after those immutable release-candidate refs exist does the operator
+deploy them together, run an agent session against the canonical fixture, and
+decide whether the ecosystem can proceed to Phase 4 manifest production.
+
+Integration verification always executes against cut RC tags
+(`vX.Y.Z-rc.N`), never against unreleased `main`. The RC cuts produce the
+immutable refs declared by the babbie deployment manifest; the verification
+run deploys exactly those refs and tests the integrated stack.
+
+The operator procedure is:
+
+1. Cut matching RC tags across the six lockstep repos, following each repo's
+   `RELEASING.md`.
+2. Update `ops/deployments/babbie.toml` so babbie declares the new RC refs,
+   and submit that manifest change through normal PR review.
+3. Converge babbie on the host with `scripts/tesserine-rebuild-babbie`.
+4. Run the integration test session with `agentd run site-builder` against
+   `tesserine/example-hello`.
+5. Evaluate the agent session against the pass criteria below.
+6. If the session passes, proceed to ecosystem manifest production,
+   manifest verification, and stable tag cuts. If it fails, file substrate
+   fix issues at the current milestone, cut the next RC, and retry the
+   integration verification procedure.
+
+The canonical integration fixture is
+[`tesserine/example-hello`](https://github.com/tesserine/example-hello). Its
+README names the canonical request: add a `greet(name)` function to
+`hello.py`.
+
+The agent session passes only when:
+
+- the session reaches a terminal success state, rather than stopping blocked
+  mid-protocol;
+- the session progresses past every artifact-producing protocol's deliver
+  step without schema-validation failures from envelope or identity-in-body
+  mismatches;
+- the agent delivers artifacts through the MCP tools, with no direct writes
+  to `.runa/workspace/`.
+
+The supporting procedure documents are:
+
+- per-repo `RELEASING.md` files for RC and stable tag cuts;
+- [`ops/README.md`](https://github.com/tesserine/ops/blob/main/README.md) for
+  babbie convergence and host layout;
+- [`ops/deployments/README.md`](https://github.com/tesserine/ops/blob/main/deployments/README.md)
+  for deployment manifest schema and ref policy;
+- [`commons/RELEASE.md`](RELEASE.md) for the commons release ceremony.
+
+This procedure follows
+[ADR-0013](adr/0013-procedure-substrate-discipline.md): substrate gaps
+surfaced during integration verification are filed at the substrate level,
+not absorbed as local workarounds in the release session.
