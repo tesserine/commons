@@ -93,23 +93,33 @@ The operator procedure is:
 Phase 4 stable publication is ordered by the verifier's release identity
 requirements:
 
-1. Cut stable tags across the five non-`commons` lockstep repos: `agentd`,
-   `base`, `runa`, `groundwork`, and `ops`.
-2. Produce the ecosystem manifest declaring all six lockstep tag identities.
+1. Update `ops/deployments/babbie.toml` so babbie declares the stable refs
+   and deployment version, and submit that manifest change through normal PR
+   review. Set `deployment.version = "X.Y.Z"`, set `agentd.ref` and
+   `base.ref` to `vX.Y.Z`, set `agentd.image` to
+   `localhost/agentd:vX.Y.Z`, set `base.image` to
+   `localhost/tesserine/base:vX.Y.Z`, and set `runa.ref` and
+   `methodologies.groundwork.ref` to `vX.Y.Z`. These stable refs are declared
+   tag names; they do not need to exist before the deployment manifest update
+   lands.
+2. Cut stable tags across the five non-`commons` lockstep repos: `agentd`,
+   `base`, `runa`, `groundwork`, and `ops`. The `ops` stable tag points at
+   the commit containing the stable babbie deployment manifest.
+3. Produce the ecosystem manifest declaring all six lockstep tag identities.
    Non-`commons` components declare their tag target commits. The `commons`
    component declares tag `vX.Y.Z`; its commit identity is the manifest's
    containing commit, per ADR-0011.
-3. Commit the manifest to `commons`.
-4. Cut the `commons` stable tag at the manifest-containing commit, following
+4. Commit the manifest to `commons`.
+5. Cut the `commons` stable tag at the manifest-containing commit, following
    [`commons/RELEASING.md`](RELEASING.md).
-5. After the tag-triggered release workflows have completed, verify the
+6. After the tag-triggered release workflows have completed, verify the
    manifest:
 
    ```sh
    ./scripts/verify-ecosystem-manifest releases/ecosystem/vX.Y.Z.json
    ```
 
-6. Publish the verified ecosystem release.
+7. Publish the verified ecosystem release.
 
 The canonical integration fixture is
 [`tesserine/example-hello`](https://github.com/tesserine/example-hello). Its
