@@ -79,18 +79,41 @@ The operator procedure is:
 2. Update `ops/deployments/babbie.toml` so babbie declares the new RC refs,
    and submit that manifest change through normal PR review.
 3. Converge babbie on the host with `scripts/tesserine-rebuild-babbie`.
-4. Run the integration test session with `agentd run site-builder` against
-   `tesserine/example-hello`.
+4. Run the integration test session against `tesserine/example-hello`:
+
+   ```sh
+   agentd run site-builder https://github.com/tesserine/example-hello --request 'add a `greet(name)` function'
+   ```
+
 5. Evaluate the agent session against the pass criteria below.
-6. If the session passes, proceed to ecosystem manifest production,
-   manifest verification, and stable tag cuts. If it fails, file substrate
-   fix issues at the current milestone, cut the next RC, and retry the
-   integration verification procedure.
+6. If the session passes, proceed to Phase 4 stable publication. If it fails,
+   file substrate fix issues at the current milestone, cut the next RC, and
+   retry the integration verification procedure.
+
+Phase 4 stable publication is ordered by the verifier's release identity
+requirements:
+
+1. Cut stable tags across the five non-`commons` lockstep repos: `agentd`,
+   `base`, `runa`, `groundwork`, and `ops`.
+2. Produce the ecosystem manifest declaring all six lockstep tag identities.
+   Non-`commons` components declare their tag target commits. The `commons`
+   component declares tag `vX.Y.Z`; its commit identity is the manifest's
+   containing commit, per ADR-0011.
+3. Commit the manifest to `commons`.
+4. Cut the `commons` stable tag at the manifest-containing commit, following
+   [`commons/RELEASING.md`](RELEASING.md).
+5. After the tag-triggered release workflows have completed, verify the
+   manifest:
+
+   ```sh
+   ./scripts/verify-ecosystem-manifest releases/ecosystem/vX.Y.Z.json
+   ```
+
+6. Publish the verified ecosystem release.
 
 The canonical integration fixture is
 [`tesserine/example-hello`](https://github.com/tesserine/example-hello). Its
-README names the canonical request: add a `greet(name)` function to
-`hello.py`.
+README names the canonical request: add a `greet(name)` function.
 
 The agent session passes only when:
 
