@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added ecosystem release manifest schema and cross-repo verifier substrate for
   Phase 3 release coordination, including fixture coverage and operator docs.
+- Added ecosystem integration verification procedure docs for the RC-to-stable
+  release gate, including babbie convergence, the canonical fixture, pass
+  criteria, and ADR-0013 substrate-gap handling.
 - Added ADR-0013 Procedure Substrate Discipline, codifying how agents handle
   documentation gaps encountered while executing procedure substrate.
 - Added commons release ceremony tooling: release metadata checks, release-cut

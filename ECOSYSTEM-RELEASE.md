@@ -58,8 +58,111 @@ The verifier checks:
 Failures identify the component, tag, check, expected value, and actual value
 where applicable. A failed manifest is not a partial ecosystem release.
 
-## v0.1.2 Handoff
+## Integration Verification
 
-Phase 3 provides the schema and verifier substrate. The first real stable
-manifest, `releases/ecosystem/v0.1.2.json`, is produced during Phase 4 after
-the exact `v0.1.2` tag commits exist across all lockstep repositories.
+Integration verification is the release-cycle gate between per-repo release
+candidate ceremonies and ecosystem manifest publication. The non-`ops`
+lockstep repos first cut their `vX.Y.Z-rc.N` tags through their `RELEASING.md`
+procedures. `ops` cuts its matching RC tag after the babbie deployment
+artifacts declare those immutable release-candidate refs. The operator then
+deploys the cut RC refs together, runs an agent session against the canonical
+fixture, and decides whether the ecosystem can proceed to Phase 4 manifest
+production.
+
+Integration verification always executes against cut RC tags
+(`vX.Y.Z-rc.N`), never against unreleased `main`. The RC cuts produce the
+immutable refs declared by the babbie deployment manifest, and the `ops` RC
+tag carries that manifest and its literal deployment artifacts. The
+verification run deploys exactly those refs and tests the integrated stack.
+
+The operator procedure is:
+
+1. Cut matching RC tags across the five non-`ops` lockstep repos: `agentd`,
+   `base`, `runa`, `groundwork`, and `commons`. Order among these repos does
+   not matter; `ops` is cut after its deployment artifacts declare the RC
+   substrate.
+2. Update `ops` in a single PR so babbie declares and can install the new RC
+   refs coherently. Set the RC refs in `ops/deployments/babbie.toml`, update
+   the literal `Image=` line in `ops/agentd.container` to match
+   `babbie.toml`'s `agentd.image`, and update the literal `base_image` field
+   in `ops/agentd.toml` to match `babbie.toml`'s `base.image`. Submit that
+   deployment-artifact change through normal PR review. The
+   `scripts/tesserine-rebuild-babbie` `verify_literal_artifacts` check
+   requires these checked-in files to be coherent before convergence.
+3. Cut the `ops` RC tag at the commit containing the updated deployment
+   artifacts.
+4. Converge babbie on the host with `scripts/tesserine-rebuild-babbie`.
+5. Run the integration test session against `tesserine/example-hello`:
+
+   ```sh
+   agentd run site-builder https://github.com/tesserine/example-hello --request 'add a `greet(name)` function'
+   ```
+
+6. Evaluate the agent session against the pass criteria below.
+7. If the session passes, proceed to Phase 4 stable publication. If it fails,
+   file substrate fix issues at the current milestone, cut the next RC, and
+   retry the integration verification procedure.
+
+Phase 4 stable publication is ordered by the verifier's release identity
+requirements:
+
+1. Update `ops` in a single PR so babbie declares and can install the stable
+   refs coherently. Set `deployment.version = "X.Y.Z"`, set `agentd.ref` and
+   `base.ref` to `vX.Y.Z`, set `agentd.image` to
+   `localhost/agentd:vX.Y.Z`, set `base.image` to
+   `localhost/tesserine/base:vX.Y.Z`, and set `runa.ref` and
+   `methodologies.groundwork.ref` to `vX.Y.Z` in
+   `ops/deployments/babbie.toml`. In the same PR, update the literal `Image=`
+   line in `ops/agentd.container` to match `babbie.toml`'s `agentd.image`,
+   and update the literal `base_image` field in `ops/agentd.toml` to match
+   `babbie.toml`'s `base.image`. Submit that deployment-artifact change
+   through normal PR review. The `scripts/tesserine-rebuild-babbie`
+   `verify_literal_artifacts` check requires these checked-in files to be
+   coherent before convergence. These stable refs are declared tag names; they
+   do not need to exist before the deployment manifest update lands.
+2. Cut stable tags across the five non-`commons` lockstep repos: `agentd`,
+   `base`, `runa`, `groundwork`, and `ops`. The `ops` stable tag points at
+   the commit containing the stable babbie deployment manifest.
+3. Produce the ecosystem manifest declaring all six lockstep tag identities.
+   Non-`commons` components declare their tag target commits. The `commons`
+   component declares tag `vX.Y.Z`; its commit identity is the manifest's
+   containing commit, per ADR-0011.
+4. Commit the manifest to `commons`.
+5. Cut the `commons` stable tag at the manifest-containing commit, following
+   [`commons/RELEASING.md`](RELEASING.md).
+6. After the tag-triggered release workflows have completed, verify the
+   manifest:
+
+   ```sh
+   ./scripts/verify-ecosystem-manifest releases/ecosystem/vX.Y.Z.json
+   ```
+
+7. Publish the verified ecosystem release.
+
+The canonical integration fixture is
+[`tesserine/example-hello`](https://github.com/tesserine/example-hello). Its
+README names the canonical request: add a `greet(name)` function.
+
+The agent session passes only when:
+
+- the session reaches a terminal success state, rather than stopping blocked
+  mid-protocol;
+- the session progresses past every artifact-producing protocol's deliver
+  step without schema-validation failures from envelope or identity-in-body
+  mismatches;
+- the agent delivers artifacts through the MCP tools, with no direct writes
+  to `.runa/workspace/`.
+
+The supporting procedure documents are:
+
+- per-repo `RELEASING.md` files for RC and stable tag cuts;
+- [`ops/README.md`](https://github.com/tesserine/ops/blob/main/README.md) for
+  babbie convergence and host layout;
+- [`ops/deployments/README.md`](https://github.com/tesserine/ops/blob/main/deployments/README.md)
+  for deployment manifest schema and ref policy;
+- [`commons/RELEASE.md`](RELEASE.md) for the commons release ceremony.
+
+This procedure follows
+[ADR-0013](adr/0013-procedure-substrate-discipline.md): substrate gaps
+surfaced during integration verification are filed at the substrate level,
+not absorbed as local workarounds in the release session.
