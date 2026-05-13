@@ -61,47 +61,65 @@ where applicable. A failed manifest is not a partial ecosystem release.
 ## Integration Verification
 
 Integration verification is the release-cycle gate between per-repo release
-candidate ceremonies and ecosystem manifest publication. Each lockstep repo
-first cuts its own `vX.Y.Z-rc.N` tag through its `RELEASING.md` procedure.
-Only after those immutable release-candidate refs exist does the operator
-deploy them together, run an agent session against the canonical fixture, and
-decide whether the ecosystem can proceed to Phase 4 manifest production.
+candidate ceremonies and ecosystem manifest publication. The non-`ops`
+lockstep repos first cut their `vX.Y.Z-rc.N` tags through their `RELEASING.md`
+procedures. `ops` cuts its matching RC tag after the babbie deployment
+artifacts declare those immutable release-candidate refs. The operator then
+deploys the cut RC refs together, runs an agent session against the canonical
+fixture, and decides whether the ecosystem can proceed to Phase 4 manifest
+production.
 
 Integration verification always executes against cut RC tags
 (`vX.Y.Z-rc.N`), never against unreleased `main`. The RC cuts produce the
-immutable refs declared by the babbie deployment manifest; the verification
-run deploys exactly those refs and tests the integrated stack.
+immutable refs declared by the babbie deployment manifest, and the `ops` RC
+tag carries that manifest and its literal deployment artifacts. The
+verification run deploys exactly those refs and tests the integrated stack.
 
 The operator procedure is:
 
-1. Cut matching RC tags across the six lockstep repos, following each repo's
-   `RELEASING.md`.
-2. Update `ops/deployments/babbie.toml` so babbie declares the new RC refs,
-   and submit that manifest change through normal PR review.
-3. Converge babbie on the host with `scripts/tesserine-rebuild-babbie`.
-4. Run the integration test session against `tesserine/example-hello`:
+1. Cut matching RC tags across the five non-`ops` lockstep repos: `agentd`,
+   `base`, `runa`, `groundwork`, and `commons`. Order among these repos does
+   not matter; `ops` is cut after its deployment artifacts declare the RC
+   substrate.
+2. Update `ops` in a single PR so babbie declares and can install the new RC
+   refs coherently. Set the RC refs in `ops/deployments/babbie.toml`, update
+   the literal `Image=` line in `ops/agentd.container` to match
+   `babbie.toml`'s `agentd.image`, and update the literal `base_image` field
+   in `ops/agentd.toml` to match `babbie.toml`'s `base.image`. Submit that
+   deployment-artifact change through normal PR review. The
+   `scripts/tesserine-rebuild-babbie` `verify_literal_artifacts` check
+   requires these checked-in files to be coherent before convergence.
+3. Cut the `ops` RC tag at the commit containing the updated deployment
+   artifacts.
+4. Converge babbie on the host with `scripts/tesserine-rebuild-babbie`.
+5. Run the integration test session against `tesserine/example-hello`:
 
    ```sh
    agentd run site-builder https://github.com/tesserine/example-hello --request 'add a `greet(name)` function'
    ```
 
-5. Evaluate the agent session against the pass criteria below.
-6. If the session passes, proceed to Phase 4 stable publication. If it fails,
+6. Evaluate the agent session against the pass criteria below.
+7. If the session passes, proceed to Phase 4 stable publication. If it fails,
    file substrate fix issues at the current milestone, cut the next RC, and
    retry the integration verification procedure.
 
 Phase 4 stable publication is ordered by the verifier's release identity
 requirements:
 
-1. Update `ops/deployments/babbie.toml` so babbie declares the stable refs
-   and deployment version, and submit that manifest change through normal PR
-   review. Set `deployment.version = "X.Y.Z"`, set `agentd.ref` and
+1. Update `ops` in a single PR so babbie declares and can install the stable
+   refs coherently. Set `deployment.version = "X.Y.Z"`, set `agentd.ref` and
    `base.ref` to `vX.Y.Z`, set `agentd.image` to
    `localhost/agentd:vX.Y.Z`, set `base.image` to
    `localhost/tesserine/base:vX.Y.Z`, and set `runa.ref` and
-   `methodologies.groundwork.ref` to `vX.Y.Z`. These stable refs are declared
-   tag names; they do not need to exist before the deployment manifest update
-   lands.
+   `methodologies.groundwork.ref` to `vX.Y.Z` in
+   `ops/deployments/babbie.toml`. In the same PR, update the literal `Image=`
+   line in `ops/agentd.container` to match `babbie.toml`'s `agentd.image`,
+   and update the literal `base_image` field in `ops/agentd.toml` to match
+   `babbie.toml`'s `base.image`. Submit that deployment-artifact change
+   through normal PR review. The `scripts/tesserine-rebuild-babbie`
+   `verify_literal_artifacts` check requires these checked-in files to be
+   coherent before convergence. These stable refs are declared tag names; they
+   do not need to exist before the deployment manifest update lands.
 2. Cut stable tags across the five non-`commons` lockstep repos: `agentd`,
    `base`, `runa`, `groundwork`, and `ops`. The `ops` stable tag points at
    the commit containing the stable babbie deployment manifest.
