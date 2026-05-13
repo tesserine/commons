@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added ecosystem release manifest schema and cross-repo verifier substrate for
   Phase 3 release coordination, including fixture coverage and operator docs.
+- Added ADR-0013 Procedure Substrate Discipline, codifying how agents handle
+  documentation gaps encountered while executing procedure substrate.
 - Added commons release ceremony tooling: release metadata checks, release-cut
   helper, GitHub release workflows, schema meta-schema validation, and
   commons-specific release operator documentation.
