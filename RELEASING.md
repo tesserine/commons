@@ -21,6 +21,11 @@ Release tag grammar follows ADR-0012 exactly: stable tags are
 numeric identifiers have no leading zeroes, and `rc.0` is not a release
 candidate.
 
+When a commons tag publishes an ecosystem release manifest, the commons tag is
+the commons component version. The manifest's `version` field and
+`releases/ecosystem/vX.Y.Z.json` filename are the ecosystem version, which may
+differ from the commons component tag under ADR-0014.
+
 ## Pre-Release Gate
 
 A releasable commit is on `main`, up to date with `origin/main`, and has a clean
