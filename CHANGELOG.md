@@ -9,9 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added ADR-0014 Component-Independent Semver and Aggregate Ecosystem Release
+- Added ADR-0014 Component-Independent SemVer and Curatorial Ecosystem Release
   Versioning, replacing uniform component tags with component-independent
-  SemVer and aggregate ecosystem SemVer.
+  SemVer and curatorial ecosystem versioning.
 - Added ecosystem release manifest schema and cross-repo verifier substrate for
   Phase 3 release coordination, including fixture coverage and operator docs.
 - Added ecosystem integration verification procedure docs for the RC-to-stable
@@ -59,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Reconciled ADR-0011, ecosystem release docs, and manifest verification with
-  component-independent tags under one aggregate ecosystem version.
+  component-independent tags under one curatorial ecosystem version.
 - Tightened ecosystem manifest verification so release workflow evidence is
   scoped to the named tag, and deployment/base cross-repo checks compare
   repository identity as well as refs.
