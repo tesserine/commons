@@ -1,6 +1,6 @@
 # ADR-0011: Ecosystem Release Identity and Ceremony
 
-**Status:** Accepted
+**Status:** Accepted; uniform-version rule superseded by ADR-0014.
 **Traces to:** Principle 7 (Verifiable Completion) - primary; Principle 1
 (Sovereignty) - secondary; Principle 3 (Grounding) - secondary
 
@@ -19,13 +19,16 @@ manifest committed to `tesserine/commons`. The manifest is the canonical
 artifact that states:
 
 ```text
-Tesserine vX.Y.Z =
-  commons@vX.Y.Z at the manifest-containing commit
-  plus {agentd, base, runa, groundwork, ops}@vX.Y.Z at declared commits
+Tesserine vECO =
+  commons@<manifest-declared tag> at the manifest-containing commit
+  plus {agentd, base, runa, groundwork, ops}@<manifest-declared tags>
+    at declared commits
 ```
 
-The lockstep repositories use the same tag string as the ecosystem release
-version. Release tag grammar is defined by
+The ecosystem release version is the manifest version. Component tags are
+declared independently in the manifest and need not match each other or the
+ecosystem version; [ADR-0014](0014-component-independent-versioning.md)
+defines the aggregate SemVer rule. Release tag grammar is defined by
 [ADR-0012](0012-ecosystem-release-version-grammar.md). Publication of the
 verified manifest is the atomic ecosystem release boundary. An ecosystem
 release is not complete until every referenced tag exists, every non-`commons`
@@ -67,20 +70,23 @@ authority, so the release identity artifact belongs there.
 ecosystem release identity is a convention-level artifact. Phase 3 defines the
 exact manifest path, schema, and verification command, but not the authority:
 the canonical manifest is committed in `commons`. The manifest records each
-non-`commons` lockstep repository, tag, and commit. For `commons`, the manifest
-records the repository and tag; the commit is the manifest's containing commit.
-A release without a published manifest is a set of component tags, not a
-Tesserine ecosystem release.
+non-`commons` lockstep set member's repository, tag, and commit. For `commons`,
+the manifest records the repository and tag; the commit is the manifest's
+containing commit. A release without a published manifest is a set of component
+tags, not a Tesserine ecosystem release.
 
-**Uniform lockstep versions.** The lockstep set for v0.1.2 is `agentd`,
-`base`, `runa`, `groundwork`, `commons`, and `ops`. An ecosystem release
-`vX.Y.Z` references tag `vX.Y.Z` in every lockstep repo, using the ADR-0012
-stable tag grammar. Per-repo versions may exist outside the lockstep set, but
-a repository inside the set does not advance under an independent version
-number for an ecosystem release. Future repositories join lockstep when a
-Tesserine release cannot truthfully be declared, deployed, or verified without
-pinning that repository's revision. Runtime dependency alone is too broad;
-deployment-manifest inclusion alone is too narrow.
+**Component-independent lockstep set versions.** The lockstep set for v0.1.2
+is `agentd`, `base`, `runa`, `groundwork`, `commons`, and `ops`. "Lockstep
+set" is the operational term for the repositories that compose a Tesserine
+ecosystem release; it does not require those repositories to share a version
+string. An ecosystem release references each member's manifest-declared tag,
+using the ADR-0012 tag grammar and the ADR-0014 aggregate SemVer rule.
+Components inside the lockstep set version per their own changes. A component
+that has not changed since the prior ecosystem release appears in the new
+manifest with its prior tag and commit unchanged. Future repositories join
+lockstep when a Tesserine release cannot truthfully be declared, deployed, or
+verified without pinning that repository's revision. Runtime dependency alone
+is too broad; deployment-manifest inclusion alone is too narrow.
 
 **Manifest publication is the atomic boundary.** Git cannot tag six
 repositories atomically. The ecosystem analogue of ADR-0006's atomic operation
@@ -97,7 +103,7 @@ checkout of `commons`, so the home repository's commit is already identified by
 the commit that contains the manifest. Recording that same commit inside the
 manifest would be redundant and impossible, because the commit hash depends on
 the manifest contents. This asymmetry is part of the identity model: external
-lockstep repositories need explicit commit fields, while the home repository's
+lockstep set members need explicit commit fields, while the home repository's
 commit is derived from location. Operational verification confirms this
 published home-repository identity by comparing the manifest being verified to
 the manifest content published at the named `commons` tag.
@@ -167,11 +173,11 @@ Phase 4 uses those pieces to publish the first ceremony-blessed release.
 
 **What this means for the builder agent.** When asked to cut or verify a
 Tesserine ecosystem release, do not infer release identity from deployment
-state, GitHub releases, or a set of convenient tags. Find the `commons`
-release manifest and verify it against its containing commit. Do not hand-tag
-around ADR-0006 or ADR-0010. Do not treat a failed cross-repo verification as
-partial success. Do not deploy a release by mixing component refs from multiple
-ecosystem manifests.
+state, GitHub releases, matching tag strings, or a set of convenient tags.
+Find the `commons` release manifest and verify it against its containing
+commit. Do not hand-tag around ADR-0006 or ADR-0010. Do not treat a failed
+cross-repo verification as partial success. Do not deploy a release by mixing
+component refs from multiple ecosystem manifests.
 
 **What this does not mean.** This ADR does not define the manifest file format,
 the verifier implementation, registry publishing, signing, or release-note

@@ -24,6 +24,7 @@ LOCKSTEP_COMPONENTS = {
     "commons": "tesserine/commons",
     "ops": "tesserine/ops",
 }
+RC_SUFFIX_RE = re.compile(r"-rc\.[1-9][0-9]*$")
 
 
 @dataclass(frozen=True)
@@ -240,23 +241,32 @@ def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], 
     return components, errors
 
 
-def verify_component_shape(component: Component, version: str) -> list[str]:
+def verify_component_shape(component: Component) -> list[str]:
     errors: list[str] = []
     expected_repo = LOCKSTEP_COMPONENTS.get(component.name)
-    expected_tag = f"v{version}"
 
     if component.repo != expected_repo:
         errors.append(
             f"{component.name} {component.tag} repo: expected {expected_repo}, actual {component.repo}"
         )
-    if component.tag != expected_tag:
-        errors.append(
-            f"{component.name} {component.tag} tag: expected {expected_tag}, actual {component.tag}"
-        )
     if component.name == "commons" and component.commit is not None:
         errors.append(f"commons {component.tag} commit: commons identity is verified from published manifest content")
     if component.name != "commons" and component.commit is None:
         errors.append(f"{component.name} {component.tag} commit: non-commons components must declare commit")
+    return errors
+
+
+def verify_stability_composition(components: dict[str, Component], version: str) -> list[str]:
+    if RC_SUFFIX_RE.search(version):
+        return []
+
+    errors: list[str] = []
+    for component in components.values():
+        if RC_SUFFIX_RE.search(component.tag):
+            errors.append(
+                f"{component.name} {component.tag} tag: stable ecosystem version {version} "
+                "requires stable component tags under ADR-0014"
+            )
     return errors
 
 
@@ -278,7 +288,7 @@ def verify_commons_published_manifest(
 
 def verify_cross_repo_identity(components: dict[str, Component], version: str) -> list[str]:
     errors: list[str] = []
-    expected_tag = f"v{version}"
+    runa = components.get("runa")
 
     base = components.get("base")
     if base is not None and base.commit is not None:
@@ -292,11 +302,11 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
                 for match in re.finditer(r"(?m)^[ \t]*ARG[ \t]+RUNA_REF=([^ \t\r\n#]+)", dockerfile)
             ]
             if not runa_refs:
-                errors.append(f"base {base.tag} runa-ref: expected {expected_tag}, actual None")
+                errors.append(f"base {base.tag} runa-ref: expected {runa.tag if runa else None}, actual None")
             for runa_ref in sorted(set(runa_refs)):
-                if runa_ref != expected_tag:
+                if runa is not None and runa_ref != runa.tag:
                     errors.append(
-                        f"base {base.tag} runa-ref: expected {expected_tag}, actual {runa_ref}"
+                        f"base {base.tag} runa-ref: expected {runa.tag}, actual {runa_ref}"
                     )
         try:
             checkout_runa_ref = repo_file(base.repo, "scripts/checkout-runa-ref", base.commit)
@@ -344,9 +354,9 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
                         f"ops {ops.tag} deployment:{name}:{component_name}-repo: expected {expected_repo}, actual {actual_repo}"
                     )
                 actual_ref = actual_identity.get("ref")
-                if actual_ref != expected_tag:
+                if actual_ref != component.tag:
                     errors.append(
-                        f"ops {ops.tag} deployment:{name}:{component_name}-ref: expected {expected_tag}, actual {actual_ref}"
+                        f"ops {ops.tag} deployment:{name}:{component_name}-ref: expected {component.tag}, actual {actual_ref}"
                     )
     return errors
 
@@ -368,7 +378,8 @@ def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_cont
     errors.extend(component_errors)
 
     for component in components.values():
-        errors.extend(verify_component_shape(component, version))
+        errors.extend(verify_component_shape(component))
+    errors.extend(verify_stability_composition(components, version))
 
     if errors:
         return errors

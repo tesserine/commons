@@ -24,6 +24,12 @@ runa_commit=3333333333333333333333333333333333333333
 groundwork_commit=4444444444444444444444444444444444444444
 ops_commit=5555555555555555555555555555555555555555
 commons_commit=6666666666666666666666666666666666666666
+groundwork_v020_commit=7777777777777777777777777777777777777777
+ops_v013_commit=8888888888888888888888888888888888888888
+commons_v013_commit=9999999999999999999999999999999999999999
+groundwork_v020_rc1_commit=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+ops_v013_rc1_commit=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+commons_v013_rc1_commit=cccccccccccccccccccccccccccccccccccccccc
 
 write_manifest() {
     local path="$1"
@@ -76,6 +82,104 @@ write_manifest() {
 EOF
 }
 
+write_independent_manifest() {
+    local path="$1"
+
+    cat >"$path" <<EOF
+{
+  "schema_version": 1,
+  "ecosystem": "tesserine",
+  "version": "0.2.0",
+  "components": [
+    {
+      "name": "agentd",
+      "repo": "tesserine/agentd",
+      "tag": "v0.1.2",
+      "commit": "$agentd_commit"
+    },
+    {
+      "name": "base",
+      "repo": "tesserine/base",
+      "tag": "v0.1.2",
+      "commit": "$base_commit"
+    },
+    {
+      "name": "runa",
+      "repo": "tesserine/runa",
+      "tag": "v0.1.2",
+      "commit": "$runa_commit"
+    },
+    {
+      "name": "groundwork",
+      "repo": "tesserine/groundwork",
+      "tag": "v0.2.0",
+      "commit": "$groundwork_v020_commit"
+    },
+    {
+      "name": "commons",
+      "repo": "tesserine/commons",
+      "tag": "v0.1.3"
+    },
+    {
+      "name": "ops",
+      "repo": "tesserine/ops",
+      "tag": "v0.1.3",
+      "commit": "$ops_v013_commit"
+    }
+  ]
+}
+EOF
+}
+
+write_rc_mixed_manifest() {
+    local path="$1"
+
+    cat >"$path" <<EOF
+{
+  "schema_version": 1,
+  "ecosystem": "tesserine",
+  "version": "0.2.0-rc.1",
+  "components": [
+    {
+      "name": "agentd",
+      "repo": "tesserine/agentd",
+      "tag": "v0.1.2",
+      "commit": "$agentd_commit"
+    },
+    {
+      "name": "base",
+      "repo": "tesserine/base",
+      "tag": "v0.1.2",
+      "commit": "$base_commit"
+    },
+    {
+      "name": "runa",
+      "repo": "tesserine/runa",
+      "tag": "v0.1.2",
+      "commit": "$runa_commit"
+    },
+    {
+      "name": "groundwork",
+      "repo": "tesserine/groundwork",
+      "tag": "v0.2.0-rc.1",
+      "commit": "$groundwork_v020_rc1_commit"
+    },
+    {
+      "name": "commons",
+      "repo": "tesserine/commons",
+      "tag": "v0.1.3-rc.1"
+    },
+    {
+      "name": "ops",
+      "repo": "tesserine/ops",
+      "tag": "v0.1.3-rc.1",
+      "commit": "$ops_v013_rc1_commit"
+    }
+  ]
+}
+EOF
+}
+
 manifest_path() {
     local name="$1"
     local version="${2:-0.1.2}"
@@ -89,7 +193,7 @@ write_fake_gh() {
     local bin_dir="$1"
     mkdir -p "$bin_dir"
 
-    local dockerfile_good dockerfile_bad checkout_runa_ref_good checkout_runa_ref_bad babbie_good babbie_bad babbie_bad_repo
+    local dockerfile_good dockerfile_bad checkout_runa_ref_good checkout_runa_ref_bad babbie_good babbie_bad babbie_bad_repo babbie_independent babbie_rc_mixed
     dockerfile_good="$(printf 'ARG RUNA_REF=v0.1.2\n')"
     dockerfile_bad="$(printf 'ARG RUNA_REF=v0.1.1\n')"
     checkout_runa_ref_good="$(printf 'default_runa_repo="https://github.com/tesserine/runa.git"\n')"
@@ -129,6 +233,60 @@ TOML
         printf '%s\n' "$babbie_good" \
             | awk 'in_agentd && /^repo = / { sub(/tesserine/, "wrong"); in_agentd = 0 } /^\[agentd\]$/ { in_agentd = 1 } { print }'
     )"
+    local babbie_independent_file="$scratch/babbie-independent.toml"
+    cat >"$babbie_independent_file" <<'TOML'
+schema_version = 1
+
+[deployment]
+name = "babbie"
+host = "babbie"
+model = "desired-state"
+version = "0.2.0"
+
+[agentd]
+repo = "https://github.com/tesserine/agentd"
+ref = "v0.1.2"
+
+[base]
+repo = "https://github.com/tesserine/base"
+ref = "v0.1.2"
+
+[runa]
+repo = "https://github.com/tesserine/runa"
+ref = "v0.1.2"
+
+[methodologies.groundwork]
+repo = "https://github.com/tesserine/groundwork"
+ref = "v0.2.0"
+TOML
+    babbie_independent="$(cat "$babbie_independent_file")"
+    local babbie_rc_mixed_file="$scratch/babbie-rc-mixed.toml"
+    cat >"$babbie_rc_mixed_file" <<'TOML'
+schema_version = 1
+
+[deployment]
+name = "babbie"
+host = "babbie"
+model = "desired-state"
+version = "0.2.0-rc.1"
+
+[agentd]
+repo = "https://github.com/tesserine/agentd"
+ref = "v0.1.2"
+
+[base]
+repo = "https://github.com/tesserine/base"
+ref = "v0.1.2"
+
+[runa]
+repo = "https://github.com/tesserine/runa"
+ref = "v0.1.2"
+
+[methodologies.groundwork]
+repo = "https://github.com/tesserine/groundwork"
+ref = "v0.2.0-rc.1"
+TOML
+    babbie_rc_mixed="$(cat "$babbie_rc_mixed_file")"
 
     dockerfile_good_b64="$(printf '%s' "$dockerfile_good" | base64 | tr -d '\n')"
     dockerfile_bad_b64="$(printf '%s' "$dockerfile_bad" | base64 | tr -d '\n')"
@@ -137,6 +295,8 @@ TOML
     babbie_good_b64="$(printf '%s' "$babbie_good" | base64 | tr -d '\n')"
     babbie_bad_b64="$(printf '%s' "$babbie_bad" | base64 | tr -d '\n')"
     babbie_bad_repo_b64="$(printf '%s' "$babbie_bad_repo" | base64 | tr -d '\n')"
+    babbie_independent_b64="$(printf '%s' "$babbie_independent" | base64 | tr -d '\n')"
+    babbie_rc_mixed_b64="$(printf '%s' "$babbie_rc_mixed" | base64 | tr -d '\n')"
 
     cat >"$bin_dir/gh" <<EOF
 #!/usr/bin/env bash
@@ -169,6 +329,18 @@ if [[ "\$1" == "api" ]]; then
         repos/tesserine/groundwork/git/tags/tag-groundwork)
             printf '{"object":{"sha":"$groundwork_commit"}}'
             ;;
+        repos/tesserine/groundwork/git/ref/tags/v0.2.0)
+            printf '{"object":{"type":"tag","sha":"tag-groundwork-v020"}}'
+            ;;
+        repos/tesserine/groundwork/git/tags/tag-groundwork-v020)
+            printf '{"object":{"sha":"$groundwork_v020_commit"}}'
+            ;;
+        repos/tesserine/groundwork/git/ref/tags/v0.2.0-rc.1)
+            printf '{"object":{"type":"tag","sha":"tag-groundwork-v020-rc1"}}'
+            ;;
+        repos/tesserine/groundwork/git/tags/tag-groundwork-v020-rc1)
+            printf '{"object":{"sha":"$groundwork_v020_rc1_commit"}}'
+            ;;
         repos/tesserine/commons/git/ref/tags/v0.1.2)
             if [[ "\${FAKE_GH_MISSING_COMMONS_TAG:-}" == "1" ]]; then
                 printf 'Not Found\n' >&2
@@ -178,6 +350,18 @@ if [[ "\$1" == "api" ]]; then
             ;;
         repos/tesserine/commons/git/tags/tag-commons)
             printf '{"object":{"sha":"$commons_commit"}}'
+            ;;
+        repos/tesserine/commons/git/ref/tags/v0.1.3)
+            printf '{"object":{"type":"tag","sha":"tag-commons-v013"}}'
+            ;;
+        repos/tesserine/commons/git/tags/tag-commons-v013)
+            printf '{"object":{"sha":"$commons_v013_commit"}}'
+            ;;
+        repos/tesserine/commons/git/ref/tags/v0.1.3-rc.1)
+            printf '{"object":{"type":"tag","sha":"tag-commons-v013-rc1"}}'
+            ;;
+        repos/tesserine/commons/git/tags/tag-commons-v013-rc1)
+            printf '{"object":{"sha":"$commons_v013_rc1_commit"}}'
             ;;
         repos/tesserine/commons/contents/releases/ecosystem/*\\?ref=v0.1.2)
             if [[ "\${FAKE_GH_MISSING_COMMONS_MANIFEST:-}" == "1" ]]; then
@@ -193,11 +377,39 @@ if [[ "\$1" == "api" ]]; then
                 exit 1
             fi
             ;;
+        repos/tesserine/commons/contents/releases/ecosystem/*\\?ref=v0.1.3)
+            if [[ -n "\${FAKE_GH_COMMONS_MANIFEST_FILE:-}" ]]; then
+                printf '{"encoding":"base64","content":"%s"}' "\$(base64 <"\$FAKE_GH_COMMONS_MANIFEST_FILE" | tr -d '\n')"
+            else
+                printf 'FAKE_GH_COMMONS_MANIFEST_FILE is required\n' >&2
+                exit 1
+            fi
+            ;;
+        repos/tesserine/commons/contents/releases/ecosystem/*\\?ref=v0.1.3-rc.1)
+            if [[ -n "\${FAKE_GH_COMMONS_MANIFEST_FILE:-}" ]]; then
+                printf '{"encoding":"base64","content":"%s"}' "\$(base64 <"\$FAKE_GH_COMMONS_MANIFEST_FILE" | tr -d '\n')"
+            else
+                printf 'FAKE_GH_COMMONS_MANIFEST_FILE is required\n' >&2
+                exit 1
+            fi
+            ;;
         repos/tesserine/ops/git/ref/tags/v0.1.2)
             printf '{"object":{"type":"tag","sha":"tag-ops"}}'
             ;;
         repos/tesserine/ops/git/tags/tag-ops)
             printf '{"object":{"sha":"$ops_commit"}}'
+            ;;
+        repos/tesserine/ops/git/ref/tags/v0.1.3)
+            printf '{"object":{"type":"tag","sha":"tag-ops-v013"}}'
+            ;;
+        repos/tesserine/ops/git/tags/tag-ops-v013)
+            printf '{"object":{"sha":"$ops_v013_commit"}}'
+            ;;
+        repos/tesserine/ops/git/ref/tags/v0.1.3-rc.1)
+            printf '{"object":{"type":"tag","sha":"tag-ops-v013-rc1"}}'
+            ;;
+        repos/tesserine/ops/git/tags/tag-ops-v013-rc1)
+            printf '{"object":{"sha":"$ops_v013_rc1_commit"}}'
             ;;
         repos/tesserine/base/contents/Dockerfile?ref=$base_commit)
             if [[ "\${FAKE_GH_BAD_BASE_RUNA_REF:-}" == "1" ]]; then
@@ -221,6 +433,12 @@ if [[ "\$1" == "api" ]]; then
             else
                 printf '{"encoding":"base64","content":"$babbie_good_b64"}'
             fi
+            ;;
+        repos/tesserine/ops/contents/deployments/babbie.toml?ref=$ops_v013_commit)
+            printf '{"encoding":"base64","content":"$babbie_independent_b64"}'
+            ;;
+        repos/tesserine/ops/contents/deployments/babbie.toml?ref=$ops_v013_rc1_commit)
+            printf '{"encoding":"base64","content":"$babbie_rc_mixed_b64"}'
             ;;
         *)
             printf 'unknown fake gh api endpoint: %s\n' "\$endpoint" >&2
@@ -251,7 +469,24 @@ elif [[ "\$1" == "run" && "\$2" == "list" ]]; then
     elif [[ "\$repo" == "tesserine/base" && "\${FAKE_GH_FAIL_BASE_RELEASE:-}" == "1" ]]; then
         printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"failure","url":"https://example.invalid/base-failure"}]'
     else
-        printf '[{"headBranch":"v0.1.2","status":"completed","conclusion":"success","url":"https://example.invalid/%s/%s"}]' "\$repo" "\$commit"
+        case "\$commit" in
+            $groundwork_v020_commit)
+                tag="v0.2.0"
+                ;;
+            $groundwork_v020_rc1_commit)
+                tag="v0.2.0-rc.1"
+                ;;
+            $ops_v013_commit|$commons_v013_commit)
+                tag="v0.1.3"
+                ;;
+            $ops_v013_rc1_commit|$commons_v013_rc1_commit)
+                tag="v0.1.3-rc.1"
+                ;;
+            *)
+                tag="v0.1.2"
+                ;;
+        esac
+        printf '[{"headBranch":"%s","status":"completed","conclusion":"success","url":"https://example.invalid/%s/%s"}]' "\$tag" "\$repo" "\$commit"
     fi
 else
     printf 'unknown fake gh command: %s\n' "\$*" >&2
@@ -373,6 +608,42 @@ assert_success \
     "verifier does not depend on checkout HEAD for commons identity" \
     env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$valid_manifest" \
     "$verifier" "$valid_manifest"
+
+independent_manifest="$(manifest_path independent 0.2.0)"
+write_independent_manifest "$independent_manifest"
+assert_success \
+    "verifier accepts component-independent tags under one aggregate ecosystem version" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$independent_manifest" \
+    "$verifier" "$independent_manifest"
+
+stable_with_rc_component="$(manifest_path stable-with-rc-component 0.2.0)"
+write_independent_manifest "$stable_with_rc_component"
+python3 - "$stable_with_rc_component" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+manifest = json.loads(path.read_text(encoding="utf-8"))
+for component in manifest["components"]:
+    if component["name"] == "groundwork":
+        component["tag"] = "v0.2.0-rc.1"
+path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+PY
+gh_called="$scratch/stable-with-rc-component-gh-called"
+assert_failure_contains_without_file \
+    "verifier rejects RC component tags in stable ecosystem manifests before GitHub fetch" \
+    "groundwork v0.2.0-rc.1 tag: stable ecosystem version 0.2.0 requires stable component tags under ADR-0014" \
+    "$gh_called" \
+    env PATH="$no_gh_bin:$PATH" FAKE_GH_CALLED_FILE="$gh_called" \
+    "$verifier" "$stable_with_rc_component"
+
+rc_mixed_manifest="$(manifest_path rc-mixed 0.2.0-rc.1)"
+write_rc_mixed_manifest "$rc_mixed_manifest"
+assert_success \
+    "verifier accepts RC ecosystem manifests with stable and RC component tags" \
+    env PATH="$fake_bin:$PATH" FAKE_GH_COMMONS_MANIFEST_FILE="$rc_mixed_manifest" \
+    "$verifier" "$rc_mixed_manifest"
 
 bad_schema="$scratch/bad-schema.json"
 cat >"$bad_schema" <<'EOF'

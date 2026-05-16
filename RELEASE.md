@@ -26,7 +26,9 @@ Before invoking the release command, the following must hold:
 - The branch is up to date with the remote: `git pull --ff-only`.
 - `cargo-release` is installed and a `release.toml` exists at the workspace root.
 - `CHANGELOG.md`'s `[Unreleased]` section reflects everything shipping in this release. Do not manually convert `[Unreleased]` to a versioned heading; `cargo-release` rolls it into `[X.Y.Z] — YYYY-MM-DD` as part of the release operation.
-- The version level is decided: `patch` for fixes, `minor` for additive changes, `major` for breaking changes, or `rc` for a deployment release candidate.
+- The component version level is decided from this repo's own changes:
+  `patch` for fixes, `minor` for additive changes, `major` for breaking
+  changes, or `rc` for a deployment release candidate.
 
 If any precondition fails, resolve the discrepancy before releasing. `--allow-dirty` is not part of the release path.
 
@@ -81,13 +83,14 @@ the ref argument value while branch tips move.
 ## Ecosystem release manifests
 
 Stable ecosystem release identity is declared by a manifest in `commons`, as
-defined by [ADR-0011](adr/0011-ecosystem-release-identity-and-ceremony.md).
-The manifest format, canonical location, and verifier command are documented in
+defined by [ADR-0011](adr/0011-ecosystem-release-identity-and-ceremony.md) and
+[ADR-0014](adr/0014-component-independent-versioning.md). The manifest format,
+canonical location, and verifier command are documented in
 [ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md).
 
-Phase 3 of the release ceremony provides the manifest schema and verifier.
-Phase 4 produces the real `v0.1.2` manifest after exact stable tag commits
-exist across the lockstep repositories.
+The ecosystem manifest records the current lockstep set component tags and
+commits. Those component tags follow each component's own SemVer and may differ
+from the ecosystem version.
 
 ## Verification
 
