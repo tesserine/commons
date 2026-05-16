@@ -24,6 +24,7 @@ LOCKSTEP_COMPONENTS = {
     "commons": "tesserine/commons",
     "ops": "tesserine/ops",
 }
+RC_SUFFIX_RE = re.compile(r"-rc\.[1-9][0-9]*$")
 
 
 @dataclass(frozen=True)
@@ -255,6 +256,20 @@ def verify_component_shape(component: Component) -> list[str]:
     return errors
 
 
+def verify_stability_composition(components: dict[str, Component], version: str) -> list[str]:
+    if RC_SUFFIX_RE.search(version):
+        return []
+
+    errors: list[str] = []
+    for component in components.values():
+        if RC_SUFFIX_RE.search(component.tag):
+            errors.append(
+                f"{component.name} {component.tag} tag: stable ecosystem version {version} "
+                "requires stable component tags under ADR-0014"
+            )
+    return errors
+
+
 def verify_commons_published_manifest(
     component: Component, canonical_filename: str, manifest_content: bytes
 ) -> str | None:
@@ -364,6 +379,7 @@ def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_cont
 
     for component in components.values():
         errors.extend(verify_component_shape(component))
+    errors.extend(verify_stability_composition(components, version))
 
     if errors:
         return errors

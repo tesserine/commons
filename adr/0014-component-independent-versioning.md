@@ -35,6 +35,14 @@ explicitly. Component tags need not match each other or the ecosystem release
 version. A component that has not changed since the prior ecosystem release
 appears in the new manifest with its prior tag and commit unchanged.
 
+Stability composes asymmetrically. A stable ecosystem release `X.Y.Z`
+composes only stable component tags: every manifest-declared component tag
+matches the stable grammar from ADR-0012, `vMAJOR.MINOR.PATCH`, with no
+`-rc.N` suffix. An RC ecosystem release `X.Y.Z-rc.N` may compose either
+stable or RC component tags. Stable components that have not changed since the
+prior ecosystem release retain their stable tags; components being staged
+carry their own `-rc.N` tags per ADR-0010.
+
 ## Context
 
 Tesserine has run ADR-0011's ecosystem release set in lockstep mode since
