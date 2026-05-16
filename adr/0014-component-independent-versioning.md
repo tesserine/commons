@@ -1,4 +1,4 @@
-# ADR-0014: Component-Independent Semver and Aggregate Ecosystem Release Versioning
+# ADR-0014: Component-Independent SemVer and Curatorial Ecosystem Release Versioning
 
 **Status:** Accepted
 **Traces to:** Principle 1 (Sovereignty) — primary; Principle 7 (Verifiable
@@ -21,14 +21,19 @@ features land. Per-component release ceremony continues to apply:
 deployment surfaces, [ADR-0012](0012-ecosystem-release-version-grammar.md) for
 tag and version-of-record grammar.
 
-The ecosystem release version is computed by aggregate SemVer over the
-component changes since the prior ecosystem release. The mechanical floor is:
-any component major change since the prior ecosystem release makes the next
-ecosystem release a major; else any component minor change makes it a minor;
-else it is a patch. The ecosystem release version may exceed that floor when
-release-author judgment warrants — for example, when an operator-facing
-methodology change carries broader impact than its component SemVer reflects —
-but it cannot be lower than the floor.
+The ecosystem release version is chosen by the release author based on
+ecosystem-level shape — what the manifest binding represents to consumers as
+an ecosystem release. The author considers operator-facing impact at the
+ecosystem level, the substrate evolution since the prior ecosystem release,
+and the manifest-level change shape. The ecosystem version follows the SemVer
+grammar from [ADR-0012](0012-ecosystem-release-version-grammar.md) at the
+ecosystem layer: major signals ecosystem-level breaking change in
+operator-facing contracts, minor signals ecosystem-level new capability,
+patch signals ecosystem-level bugfix or hardening. The ecosystem version is
+not computed from component versions. A component-level minor or major
+change does not by itself force the ecosystem version to that level; the
+release author considers what the ecosystem release as a whole represents
+and chooses accordingly.
 
 The commons release manifest records each component's tag and commit
 explicitly. Component tags need not match each other or the ecosystem release
@@ -86,8 +91,15 @@ is not normative — it is not what truthful release identity requires. Treating
 the existing attempt as the requirement is the most common grounding failure.
 The normative requirement is: ecosystem releases must be atomic, identifiable,
 and verifiable; component versions must tell the truth about component
-changes. Independent component SemVer with aggregate ecosystem SemVer is the
-shape that delivers both.
+changes. Independent component SemVer with curatorial ecosystem versioning
+is the shape that delivers both. Curatorial in this sense matches established
+practice across the ecosystems cited above: Spring Cloud names BOMs with
+chosen release names (Hoxton, 2020.0.0), Linux distributions choose distro
+versions independent of package versions inside them, Maven BOMs use parent
+project versions chosen by the project rather than aggregated from
+dependencies. The pattern in the wild is: the ecosystem version names the
+release; the manifest names the components; the two layers carry SemVer
+independently.
 
 ## Consequences
 
@@ -98,12 +110,16 @@ under ADR-0010. Tag grammar continues under ADR-0012. The per-component
 discipline is the substrate; this ADR governs only how those per-component
 releases compose into an ecosystem release.
 
-**Ecosystem release version is computed, not chosen freehand.** The aggregate
-rule sets a mechanical floor: any component major → ecosystem major; else any
-component minor → ecosystem minor; else patch. Release-author judgment may
-exceed the floor when component SemVer underrepresents operator-facing
-impact, but cannot drop below it. The floor is observable from the manifest
-diff against the prior ecosystem release. The ceiling is governance.
+**Ecosystem release version is chosen, not aggregated.** The release author
+chooses the ecosystem version based on ecosystem-level shape, following
+SemVer at the ecosystem layer. A component shipping a minor does not force
+the ecosystem release to be a minor; a component shipping a major does not
+force the ecosystem release to be a major. The signal carried by per-component
+SemVer is about that component, not about the ecosystem. The release author
+reads ecosystem-level shape and chooses ecosystem-level version accordingly.
+This is the curatorial pattern that BOM-based ecosystems use in the wild;
+aggregating component versions into an ecosystem version conflates per-component
+signals with ecosystem-level signals that are not the same thing.
 
 **Commons release manifest records independent tags.** Each component entry
 carries its own tag and commit. The home-repository identity rules from
@@ -168,10 +184,13 @@ binds the component set into a verified release.
 - When asked to release a component, version per the component's own changes
   since its last component release. Do not align with other components. Do
   not consult other components' versions.
-- When asked to cut an ecosystem release, compute the aggregate version from
-  component changes since the prior ecosystem release, write the commons
-  manifest with each component's actual current tag and commit, follow
-  ADR-0011's atomic publication and all-or-nothing verification.
+- When asked to cut an ecosystem release, choose the ecosystem version based
+  on ecosystem-level shape since the prior ecosystem release: what changed at
+  the manifest level, what operator-facing impact the release carries, how
+  the substrate has evolved. Do not aggregate component versions to derive
+  the ecosystem version. Write the commons manifest with each component's
+  actual current tag and commit, follow ADR-0011's atomic publication and
+  all-or-nothing verification.
 - When asked which version of component A goes with which version of
   component B, consult the relevant ecosystem release manifest. Do not infer
   compatibility from string matching across components.

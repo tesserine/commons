@@ -28,7 +28,7 @@ Tesserine vECO =
 The ecosystem release version is the manifest version. Component tags are
 declared independently in the manifest and need not match each other or the
 ecosystem version; [ADR-0014](0014-component-independent-versioning.md)
-defines the aggregate SemVer rule. Release tag grammar is defined by
+defines the curatorial ecosystem versioning rule. Release tag grammar is defined by
 [ADR-0012](0012-ecosystem-release-version-grammar.md). Publication of the
 verified manifest is the atomic ecosystem release boundary. An ecosystem
 release is not complete until every referenced tag exists, every non-`commons`
@@ -80,7 +80,7 @@ is `agentd`, `base`, `runa`, `groundwork`, `commons`, and `ops`. "Lockstep
 set" is the operational term for the repositories that compose a Tesserine
 ecosystem release; it does not require those repositories to share a version
 string. An ecosystem release references each member's manifest-declared tag,
-using the ADR-0012 tag grammar and the ADR-0014 aggregate SemVer rule.
+using the ADR-0012 tag grammar and the ADR-0014 curatorial ecosystem versioning rule.
 Components inside the lockstep set version per their own changes. A component
 that has not changed since the prior ecosystem release appears in the new
 manifest with its prior tag and commit unchanged. Future repositories join

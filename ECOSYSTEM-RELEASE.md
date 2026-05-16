@@ -113,8 +113,12 @@ The operator procedure is:
 
 Stable publication is ordered by the verifier's release identity requirements:
 
-1. Compute the ecosystem version by ADR-0014 aggregate SemVer over component
-   changes since the prior ecosystem release.
+1. Choose the ecosystem version per [ADR-0014](adr/0014-component-independent-versioning.md):
+   the release author reads ecosystem-level shape (operator-facing impact,
+   substrate evolution, manifest-level change shape since the prior ecosystem
+   release) and chooses major, minor, or patch at the ecosystem layer
+   following the SemVer grammar of [ADR-0012](adr/0012-ecosystem-release-version-grammar.md).
+   Component versions are not aggregated to derive the ecosystem version.
 2. Cut stable tags only for components whose own changes require a new
    component release. Components without changes keep their prior stable tag
    and commit in the new manifest.
