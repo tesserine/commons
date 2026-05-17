@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-05-17
+
 ### Added
 
 - Added ADR-0014 Component-Independent SemVer and Curatorial Ecosystem Release
