@@ -70,6 +70,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   does not match the manifest version's canonical `vX.Y.Z.json` name before
   fetching published release content.
 
+### Fixed
+
+- Restored annotated tag refs in the release workflow before validating tag
+  identity, preserving trust checks after `actions/checkout`.
+
 ## [0.1.1] — 2026-04-21
 
 ### Added
