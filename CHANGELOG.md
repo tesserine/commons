@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added "Self-describing interfaces" section to `DESIGN-PRINCIPLES.md`
+  (principles #17–20), capturing engineering judgment for interfaces that
+  expose their own schema, derive documentation from contract, share
+  uniform patterns across surfaces, and support verify-before-act. Lands
+  as engineering judgment; surface-level operationalizing ADRs will follow
+  once individual surfaces commit to schema exposure in implementation.
+
 ## [0.2.0] — 2026-05-17
 
 ### Added
