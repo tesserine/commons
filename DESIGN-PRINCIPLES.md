@@ -140,5 +140,62 @@ fix.
 
 ---
 
+## Self-describing interfaces
+
+### 17. Interfaces describe themselves
+
+An interface that exposes its own schema lets consumers — humans landing
+cold, autonomous agents, code generators — discover capability through the
+interface itself. Documentation maintained alongside is a second source of
+truth that will drift; documentation derived from schema cannot. The schema
+is the contract, not a paraphrase of the contract.
+
+Markdown describing an API requires every consumer to read it, trust it,
+and discover staleness only after failure. A queryable schema requires no
+trust: the consumer asks the surface what it can do and the surface
+answers from the live contract.
+
+Every fresh context window is the first time an agent encounters a
+surface. The surface that describes itself enables action without
+operator-mediated discovery.
+
+### 18. Schema is the source; documentation is derived
+
+When schema and docs both describe a contract, the question is which one
+moves first. Schema-first means changes propagate to docs automatically —
+drift is structurally impossible. Doc-first means a human must mirror
+changes and the system has no way to know when they failed to.
+
+Prefer formats and pipelines where docs are generated from schema. The
+direction of derivation is the principle; the format is implementation.
+
+### 19. Uniform patterns across surfaces
+
+Pagination shape, authentication mechanism, error structure, identifier
+format, mutation semantics — these are cognitive load that amortizes if
+uniform across an ecosystem and compounds if inconsistent. When two
+surfaces in the same ecosystem disagree on pagination, every consumer pays
+the integration cost twice and the inconsistency teaches new surfaces that
+disagreement is allowed.
+
+This is not "everyone copies one specification." It is "the patterns are
+uniform" — which may mean shared specification, or may mean a thin layer
+of conventions each surface adopts naturally.
+
+### 20. Verify before act
+
+A consumer constructing a call should be able to check validity before
+committing. Type-check the call against the schema. Dry-run the operation.
+Introspect the available arguments. Validate the payload against the
+contract.
+
+The cost of building this capability is paid once. The cost of consumers
+acting on stale assumptions, failing partway through, and cleaning up
+partial state is paid every call. For autonomous consumers, the cleanup
+cost includes confusing downstream state that propagates into the next
+call.
+
+---
+
 *Each principle was extracted from a concrete mistake. The mistake is the
 teacher; the principle is the lesson encoded so the mistake need not repeat.*
