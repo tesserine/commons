@@ -197,5 +197,26 @@ call.
 
 ---
 
+## Session mode
+
+### 21. Mode is a property of the session, not the operation
+
+The operation and contract layer is mode-agnostic by construction. Reading a
+ticket, writing an artifact, advancing a lifecycle, or recording output is the
+same operation whether a human is driving an interactive session or an
+autonomous orchestrator is running the loop.
+
+Mode changes who issues the verbs and at what checkpoint granularity. It does
+not change the verbs' semantics, authorization model, validation gates, or
+artifact contracts. Authorization lives in the authorization, not in the
+mechanical act of launching a shell, calling a tool, or pressing a key.
+
+Transitions are gated by conformance: typed dispositions produced by the
+methodology and validated by the runtime. Operator intent enters at the
+request seed. Neither mode adds a per-operation human approval gate for
+conforming output.
+
+---
+
 *Each principle was extracted from a concrete mistake. The mistake is the
 teacher; the principle is the lesson encoded so the mistake need not repeat.*

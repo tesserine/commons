@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added ADR-0015 and Design Principle 21, promoting "mode is a property of the
+  session, not the operation" as the source invariant for dual-mode session
+  contracts, with conformance authority, request-seed intent authority, and
+  interactive mode as the methodology development harness.
 - Added "Self-describing interfaces" section to `DESIGN-PRINCIPLES.md`
   (principles #17–20), capturing engineering judgment for interfaces that
   expose their own schema, derive documentation from contract, share
