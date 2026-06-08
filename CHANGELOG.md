@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0-rc.1] — 2026-06-08
+
 ### Added
 
 - Added ADR-0015 and Design Principle 21, promoting "mode is a property of the
