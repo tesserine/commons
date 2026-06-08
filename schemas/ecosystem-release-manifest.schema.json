@@ -4,29 +4,79 @@
   "title": "Tesserine Ecosystem Release Manifest",
   "description": "Canonical schema for the manifest that declares which repository tags compose a Tesserine ecosystem release.",
   "type": "object",
-  "required": ["schema_version", "ecosystem", "version", "components"],
-  "additionalProperties": false,
-  "properties": {
-    "schema_version": {
-      "const": 1
+  "oneOf": [
+    {
+      "$ref": "#/$defs/schema-v1"
     },
-    "ecosystem": {
-      "const": "tesserine"
-    },
-    "version": {
-      "type": "string",
-      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-rc\\.[1-9][0-9]*)?$"
-    },
-    "components": {
-      "type": "array",
-      "minItems": 6,
-      "maxItems": 6,
-      "items": {
-        "$ref": "#/$defs/component"
-      }
+    {
+      "$ref": "#/$defs/schema-v2"
     }
-  },
+  ],
   "$defs": {
+    "base-manifest": {
+      "type": "object",
+      "required": ["schema_version", "ecosystem", "version", "components"],
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "type": "integer"
+        },
+        "ecosystem": {
+          "const": "tesserine"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(-rc\\.[1-9][0-9]*)?$"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/component"
+          }
+        }
+      }
+    },
+    "schema-v1": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base-manifest"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": 1
+            },
+            "components": {
+              "minItems": 6,
+              "maxItems": 6
+            }
+          }
+        }
+      ]
+    },
+    "schema-v2": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/base-manifest"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "schema_version": {
+              "const": 2
+            },
+            "components": {
+              "minItems": 5,
+              "maxItems": 5,
+              "items": {
+                "$ref": "#/$defs/current-component"
+              }
+            }
+          }
+        }
+      ]
+    },
     "commit": {
       "type": "string",
       "pattern": "^[0-9a-f]{40}$"
@@ -42,6 +92,26 @@
       "properties": {
         "name": {
           "enum": ["agentd", "base", "runa", "groundwork", "commons", "ops"]
+        },
+        "repo": {
+          "type": "string",
+          "pattern": "^tesserine/[a-z][a-z0-9-]*$"
+        },
+        "tag": {
+          "$ref": "#/$defs/tag"
+        },
+        "commit": {
+          "$ref": "#/$defs/commit"
+        }
+      }
+    },
+    "current-component": {
+      "type": "object",
+      "required": ["name", "repo", "tag"],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": ["agentd", "base", "runa", "groundwork", "commons"]
         },
         "repo": {
           "type": "string",

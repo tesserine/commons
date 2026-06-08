@@ -8,7 +8,6 @@ import re
 import shlex
 import subprocess
 import sys
-import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -16,13 +15,24 @@ from typing import Any
 import jsonschema
 
 
-LOCKSTEP_COMPONENTS = {
+SCHEMA_V1_COMPONENTS = {
     "agentd": "tesserine/agentd",
     "base": "tesserine/base",
     "runa": "tesserine/runa",
     "groundwork": "tesserine/groundwork",
     "commons": "tesserine/commons",
     "ops": "tesserine/ops",
+}
+SCHEMA_V2_COMPONENTS = {
+    "agentd": "tesserine/agentd",
+    "base": "tesserine/base",
+    "runa": "tesserine/runa",
+    "groundwork": "tesserine/groundwork",
+    "commons": "tesserine/commons",
+}
+COMPONENT_SETS_BY_SCHEMA_VERSION = {
+    1: SCHEMA_V1_COMPONENTS,
+    2: SCHEMA_V2_COMPONENTS,
 }
 RC_SUFFIX_RE = re.compile(r"-rc\.[1-9][0-9]*$")
 
@@ -210,9 +220,17 @@ def shell_assignment_values(text: str, name: str) -> list[str]:
     return values
 
 
+def expected_components(manifest: dict[str, Any]) -> dict[str, str]:
+    schema_version = manifest.get("schema_version")
+    if isinstance(schema_version, int):
+        return COMPONENT_SETS_BY_SCHEMA_VERSION.get(schema_version, {})
+    return {}
+
+
 def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], list[str]]:
     components: dict[str, Component] = {}
     errors: list[str] = []
+    expected = expected_components(manifest)
 
     for raw in manifest.get("components", []):
         if not isinstance(raw, dict):
@@ -231,19 +249,20 @@ def components_by_name(manifest: dict[str, Any]) -> tuple[dict[str, Component], 
             raw=raw,
         )
 
-    missing = sorted(set(LOCKSTEP_COMPONENTS) - set(components))
-    extra = sorted(set(components) - set(LOCKSTEP_COMPONENTS))
+    missing = sorted(set(expected) - set(components))
+    extra = sorted(set(components) - set(expected))
     for name in missing:
         errors.append(f"{name}: component is missing from manifest")
+    schema_version = manifest.get("schema_version")
     for name in extra:
-        errors.append(f"{name}: component is not part of the lockstep set")
+        errors.append(f"{name}: component is not part of schema_version {schema_version}")
 
     return components, errors
 
 
-def verify_component_shape(component: Component) -> list[str]:
+def verify_component_shape(component: Component, expected: dict[str, str]) -> list[str]:
     errors: list[str] = []
-    expected_repo = LOCKSTEP_COMPONENTS.get(component.name)
+    expected_repo = expected.get(component.name)
 
     if component.repo != expected_repo:
         errors.append(
@@ -313,7 +332,7 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
         except RuntimeError as error:
             errors.append(f"base {base.tag} runa-repo: {error}")
         else:
-            expected_runa_repo = github_url(LOCKSTEP_COMPONENTS["runa"], git_suffix=True)
+            expected_runa_repo = github_url(SCHEMA_V2_COMPONENTS["runa"], git_suffix=True)
             runa_repos = shell_assignment_values(checkout_runa_ref, "default_runa_repo")
             if not runa_repos:
                 errors.append(f"base {base.tag} runa-repo: expected {expected_runa_repo}, actual None")
@@ -323,41 +342,6 @@ def verify_cross_repo_identity(components: dict[str, Component], version: str) -
                         f"base {base.tag} runa-repo: expected {expected_runa_repo}, actual {runa_repo}"
                     )
 
-    ops = components.get("ops")
-    if ops is not None and ops.commit is not None:
-        try:
-            babbie = repo_file(ops.repo, "deployments/babbie.toml", ops.commit)
-            deployment = tomllib.loads(babbie)
-        except Exception as error:
-            errors.append(f"ops {ops.tag} deployment:babbie: {error}")
-        else:
-            name = "babbie"
-            deployed_version = deployment.get("deployment", {}).get("version")
-            if deployed_version != version:
-                errors.append(
-                    f"ops {ops.tag} deployment:{name}:version: expected {version}, actual {deployed_version}"
-                )
-            deployment_identities = {
-                "agentd": deployment.get("agentd", {}),
-                "base": deployment.get("base", {}),
-                "runa": deployment.get("runa", {}),
-                "groundwork": deployment.get("methodologies", {}).get("groundwork", {}),
-            }
-            for component_name, actual_identity in deployment_identities.items():
-                if not isinstance(actual_identity, dict):
-                    actual_identity = {}
-                component = components[component_name]
-                expected_repo = github_url(component.repo)
-                actual_repo = actual_identity.get("repo")
-                if actual_repo != expected_repo:
-                    errors.append(
-                        f"ops {ops.tag} deployment:{name}:{component_name}-repo: expected {expected_repo}, actual {actual_repo}"
-                    )
-                actual_ref = actual_identity.get("ref")
-                if actual_ref != component.tag:
-                    errors.append(
-                        f"ops {ops.tag} deployment:{name}:{component_name}-ref: expected {component.tag}, actual {actual_ref}"
-                    )
     return errors
 
 
@@ -376,9 +360,10 @@ def verify_manifest(manifest: dict[str, Any], manifest_path: Path, manifest_cont
 
     components, component_errors = components_by_name(manifest)
     errors.extend(component_errors)
+    expected = expected_components(manifest)
 
     for component in components.values():
-        errors.extend(verify_component_shape(component))
+        errors.extend(verify_component_shape(component, expected))
     errors.extend(verify_stability_composition(components, version))
 
     if errors:

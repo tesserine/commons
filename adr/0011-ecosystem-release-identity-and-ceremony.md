@@ -21,7 +21,7 @@ artifact that states:
 ```text
 Tesserine vECO =
   commons@<manifest-declared tag> at the manifest-containing commit
-  plus {agentd, base, runa, groundwork, ops}@<manifest-declared tags>
+  plus {agentd, base, runa, groundwork}@<manifest-declared tags>
     at declared commits
 ```
 
@@ -38,14 +38,11 @@ release check at that tag.
 
 ## Context
 
-Tesserine ships as an ecosystem, not as a single repository. The v0.1.2
-release train includes `agentd`, `base`, `runa`, `groundwork`, `commons`, and
-`ops`. The deployment manifest at `ops/deployments/babbie.toml` currently
-declares the operative deployment composition for babbie, but that host-level
-desired state is not the same thing as public ecosystem release identity. A
-future operator needs one artifact that answers which repository revisions
-compose "Tesserine vX.Y.Z" without reverse-engineering it from a deployment
-host, release notes, or individual tags.
+Tesserine ships as an ecosystem, not as a single repository. A future operator
+needs one artifact that answers which repository revisions compose "Tesserine
+vX.Y.Z" without reverse-engineering it from a deployment host, release notes,
+or individual tags. Already-published manifests remain valid under the schema
+version they declare; new manifest schema versions express release-set changes.
 
 ADR-0006 was written after the v0.1.1 incident in which cargo-workspace tags
 pointed at commits whose binaries still self-reported the previous version.
@@ -59,10 +56,10 @@ could carry the ecosystem tag plus an inline manifest in tag metadata, but tag
 metadata is a poor review surface and hides release composition from normal
 file-based tooling. Each repo could mutually verify the others without a
 single canonical artifact, but that only proves consistency at a moment in
-time; it does not leave a source of truth for readers. A release manifest in
-`ops` would be close to deployment mechanics, but `ops` manifests are
-host-specific desired state. `commons` is already the ecosystem convention
-authority, so the release identity artifact belongs there.
+time; it does not leave a source of truth for readers. A release manifest in a
+deployment-operations repository would be close to deployment mechanics, but
+deployment desired state is operator-owned. `commons` is already the ecosystem
+convention authority, so the release identity artifact belongs there.
 
 ## Consequences
 
@@ -75,20 +72,19 @@ the manifest records the repository and tag; the commit is the manifest's
 containing commit. A release without a published manifest is a set of component
 tags, not a Tesserine ecosystem release.
 
-**Component-independent lockstep set versions.** The lockstep set for v0.1.2
-is `agentd`, `base`, `runa`, `groundwork`, `commons`, and `ops`. "Lockstep
-set" is the operational term for the repositories that compose a Tesserine
-ecosystem release; it does not require those repositories to share a version
-string. An ecosystem release references each member's manifest-declared tag,
-using the ADR-0012 tag grammar and the ADR-0014 curatorial ecosystem versioning rule.
-Components inside the lockstep set version per their own changes. A component
-that has not changed since the prior ecosystem release appears in the new
-manifest with its prior tag and commit unchanged. Future repositories join
-lockstep when a Tesserine release cannot truthfully be declared, deployed, or
-verified without pinning that repository's revision. Runtime dependency alone
-is too broad; deployment-manifest inclusion alone is too narrow.
+**Component-independent release set versions.** The release set is the group
+of repositories that compose a Tesserine ecosystem release; it does not
+require those repositories to share a version string. An ecosystem release
+references each member's manifest-declared tag, using the ADR-0012 tag grammar
+and the ADR-0014 curatorial ecosystem versioning rule. Components inside the
+release set version per their own changes. A component that has not changed
+since the prior ecosystem release appears in the new manifest with its prior
+tag and commit unchanged. Future repositories join the release set when a
+Tesserine release cannot truthfully be declared or verified without pinning
+that repository's revision. Runtime dependency alone is too broad; deployment
+state inclusion alone is too narrow.
 
-**Manifest publication is the atomic boundary.** Git cannot tag six
+**Manifest publication is the atomic boundary.** Git cannot tag multiple
 repositories atomically. The ecosystem analogue of ADR-0006's atomic operation
 is the verified publication of a complete, self-consistent release manifest.
 The manifest must be valid at the moment it is committed: it cannot depend on a
@@ -125,15 +121,14 @@ published ecosystem release, no partial rollback, and no deployment from a
 failed manifest. The failure output must identify the repository, tag, and
 check that failed so the owning repo can remediate at its boundary.
 
-**Deployment manifests consume release identity.** An `ops/deployments/<host>.toml`
-that represents a release deployment must match the corresponding subset of
-one published ecosystem manifest. It may omit lockstep repos that are not
-deployed onto that host, such as `commons` or `ops` itself, and it may include
-host-local fields such as paths and image names. It must not mix component
-refs from multiple ecosystem releases. A deployment manifest may still use
-non-release refs allowed by ADR-0010 for integration or local testing, but
-that state is not a release deployment until it matches a published ecosystem
-manifest subset.
+**Deployments consume release identity.** A release deployment must consume the
+corresponding subset of one published ecosystem manifest. It may omit release
+set repos that are not deployed onto that host, and it may include
+operator-owned local fields such as paths and image names outside the
+Tesserine repositories. It must not mix component refs from multiple ecosystem
+releases. A deployment may still use non-release refs allowed by ADR-0010 for
+integration or local testing, but that state is not a release deployment until
+it matches a published ecosystem manifest subset.
 
 **Every release surface has a version of record.** ADR-0006's
 workspace-version invariant generalizes to all release surfaces: at tag time,
@@ -148,12 +143,8 @@ source-controlled release metadata field, so long as the repo's release check
 can mechanically compare it to the tag.
 
 **Non-cargo version-of-record surfaces.** The current artifacts and Phase 2
-release-check responsibilities are distinct. `base` already reports image
-identity through the labels required by ADR-0010. `ops` deployment manifests
-already record deployed component identity through `ref` fields; Phase 2 makes
-those fields part of the `ops` release check when a deployment manifest
-represents a release deployment, while the ecosystem release version lives in
-the Phase 3 `commons` release manifest. `commons` currently has no
+release-check responsibilities are distinct. `base` reports image identity
+through the labels required by ADR-0010. `commons` currently has no
 `Cargo.toml`; Phase 2 verifies its docs, schemas, changelog, and
 release-manifest identity rather than cargo metadata, and for the release
 manifest itself the commit under verification is the manifest-containing
@@ -176,8 +167,8 @@ Tesserine ecosystem release, do not infer release identity from deployment
 state, GitHub releases, matching tag strings, or a set of convenient tags.
 Find the `commons` release manifest and verify it against its containing
 commit. Do not hand-tag around ADR-0006 or ADR-0010. Do not treat a failed
-cross-repo verification as partial success. Do not deploy a release by mixing
-component refs from multiple ecosystem manifests.
+cross-repo verification as partial success. Do not compose a release deployment
+by mixing component refs from multiple ecosystem manifests.
 
 **What this does not mean.** This ADR does not define the manifest file format,
 the verifier implementation, registry publishing, signing, or release-note

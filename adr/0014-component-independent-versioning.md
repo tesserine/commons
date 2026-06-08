@@ -58,8 +58,8 @@ the compatibility matrix that independent versioning introduces.
 The tension surfaced during the v0.1.2 rollout when planning a new
 interactive-install feature for groundwork. The feature is a new minor in
 SemVer terms — proper component versioning wants groundwork at v0.2.0 — but
-the rest of the ecosystem (agentd, runa, base, ops) has nothing comparable in
-flight at this moment. Under lockstep, shipping the feature requires either
+the rest of the release set has nothing comparable in flight at this moment.
+Under lockstep, shipping the feature requires either
 bumping every component to v0.2.0 (false signal: no minor change in those
 components) or holding the feature back until other components have material
 minor changes (artificial coupling, queue-stalling).
