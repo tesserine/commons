@@ -11,7 +11,7 @@ commons owns the convention: this ADR plus a prose `RELEASE.md` at the repo root
 
 ## Context
 
-On 2026-04-22, deploying Tesserine v0.1.1 to babbie surfaced that `runa --version` reported `0.1.0` from a fresh build of the v0.1.1 tag. Investigation confirmed both `runa` and `agentd` had cut their v0.1.1 tags without bumping the workspace `Cargo.toml`. The code at the tag was materially v0.1.1; the binary self-reported v0.1.0. Same pattern in both repos.
+On 2026-04-22, deploying Tesserine v0.1.1 surfaced that `runa --version` reported `0.1.0` from a fresh build of the v0.1.1 tag. Investigation confirmed both `runa` and `agentd` had cut their v0.1.1 tags without bumping the workspace `Cargo.toml`. The code at the tag was materially v0.1.1; the binary self-reported v0.1.0. Same pattern in both repos.
 
 The remediation — re-cutting the tags against bump commits — worked only because v0.1.1 was hours old with no external consumers. That escape hatch closes the moment a release has downstream readers. The same gap will recur on every future release of every cargo-workspace repo unless the discipline is tool-enforced.
 

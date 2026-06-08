@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Evolved the ecosystem release manifest schema to `schema_version: 2` for the
+  current host-agnostic five-component release set while keeping already
+  published `schema_version: 1` manifests valid.
+- Removed the ecosystem verifier's host-deployment manifest read path; release
+  verification now checks manifest identity, component tags and commits,
+  release workflows, and cross-component source coherence without consulting
+  any operator host artifacts.
+
+### Added
+
+- Added the `v0.2.1` ecosystem release manifest as the host-agnostic successor
+  to the invalid published `v0.2.0` manifest identity.
+
 ## [0.3.0-rc.1] — 2026-06-08
 
 ### Added
@@ -32,8 +47,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added ecosystem release manifest schema and cross-repo verifier substrate for
   Phase 3 release coordination, including fixture coverage and operator docs.
 - Added ecosystem integration verification procedure docs for the RC-to-stable
-  release gate, including babbie convergence, the canonical fixture, pass
-  criteria, and ADR-0013 substrate-gap handling.
+  release gate, including operator-host convergence, the canonical fixture,
+  pass criteria, and ADR-0013 substrate-gap handling.
 - Added ADR-0013 Procedure Substrate Discipline, codifying how agents handle
   documentation gaps encountered while executing procedure substrate.
 - Added commons release ceremony tooling: release metadata checks, release-cut
