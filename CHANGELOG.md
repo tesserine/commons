@@ -17,11 +17,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   release workflows, and cross-component source coherence without consulting
   any operator host artifacts.
 
-### Added
-
-- Added the `v0.2.1` ecosystem release manifest as the host-agnostic successor
-  to the invalid published `v0.2.0` manifest identity.
-
 ## [0.3.0-rc.1] — 2026-06-08
 
 ### Added
