@@ -119,7 +119,7 @@ it. Two writers, two distinct concerns, no format overlap.
 
 **Breaking change to agent schema.** Existing agent declarations
 that use `command = [...shell script...]` require migration.
-Pre-1.0 latitude per ADR-0007's embrace of change; the right time
+Pre-1.0 latitude per the [Evolvability](https://github.com/pentaxis93/principles/blob/main/principles/evolvability.md) principle (formerly ADR-0007's embrace of change; ADR-0007 is superseded); the right time
 to make this movement is while the foundation is most movable.
 Migration pattern: drop the shell wrapper; declare the command as
 structured argv data; the methodology path moves out of shell

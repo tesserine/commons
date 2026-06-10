@@ -17,15 +17,15 @@ Future repos inherit these principles by default.
 
 ## Contents
 
-- **[PRINCIPLES.md](PRINCIPLES.md)** — seven bedrock principles organized as a topology (sovereignty, sequence, grounding, obligation to dissent, recursive improvement, transmission, verifiable completion)
-- **[DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md)** — sixteen engineering judgment principles governing how we think about code (elimination over accommodation, fix at the source, honest naming, correctness over optimization, architecture as communication, review discipline)
+- **[PRINCIPLES.md](PRINCIPLES.md)** — seven bedrock principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
+- **[DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md)** — 21 engineering design principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
 - **[EXIT-CODES.md](EXIT-CODES.md)** — shared session-outcome exit code contract for runners and callers across the ecosystem
 - **[REQUEST.md](REQUEST.md)** — canonical contract for the request artifact, the entry point that triggers a session
 - **[RELEASE.md](RELEASE.md)** — release process for Tesserine cargo-workspace repos, formalized by [ADR-0006](adr/0006-release-discipline.md)
 - **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository
 - **[ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md)** — ecosystem release manifest format and cross-repo verification contract
 - **[schemas/](schemas/)** — versioned JSON Schemas that are the machine-checkable realizations of canonical artifact specs
-- **[adr/](adr/)** — architectural decision records that operationalize the principles
+- **[adr/](adr/)** — architectural decision records. Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Nine genuine decisions (0005–0006, 0008–0012, 0014–0015) remain active.
 
 ## Relationship to individual repos
 

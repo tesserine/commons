@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Superseded six principle-shaped ADRs (0001–0004, 0007, 0013): replaced
+  each with a pointer document to the canonical principles corpus at
+  `pentaxis93/principles`, where each principle has been ascended to its
+  universal level. ADR-0001 → Sovereignty; ADR-0002 → Grounding +
+  Parsimony; ADR-0003 → Obligation to Dissent; ADR-0004 → Recursive
+  Improvement; ADR-0007 → Evolvability (primary), Grounding, Transmission;
+  ADR-0013 → Source Repair. Nine genuine decisions (0005–0006, 0008–0012,
+  0014–0015) remain active in `adr/`.
+- Added forward-pointer banners to `PRINCIPLES.md` and
+  `DESIGN-PRINCIPLES.md` directing readers to `pentaxis93/principles` as
+  the canonical home. Both files are retained for link stability.
+- Updated `README.md` contents section to distinguish the historical
+  principle docs (now canonical at `pentaxis93/principles`) from the
+  retained genuine decisions.
+- Updated internal ADR references in ADR-0008, ADR-0015, and
+  `ECOSYSTEM-RELEASE.md` to point to the canonical principle documents
+  rather than the now-superseded ADR files.
 - Evolved the ecosystem release manifest schema to `schema_version: 2` for the
   current host-agnostic five-component release set while keeping already
   published `schema_version: 1` manifests valid.

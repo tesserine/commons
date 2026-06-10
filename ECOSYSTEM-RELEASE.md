@@ -152,6 +152,6 @@ The supporting procedure documents are:
 - [`commons/RELEASE.md`](RELEASE.md) for the commons release ceremony.
 
 This procedure follows
-[ADR-0013](adr/0013-procedure-substrate-discipline.md): substrate gaps
+the [Source Repair](https://github.com/pentaxis93/principles/blob/main/principles/source-repair.md) principle's procedure-substrate discipline (formerly ADR-0013, now superseded): substrate gaps
 surfaced during integration verification are filed at the substrate level,
 not absorbed as local workarounds in the release session.

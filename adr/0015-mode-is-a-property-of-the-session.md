@@ -1,7 +1,7 @@
 # ADR-0015: Mode Is a Property of the Session
 
 **Status:** Accepted
-**Traces to:** ADR-0001 (Sovereignty), Design Principle 21 (Mode is a
+**Traces to:** [Sovereignty](https://github.com/pentaxis93/principles/blob/main/principles/sovereignty.md) (formerly ADR-0001, now superseded), Design Principle 21 (Mode is a
 property of the session, not the operation)
 
 ## Decision
@@ -45,7 +45,7 @@ first-class clients of that same validated surface. If interactive execution
 hand-rolls operations or treats human presence as an authorization gate, the
 architecture forks: autonomous mode becomes the validated path, while
 interactive mode becomes a route around the substrate. That fork violates
-ADR-0001's sovereignty boundary because the mechanical caller begins to change
+the [Sovereignty](https://github.com/pentaxis93/principles/blob/main/principles/sovereignty.md) principle's boundary because the mechanical caller begins to change
 who owns transition authority.
 
 The request artifact is the canonical door for operator intent. It lets the

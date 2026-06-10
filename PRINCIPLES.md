@@ -1,5 +1,11 @@
 # Principles
 
+> **Canonical home:** These principles have been ascended to their
+> universal level at
+> [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
+> That corpus is the single source of truth; this file remains for
+> historical reference and link stability.
+
 Seven bedrock principles govern how the pentaxis93 ecosystem makes decisions. Architecture, contract enforcement, and contribution standards derive from these principles or are shown to conflict with them.
 
 **The [ADRs](adr/) are required reading alongside this document.** They contain the enforceable consequences that operationalize these principles. The principles describe what governs; the ADRs describe what that governance prohibits and requires in practice.

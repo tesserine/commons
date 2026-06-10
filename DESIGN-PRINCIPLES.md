@@ -1,5 +1,11 @@
 # Design Principles
 
+> **Canonical home:** These design principles have been ascended to their
+> universal level at
+> [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
+> That corpus is the single source of truth; this file remains for
+> historical reference and link stability.
+
 Engineering judgment for the ecosystem. These principles sit
 between the bedrock principles (PRINCIPLES.md) and project-specific ADRs —
 they govern how we think about code across all repos.
