@@ -77,6 +77,33 @@ Callers must also:
 - treat caller-enforced timeout as a caller-layer outcome outside this
   vocabulary
 
+## Downstream Conformance
+
+Implementations verify conformance mechanically; asserting it in prose or
+in a test name is not conformance. The pattern (following the
+[ADR-0005](adr/0005-system-conventions.md) vendoring model):
+
+1. Vendor the application-defined table into the implementing repo with
+   provenance naming an immutable URL (commit-SHA or release-tag form) of
+   this document.
+2. Add a parity test that checks the implementation's labels and codes
+   against the vendored copy — not against re-stated literals.
+3. Carry a `canonical: commons/EXIT-CODES.md` back-reference at the
+   implementation site.
+
+Worked example: runa vendors the table at
+[`runa-cli/tests/fixtures/commons-exit-codes.json`](https://github.com/tesserine/runa/blob/main/runa-cli/tests/fixtures/commons-exit-codes.json)
+and verifies its `ExitCode` enum against it; agentd back-references this
+document from its `SessionOutcome` type and socket-protocol reference, and
+documents its one caller-layer addition (`timed_out`) as outside this
+vocabulary.
+
+Changing the application-defined table is a breaking contract change:
+update this document, then file conformance re-vendoring work against each
+implementing repo (`runa`, `agentd`) in the same change set. A downstream
+copy whose provenance pin predates the change is drift, caught at review
+per ADR-0005's authoring-time conformance rule.
+
 ## Forward Compatibility
 
 Unknown-code handling is part of the contract.

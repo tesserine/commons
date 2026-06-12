@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `EXIT-CODES.md` gains a Downstream Conformance section: the vendored-table
+  + parity-test + back-reference pattern (per ADR-0005), runa and agentd as
+  worked examples, and the change procedure for the application-defined
+  table.
 - `RELEASE.md` opens with a document map fixing the non-overlapping scopes
   of the three release documents (`RELEASE.md` convention, `RELEASING.md`
   commons runbook, `ECOSYSTEM-RELEASE.md` ecosystem ceremony) and pointing
