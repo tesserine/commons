@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- README hero rewritten: commons positioned as the ecosystem's enforced
+  constitution, leading with the mechanically-checked contracts and the
+  source-of-truth map; principles correctly attributed to their canonical
+  home.
 - `scripts/release-check` ADR integrity check now exempts the
   `adr/README.md` register index from the ADR filename/numbering rules
   (with a test-harness case); `RELEASING.md`'s release-identity surface

@@ -1,10 +1,24 @@
 # commons
 
-Shared principles and standards for the Tesserine ecosystem.
+**The constitution of the Tesserine ecosystem — enforced, not aspirational.**
 
-## What this is
+Most projects have conventions that live in prose and drift in practice.
+commons is built so that drifting from the constitution *fails a test
+somewhere*: the shared exit-code contract is vendored downstream with
+provenance and verified by parity tests
+([EXIT-CODES.md § Downstream Conformance](EXIT-CODES.md#downstream-conformance)),
+the request-artifact schema is vendored with immutable provenance and a
+coherence gate ([ADR-0005](adr/0005-system-conventions.md)), and the release
+ceremony is checked by executable verifiers in every release-component repo.
 
-This repo holds the bedrock principles, design principles, and architectural decision records (ADRs) that define standards across all Tesserine components. Every repo — whether it builds infrastructure, runtime, or methodology — derives its standards from what lives here.
+This repo is the ecosystem's convention and ADR authority: cross-component
+contracts, release identity, the decision record, and —
+most importantly — the **[source-of-truth map](SOURCE-OF-TRUTH.md)**, which
+names exactly one canonical home for every shared concept and the rule that
+everyone else links rather than mirrors. When two documents disagree, the map
+says which one is wrong. The bedrock principles themselves live at their
+canonical home, [pentaxis93/principles](https://github.com/pentaxis93/principles);
+this repo carries the pointers and the decisions that trace to them.
 
 ## Ecosystem repos
 
