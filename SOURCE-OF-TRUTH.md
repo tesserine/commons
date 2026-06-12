@@ -43,6 +43,7 @@ without being a release component.
 | `groundwork` | First methodology plugin (software contribution) | yes | active |
 | `runa` | Cognitive runtime / execution engine | yes | active |
 | `gazette` | Second methodology plugin (periodical chronicle) | no | active, out-of-band |
+| `agent-protocols` | Standard for the protocol document form (canonical model + derived views); Tesserine binding recorded in [`bindings/tesserine.md`](https://github.com/tesserine/agent-protocols/blob/main/bindings/tesserine.md) | no | active, draft standard |
 | `example-hello` | Canonical integration fixture | no | active, fixture |
 | `ops` | Former operational layer | no (historical manifests only) | retired |
 

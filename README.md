@@ -30,6 +30,7 @@ The canonical roster and ownership map live in
 - **[groundwork](https://github.com/tesserine/groundwork)** — contributor methodology plugin (first methodology)
 - **[base](https://github.com/tesserine/base)** — reference container image for agent sessions
 - **[gazette](https://github.com/tesserine/gazette)** — periodical-chronicle methodology plugin (not in the ecosystem release set)
+- **[agent-protocols](https://github.com/tesserine/agent-protocols)** — draft standard for the protocol document form: one canonical model per protocol, diagrams as computed projections (not in the ecosystem release set)
 - **[example-hello](https://github.com/tesserine/example-hello)** — canonical cross-stack integration fixture
 - **[ops](https://github.com/tesserine/ops)** — retired; redirects to successor documents
 
