@@ -251,6 +251,18 @@ assert_failure_contains \
     "is not a valid JSON Schema" \
     run_in_fixture "$bad_schema" metadata
 
+adr_register="$(make_valid_fixture adr-register)"
+cat >"$adr_register/adr/README.md" <<'ADRREG'
+# ADR Register
+
+| # | Title |
+| --- | --- |
+| 0001 | First |
+ADRREG
+assert_success \
+    "metadata accepts the adr/README.md register index" \
+    run_in_fixture "$adr_register" metadata
+
 bad_adr_gap="$(make_valid_fixture bad-adr-gap)"
 mv "$bad_adr_gap/adr/0002-second.md" "$bad_adr_gap/adr/0003-third.md"
 assert_failure_contains \

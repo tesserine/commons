@@ -24,6 +24,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `scripts/release-check` ADR integrity check now exempts the
+  `adr/README.md` register index from the ADR filename/numbering rules
+  (with a test-harness case); `RELEASING.md`'s release-identity surface
+  names the exemption.
 - `README.md` contents now document `scripts/` — the verifiers, release
   tooling, test harnesses, and their Python requirements.
 - `EXIT-CODES.md` gains a Downstream Conformance section: the vendored-table

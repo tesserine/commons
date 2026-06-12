@@ -12,7 +12,8 @@ repository tag plus the source-controlled release surface at that commit:
 - `CHANGELOG.md` contains a release heading `## [X.Y.Z] — YYYY-MM-DD` or
   `## [X.Y.Z-rc.N] — YYYY-MM-DD`.
 - `adr/` contains sequential, uniquely numbered ADR files whose titles match
-  their filename numbers.
+  their filename numbers, plus the `README.md` register index (exempt from
+  the numbering check).
 - `schemas/` contains JSON Schema documents that parse as JSON and validate
   against their declared JSON Schema draft meta-schema.
 

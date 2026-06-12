@@ -141,8 +141,10 @@ check_adr_integrity() {
     local found=0
     local file base number expected_number first_line title_number
     while IFS= read -r file; do
-        found=1
         base="$(basename -- "$file")"
+        # adr/README.md is the register index, not an ADR.
+        [[ "$base" == "README.md" ]] && continue
+        found=1
         [[ "$base" =~ ^([0-9]{4})-[a-z0-9][a-z0-9-]*[.]md$ ]] \
             || die "ADR filename is malformed: adr/$base"
 
