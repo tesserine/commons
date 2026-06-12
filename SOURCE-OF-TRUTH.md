@@ -38,7 +38,7 @@ without being a release component.
 | Repo | Role | Release set | Status |
 | --- | --- | --- | --- |
 | `agentd` | Agent-session daemon (isolation, audit) | yes | active |
-| `base` | Reference container image; release shell tooling origin | yes | active |
+| `base` | Reference container image | yes | active |
 | `commons` | Ecosystem doctrine, contracts, release identity | yes | active |
 | `groundwork` | First methodology plugin (software contribution) | yes | active |
 | `runa` | Cognitive runtime / execution engine | yes | active |
@@ -61,7 +61,7 @@ manifests use the five-component release set. See
 | Request artifact | [`REQUEST.md`](REQUEST.md) + [`schemas/request/v1/`](schemas/request/v1/) | `commons` | methodologies vendor with provenance per [ADR-0005](adr/0005-system-conventions.md) |
 | Schema authority pattern | [ADR-0005](adr/0005-system-conventions.md) + [`schemas/README.md`](schemas/README.md) | `commons` | methodology-private schemas stay in their methodology |
 | Release convention | [`RELEASE.md`](RELEASE.md), [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md), ADR-0006/0010/0011/0012/0014 | `commons` | per-repo `RELEASING.md` files are thin operator runbooks that defer convention here |
-| Release shell tooling | `base/scripts/` (`release-check`, `release-cut`, `checkout-runa-ref`) | `base` | consumers adopt with provenance or declare independence; see [base/RELEASING.md](https://github.com/tesserine/base/blob/main/RELEASING.md) |
+| Release shell tooling | per-repo `scripts/release-check` + `release-cut`, each repo-owned | each release-component repo | the scripts share ancestry ([commons#21](https://github.com/tesserine/commons/issues/21)) but are deliberately independent — no repo is upstream and fixes do not propagate; ownership statement: [base RELEASING.md § Release Tooling Ownership](https://github.com/tesserine/base/blob/main/RELEASING.md#release-tooling-ownership) |
 | Ecosystem release set + manifest format | [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md) | `commons` | published manifests under [`releases/ecosystem/`](releases/ecosystem/) are the per-release record |
 | Methodology format / interface | [`runa/docs/interface-contract.md`](https://github.com/tesserine/runa/blob/main/docs/interface-contract.md) + [authoring guide](https://github.com/tesserine/runa/blob/main/docs/methodology-authoring-guide.md) | `runa` | `groundwork` and `gazette` conform; they do not extend the format |
 | Session surface (driver ↔ runa) | [`runa/docs/session-surface-contract.md`](https://github.com/tesserine/runa/blob/main/docs/session-surface-contract.md) | `runa` | drivers (agentd, operators) conform |
@@ -103,12 +103,16 @@ These are deliberately split:
 - **Convention** — what a release *is* (atomic operation, tag grammar,
   manifest identity, verification obligations) — is canonical in
   `commons` (this repo).
-- **Shell tooling** — the `release-check` / `release-cut` /
-  `checkout-runa-ref` script family — originates in `base`. Each consumer
-  repo either adopts base's tooling with a provenance header or declares
-  its implementation independent in its `RELEASING.md`.
+- **Shell tooling** — the `release-check` / `release-cut` script family is
+  **per-repo-owned**: each release-component repo implements the ceremony
+  against its own release surface. The implementations share ancestry from
+  the ceremony adoption ([commons#21](https://github.com/tesserine/commons/issues/21))
+  but are deliberately independent — no repo is the tooling upstream, and a
+  fix in one does not propagate. Each script carries a provenance header
+  stating this.
 - **Per-repo `RELEASING.md`** files are thin operator runbooks: repo-specific
-  steps plus links up to the commons convention and the tooling provenance.
+  steps plus links up to the commons convention and the tooling-ownership
+  statement in base's RELEASING.md.
 
 ## Verification
 

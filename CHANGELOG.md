@@ -24,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `RELEASE.md` opens with a document map fixing the non-overlapping scopes
+  of the three release documents (`RELEASE.md` convention, `RELEASING.md`
+  commons runbook, `ECOSYSTEM-RELEASE.md` ecosystem ceremony) and pointing
+  at the per-repo tooling-ownership statement in base.
+- `SOURCE-OF-TRUTH.md` release-tooling entries corrected to the verified
+  ownership model: release scripts are per-repo-owned implementations of
+  the commons convention (commons#21), not vendored copies of a base
+  upstream. `scripts/release-check` carries a matching provenance header.
 - `README.md` ecosystem roster now lists all eight repositories with
   their classification (release components, out-of-band methodology,
   integration fixture, retired) and defers the release-set definition to
