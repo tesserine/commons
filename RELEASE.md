@@ -1,5 +1,21 @@
 # Release Process
 
+Three release documents live in this repo with non-overlapping scopes:
+
+- **This document (`RELEASE.md`)** — the shared release *convention* for
+  Tesserine repos: the atomic release operation, tag grammar, RC discipline,
+  verification obligations, and failure modes.
+- **[`RELEASING.md`](RELEASING.md)** — the operator runbook for releasing
+  *this commons repository* specifically.
+- **[`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md)** — the *ecosystem*
+  release: manifest format, release set, integration verification, and
+  cross-repo ceremony.
+
+Per-repo `RELEASING.md` files in other repos are thin operator runbooks that
+defer to this convention. Release scripts (`release-check`/`release-cut`)
+are owned per-repo — see
+[base RELEASING.md § Release Tooling Ownership](https://github.com/tesserine/base/blob/main/RELEASING.md#release-tooling-ownership).
+
 This document describes how to cut releases and deployment release candidates
 for Tesserine repos. Stable cargo-workspace releases follow the convention
 established by [ADR-0006](adr/0006-release-discipline.md). Deployment release

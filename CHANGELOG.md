@@ -7,7 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `SOURCE-OF-TRUTH.md` — canonical ownership map naming, for every
+  ecosystem-level concept, the one repository and document that owns it,
+  the repos that link to it, the map-not-mirror rule, the vendoring
+  provenance rule, and the release convention-vs-tooling split.
+- `adr/README.md` — ADR register indexing all fifteen ADRs with status,
+  principle traces, supersession lineage, and one-line purpose.
+- `schemas/README.md` — schema index with versioning rule, vendoring
+  rule, and groundwork's `x-tesserine-canonical` provenance block as the
+  worked vendoring example.
+- `concepts/README.md` — concepts index making the exploratory,
+  non-committed status of `concepts/_drafts/cognitive-state-machine.md`
+  explicit and README-visible (tracking: commons#16).
+
 ### Changed
+
+- `scripts/release-check` ADR integrity check now exempts the
+  `adr/README.md` register index from the ADR filename/numbering rules
+  (with a test-harness case); `RELEASING.md`'s release-identity surface
+  names the exemption.
+- `README.md` contents now document `scripts/` — the verifiers, release
+  tooling, test harnesses, and their Python requirements.
+- `EXIT-CODES.md` gains a Downstream Conformance section: the vendored-table
+  + parity-test + back-reference pattern (per ADR-0005), runa and agentd as
+  worked examples, and the change procedure for the application-defined
+  table.
+- `RELEASE.md` opens with a document map fixing the non-overlapping scopes
+  of the three release documents (`RELEASE.md` convention, `RELEASING.md`
+  commons runbook, `ECOSYSTEM-RELEASE.md` ecosystem ceremony) and pointing
+  at the per-repo tooling-ownership statement in base.
+- `SOURCE-OF-TRUTH.md` release-tooling entries corrected to the verified
+  ownership model: release scripts are per-repo-owned implementations of
+  the commons convention (commons#21), not vendored copies of a base
+  upstream. `scripts/release-check` carries a matching provenance header.
+- `README.md` ecosystem roster now lists all eight repositories with
+  their classification (release components, out-of-band methodology,
+  integration fixture, retired) and defers the release-set definition to
+  `ECOSYSTEM-RELEASE.md`, reconciling the roster across README,
+  ecosystem-release docs, and published manifests.
 
 - Superseded six principle-shaped ADRs (0001–0004, 0007, 0013): replaced
   each with a pointer document to the canonical principles corpus at
