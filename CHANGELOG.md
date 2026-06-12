@@ -76,6 +76,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   verification now checks manifest identity, component tags and commits,
   release workflows, and cross-component source coherence without consulting
   any operator host artifacts.
+- `SOURCE-OF-TRUTH.md` repository roster and the `README.md` ecosystem list
+  now include `agent-protocols` (draft standard for the protocol document
+  form; not in the release set), per the map's change policy.
 
 ## [0.3.0-rc.1] — 2026-06-08
 
