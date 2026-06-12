@@ -34,6 +34,12 @@ inherit these principles by default.
 - **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository
 - **[ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md)** — ecosystem release manifest format and cross-repo verification contract
 - **[schemas/](schemas/)** — versioned JSON Schemas that are the machine-checkable realizations of canonical artifact specs; indexed in [schemas/README.md](schemas/README.md)
+- **[scripts/](scripts/)** — executable verifiers: `verify-ecosystem-manifest`
+  (validates a published ecosystem manifest; see [ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md)),
+  the commons release tooling (`release-check`, `release-cut` — see
+  [RELEASING.md](RELEASING.md)), and their test harnesses
+  (`test-ecosystem-manifest`, `test-release-check`,
+  `verify-release-adoption.sh`). Python dependencies: `pip install -r requirements.txt`.
 - **[adr/](adr/)** — architectural decision records, indexed with status and lineage in [adr/README.md](adr/README.md). Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Nine genuine decisions (0005–0006, 0008–0012, 0014–0015) remain active.
 - **[concepts/](concepts/)** — conceptual foundation documents, indexed in [concepts/README.md](concepts/README.md). Currently holds only **exploratory drafts** (`concepts/_drafts/`), which are not committed project direction.
 

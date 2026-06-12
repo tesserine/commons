@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `README.md` contents now document `scripts/` — the verifiers, release
+  tooling, test harnesses, and their Python requirements.
 - `EXIT-CODES.md` gains a Downstream Conformance section: the vendored-table
   + parity-test + back-reference pattern (per ADR-0005), runa and agentd as
   worked examples, and the change procedure for the application-defined
