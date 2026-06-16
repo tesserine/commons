@@ -113,9 +113,11 @@ Output:
 | `body` | no | string or null | Ticket body text if present. |
 | `state` | yes | string | Connector-normalized ticket state label. |
 
-The reference is not a provider coordinate list. A bare ticket number, provider
-URL, or provider-specific token may be accepted by a connector, but that
-interpretation is connector-owned.
+The reference is a deployment-local opaque identifier. It is opaque to the
+engine and methodology, carries no provider coordinates such as host,
+repository, query URL, or token, and is resolved to a provider ticket by the
+connector. That interpretation is connector-owned and is not part of this
+interface.
 
 ### `create-ticket`
 
