@@ -45,6 +45,7 @@ inherit these principles by default.
 - **[DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md)** — 21 engineering design principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
 - **[EXIT-CODES.md](EXIT-CODES.md)** — shared session-outcome exit code contract for runners and callers across the ecosystem
 - **[REQUEST.md](REQUEST.md)** — canonical contract for the request artifact, the entry point that triggers a session
+- **[FORGE-CAPABILITY.md](FORGE-CAPABILITY.md)** — canonical connector-layer contract for provider-agnostic forge operations and opaque handles
 - **[RELEASE.md](RELEASE.md)** — release process for Tesserine cargo-workspace repos, formalized by [ADR-0006](adr/0006-release-discipline.md)
 - **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository
 - **[ECOSYSTEM-RELEASE.md](ECOSYSTEM-RELEASE.md)** — ecosystem release manifest format and cross-repo verification contract
@@ -55,7 +56,7 @@ inherit these principles by default.
   [RELEASING.md](RELEASING.md)), and their test harnesses
   (`test-ecosystem-manifest`, `test-release-check`,
   `verify-release-adoption.sh`). Python dependencies: `pip install -r requirements.txt`.
-- **[adr/](adr/)** — architectural decision records, indexed with status and lineage in [adr/README.md](adr/README.md). Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Nine genuine decisions (0005–0006, 0008–0012, 0014–0015) remain active.
+- **[adr/](adr/)** — architectural decision records, indexed with status and lineage in [adr/README.md](adr/README.md). Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Ten genuine decisions (0005–0006, 0008–0012, 0014–0016) remain active.
 - **[concepts/](concepts/)** — conceptual foundation documents, indexed in [concepts/README.md](concepts/README.md). Currently holds only **exploratory drafts** (`concepts/_drafts/`), which are not committed project direction.
 
 ## Relationship to individual repos

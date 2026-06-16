@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `FORGE-CAPABILITY.md`, `schemas/forge-capability/v1/forge-capability.schema.json`,
+  and ADR-0016 establish the connector-layer architecture and the first
+  capability contract: provider-agnostic forge operations, connector-owned
+  provider coordinates and identities, opaque `{ id, display }` handles, and
+  runa tool-set union composition rules.
 - `SOURCE-OF-TRUTH.md` — canonical ownership map naming, for every
   ecosystem-level concept, the one repository and document that owns it,
   the repos that link to it, the map-not-mirror rule, the vendoring
