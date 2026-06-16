@@ -600,7 +600,7 @@
     },
     "completion": {
       "type": "object",
-      "required": ["criterion_summary", "gaps", "merge_reference", "documentation_status"],
+      "required": ["criterion_summary", "gaps", "change_reference", "documentation_status"],
       "additionalProperties": false,
       "properties": {
         "criterion_summary": {
@@ -614,7 +614,7 @@
             "minLength": 1
           }
         },
-        "merge_reference": {
+        "change_reference": {
           "type": "string",
           "minLength": 1
         },
