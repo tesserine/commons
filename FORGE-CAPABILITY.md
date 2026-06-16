@@ -16,7 +16,7 @@ configuration. A caller supplies only capability-domain data.
 
 ## Version
 
-`1.0.0`
+`1.1.0`
 
 ## Stable Identifier
 
@@ -64,6 +64,38 @@ The connector boundary is in-process. A connector contributes MCP tools to
 runa's MCP surface by providing a tool specification and handlers. Runa
 composes the union of selected tool-sets for a deployment.
 
+### Forge Work-Unit Identity
+
+A forge work-unit identity names exactly one unit of work, in exactly one
+scope, on one provider deployment. Two properties make an identity sound, and
+they are required of every connector regardless of provider:
+
+- **Complete.** The owning connector can re-target precisely that one unit from
+  the identity alone. An identity that resolves to more than one unit — or to a
+  different unit under a different deployment — is not complete.
+- **Scoped.** The identity carries the coordinate that determines which
+  deployment, tracker, or repository it belongs to. A connector must validate
+  that coordinate against its configured scope and reject a foreign-scope
+  identity **before performing any operation**, destructive operations
+  especially. A bare item number is not a scoped identity.
+
+This model is provider-agnostic. It is the contract; a provider is a
+projection of it. `github` projects the scope as `owner/repo`; `sourcehut`
+projects the scope as a tracker identifier. Neither provider defines the model,
+and the model is never derived from one provider's incidental form and patched
+toward the others.
+
+Two forms of identity cross the capability seam:
+
+- A **reference** is the caller-facing locator used to first reach a unit (the
+  input to `read-ticket`). It may carry provider coordinates. It is opaque to
+  the engine and methodology — they never parse it — but the connector resolves
+  it, and validates any coordinate it carries against the connector's
+  configured scope, rejecting a foreign scope.
+- A **handle** is the connector-issued identity returned by an operation and
+  used thereafter (the `{ id, display }` below). Its `id` is complete and
+  scoped per the properties above.
+
 ### Opaque Handle
 
 The shared handle shape is:
@@ -80,9 +112,13 @@ The handle is opaque to the engine and methodology. The engine may compare
 infer provider type, reconstruct provider coordinates, or derive provider
 identity grammar from the value.
 
-Connectors may encode whatever internal provider identity they need in `id`,
-but the encoding is a connector concern. Callers cannot construct handles
-except by receiving them from a connector operation.
+Connectors choose the `id` encoding, but it is not free: the `id` must be a
+complete, scoped identity per **Forge Work-Unit Identity** above — it encodes
+the provider scope and the item such that it re-targets exactly one work unit,
+and the connector rejects any handle whose scope differs from its configured
+scope before performing an operation. "Compared for equality only" describes
+the engine's treatment, not a licence for a non-self-contained id. Callers
+cannot construct handles except by receiving them from a connector operation.
 
 ## Operation Contract
 
@@ -113,11 +149,13 @@ Output:
 | `body` | no | string or null | Ticket body text if present. |
 | `state` | yes | string | Connector-normalized ticket state label. |
 
-The reference is a deployment-local opaque identifier. It is opaque to the
-engine and methodology, carries no provider coordinates such as host,
-repository, query URL, or token, and is resolved to a provider ticket by the
-connector. That interpretation is connector-owned and is not part of this
-interface.
+The reference is opaque to the engine and methodology: they never parse it. It
+is the caller-facing form of a forge work-unit identity (see **Forge Work-Unit
+Identity**), so it may carry provider coordinates — a deployment renders
+references in a coordinate-bearing form. The connector resolves the reference
+to a provider ticket and validates any coordinate it carries against the
+connector's configured scope, rejecting a foreign scope. The reference grammar
+and its resolution are connector-owned; the caller never needs to know them.
 
 ### `create-ticket`
 

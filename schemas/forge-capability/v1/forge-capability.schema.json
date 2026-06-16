@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Forge Capability",
-  "description": "Canonical schema for the forge capability connector tool-set and operation payloads. Version 1.0.0. commons is the spec authority; FORGE-CAPABILITY.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and FORGE-CAPABILITY.md disagree, FORGE-CAPABILITY.md is authoritative.",
+  "description": "Canonical schema for the forge capability connector tool-set and operation payloads. Version 1.1.0. commons is the spec authority; FORGE-CAPABILITY.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and FORGE-CAPABILITY.md disagree, FORGE-CAPABILITY.md is authoritative.",
   "type": "object",
   "required": ["capability", "version", "handle_schema", "tools"],
   "additionalProperties": false,
@@ -10,7 +10,7 @@
       "const": "forge"
     },
     "version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "handle_schema": {
       "const": "#/$defs/handle"
@@ -75,7 +75,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Connector-issued identity token, compared for equality only.",
+          "description": "Connector-issued identity token; compared for equality only by the engine. Must be a complete, scoped work-unit identity per FORGE-CAPABILITY.md (Forge Work-Unit Identity); the prose is authoritative.",
           "minLength": 1
         },
         "display": {
@@ -354,7 +354,7 @@
       "properties": {
         "reference": {
           "type": "string",
-          "description": "Connector-interpreted ticket reference in the active deployment.",
+          "description": "Connector-interpreted ticket reference in the active deployment; may carry provider coordinates the connector validates against its configured scope. See FORGE-CAPABILITY.md (Forge Work-Unit Identity).",
           "minLength": 1
         }
       }

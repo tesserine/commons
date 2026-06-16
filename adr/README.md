@@ -8,7 +8,7 @@ Six principle-shaped ADRs (0001–0004, 0007, 0013) are superseded: their
 content ascended to the canonical principles corpus at
 [`pentaxis93/principles`](https://github.com/pentaxis93/principles), and the
 files here are pointer documents naming each principle's canonical home.
-Ten genuine ecosystem decisions remain active.
+Eleven genuine ecosystem decisions remain active.
 
 Repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover
 repo-local scope and are not registered here.
@@ -31,6 +31,7 @@ repo-local scope and are not registered here.
 | [0014](0014-component-independent-versioning.md) | Component-Independent SemVer and Curatorial Ecosystem Release Versioning | Accepted | Sovereignty (primary), Verifiable Completion, Grounding | partially supersedes 0011 | Components version independently; the ecosystem version is curated, not aggregated |
 | [0015](0015-mode-is-a-property-of-the-session.md) | Mode Is a Property of the Session | Accepted | Sovereignty (formerly ADR-0001), Design Principle 21 | — | Autonomous and interactive execution are modes of one session, not variant session types |
 | [0016](0016-connector-layer-architecture-and-forge-capability.md) | Connector-Layer Architecture and Forge Capability | Accepted | Sovereignty (primary), Grounding | — | Methodologies bind to provider-agnostic capabilities; connectors implement provider-specific MCP tool-sets behind opaque handles |
+| [0017](0017-forge-work-unit-identity-model.md) | Forge Work-Unit Identity Model | Accepted | Grounding (primary), Single Home, Sovereignty | refines 0016 | A forge work-unit identity is complete and scoped; connectors validate scope before any effect; a provider is a projection of the model, not its source |
 
 ## Conventions
 
