@@ -60,6 +60,7 @@ manifests use the five-component release set. See
 | Ecosystem ADRs | [`adr/`](adr/) + [`adr/README.md`](adr/README.md) register | `commons` | repos cite ADRs by link; repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover repo-local scope only |
 | Exit codes | [`EXIT-CODES.md`](EXIT-CODES.md) | `commons` | `runa` and `agentd` implement and back-reference; they do not redefine |
 | Request artifact | [`REQUEST.md`](REQUEST.md) + [`schemas/request/v1/`](schemas/request/v1/) | `commons` | methodologies vendor with provenance per [ADR-0005](adr/0005-system-conventions.md) |
+| Forge capability contract | [`FORGE-CAPABILITY.md`](FORGE-CAPABILITY.md) + [`schemas/forge-capability/v1/`](schemas/forge-capability/v1/) + [ADR-0016](adr/0016-connector-layer-architecture-and-forge-capability.md) | `commons` | `runa`, forge connectors, and methodologies vendor or cite with provenance; they do not expose provider coordinates or reconstruct provider identities outside connectors |
 | Schema authority pattern | [ADR-0005](adr/0005-system-conventions.md) + [`schemas/README.md`](schemas/README.md) | `commons` | methodology-private schemas stay in their methodology |
 | Release convention | [`RELEASE.md`](RELEASE.md), [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md), ADR-0006/0010/0011/0012/0014 | `commons` | per-repo `RELEASING.md` files are thin operator runbooks that defer convention here |
 | Release shell tooling | per-repo `scripts/release-check` + `release-cut`, each repo-owned | each release-component repo | the scripts share ancestry ([commons#21](https://github.com/tesserine/commons/issues/21)) but are deliberately independent — no repo is upstream and fixes do not propagate; ownership statement: [base RELEASING.md § Release Tooling Ownership](https://github.com/tesserine/base/blob/main/RELEASING.md#release-tooling-ownership) |
@@ -68,7 +69,7 @@ manifests use the five-component release set. See
 | Session surface (driver ↔ runa) | [`runa/docs/session-surface-contract.md`](https://github.com/tesserine/runa/blob/main/docs/session-surface-contract.md) | `runa` | drivers (agentd, operators) conform |
 | Runtime implementation architecture | [`runa/ARCHITECTURE.md`](https://github.com/tesserine/runa/blob/main/ARCHITECTURE.md) | `runa` | the commons cognitive-state-machine *concept* draft is exploratory and separate (see below) |
 | Work-unit / issue methodology | [`groundwork`](https://github.com/tesserine/groundwork) (decompose protocol, work-unit-craft skill, work-unit-model) | `groundwork` | any repo doing work through the methodology follows it |
-| Forge mechanics | [`groundwork/mechanics/`](https://github.com/tesserine/groundwork/tree/main/mechanics) | `groundwork` | invariant handles in `manifest.toml`; per-forge implementations in parallel directories |
+| Current forge mechanics implementation | [`groundwork/mechanics/`](https://github.com/tesserine/groundwork/tree/main/mechanics) | `groundwork` (transitional implementation home) | current per-forge implementations remain here until the connector slices relocate provider-specific mechanics to forge connectors per [ADR-0016](adr/0016-connector-layer-architecture-and-forge-capability.md) / [commons#60](https://github.com/tesserine/commons/issues/60); the canonical forge capability contract is the row above |
 | Session execution, isolation, audit | [`agentd/ARCHITECTURE.md`](https://github.com/tesserine/agentd/blob/main/ARCHITECTURE.md) | `agentd` | — |
 | Operational runbooks (agent host) | [`agentd/docs/runbooks/`](https://github.com/tesserine/agentd/tree/main/docs/runbooks) | `agentd` | `ops` is retired and redirects there; host-specific deployment state belongs to the operator's own host repository |
 | Examples / onboarding | distributed: each repo owns its examples; `example-hello` is the canonical cross-stack integration fixture (per [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md)) | each repo | examples demonstrate, they do not redefine contracts |
@@ -94,8 +95,10 @@ and a test that enforces content parity
 ([`groundwork/tests/test_request_schema_vendoring.py`](https://github.com/tesserine/groundwork/blob/main/tests/test_request_schema_vendoring.py)).
 
 Prohibited: new mirrors of principles, exit codes, release convention,
-request schema, the ecosystem roster, methodology format, forge mechanics,
-or operational runbooks. Reduce existing duplicates to links.
+request schema, the ecosystem roster, methodology format, the forge capability
+contract, current forge mechanics implementation, or operational runbooks.
+Reduce existing duplicates to links. The ADR-0016 / commons#60 connector
+relocation is a move of provider-specific mechanics, not a new mirror.
 
 ## Release convention vs release tooling
 

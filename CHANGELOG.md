@@ -9,11 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `FORGE-CAPABILITY.md`, `schemas/forge-capability/v1/forge-capability.schema.json`,
+  and ADR-0016 establish the connector-layer architecture and the first
+  capability contract: provider-agnostic forge operations, connector-owned
+  provider coordinates and identities, opaque `{ id, display }` handles, and
+  runa tool-set union composition rules.
 - `SOURCE-OF-TRUTH.md` — canonical ownership map naming, for every
   ecosystem-level concept, the one repository and document that owns it,
   the repos that link to it, the map-not-mirror rule, the vendoring
   provenance rule, and the release convention-vs-tooling split.
-- `adr/README.md` — ADR register indexing all fifteen ADRs with status,
+- `adr/README.md` — ADR register indexing all sixteen ADRs with status,
   principle traces, supersession lineage, and one-line purpose.
 - `schemas/README.md` — schema index with versioning rule, vendoring
   rule, and groundwork's `x-tesserine-canonical` provenance block as the
@@ -58,8 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   universal level. ADR-0001 → Sovereignty; ADR-0002 → Grounding +
   Parsimony; ADR-0003 → Obligation to Dissent; ADR-0004 → Recursive
   Improvement; ADR-0007 → Evolvability (primary), Grounding, Transmission;
-  ADR-0013 → Source Repair. Nine genuine decisions (0005–0006, 0008–0012,
-  0014–0015) remain active in `adr/`.
+  ADR-0013 → Source Repair. Ten genuine decisions (0005–0006, 0008–0012,
+  0014–0016) remain active in `adr/`.
 - Added forward-pointer banners to `PRINCIPLES.md` and
   `DESIGN-PRINCIPLES.md` directing readers to `pentaxis93/principles` as
   the canonical home. Both files are retained for link stability.

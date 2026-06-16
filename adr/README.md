@@ -8,7 +8,7 @@ Six principle-shaped ADRs (0001–0004, 0007, 0013) are superseded: their
 content ascended to the canonical principles corpus at
 [`pentaxis93/principles`](https://github.com/pentaxis93/principles), and the
 files here are pointer documents naming each principle's canonical home.
-Nine genuine ecosystem decisions remain active.
+Ten genuine ecosystem decisions remain active.
 
 Repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover
 repo-local scope and are not registered here.
@@ -30,6 +30,7 @@ repo-local scope and are not registered here.
 | [0013](0013-procedure-substrate-discipline.md) | Procedure Substrate Discipline | Superseded | — | ascended → [Source Repair](https://github.com/pentaxis93/principles/blob/main/principles/source-repair.md) | Pointer to canonical principle |
 | [0014](0014-component-independent-versioning.md) | Component-Independent SemVer and Curatorial Ecosystem Release Versioning | Accepted | Sovereignty (primary), Verifiable Completion, Grounding | partially supersedes 0011 | Components version independently; the ecosystem version is curated, not aggregated |
 | [0015](0015-mode-is-a-property-of-the-session.md) | Mode Is a Property of the Session | Accepted | Sovereignty (formerly ADR-0001), Design Principle 21 | — | Autonomous and interactive execution are modes of one session, not variant session types |
+| [0016](0016-connector-layer-architecture-and-forge-capability.md) | Connector-Layer Architecture and Forge Capability | Accepted | Sovereignty (primary), Grounding | — | Methodologies bind to provider-agnostic capabilities; connectors implement provider-specific MCP tool-sets behind opaque handles |
 
 ## Conventions
 
@@ -40,4 +41,4 @@ repo-local scope and are not registered here.
   change policy).
 
 Verification: the table has one row per `adr/*.md` decision file —
-`ls adr/*.md | grep -v README | wc -l` equals the row count (15).
+`ls adr/*.md | grep -v README | wc -l` equals the row count (16).
