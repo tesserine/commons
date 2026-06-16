@@ -100,7 +100,7 @@
     },
     "tool-name": {
       "type": "string",
-      "description": "Exposed MCP tool name. The canonical name is the operation name; declared composition aliases may use another role-qualified name.",
+      "description": "Connector descriptor tool name. The exposed connector name is the canonical operation name; aliases are explicit composition-layer decisions outside this schema.",
       "minLength": 1,
       "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
     },
@@ -166,6 +166,9 @@
             "operation": {
               "const": "read-ticket"
             },
+            "name": {
+              "const": "read-ticket"
+            },
             "input_schema": {
               "const": "#/$defs/read-ticket-input"
             },
@@ -185,6 +188,9 @@
           "type": "object",
           "properties": {
             "operation": {
+              "const": "create-ticket"
+            },
+            "name": {
               "const": "create-ticket"
             },
             "input_schema": {
@@ -208,6 +214,9 @@
             "operation": {
               "const": "claim-work-unit"
             },
+            "name": {
+              "const": "claim-work-unit"
+            },
             "input_schema": {
               "const": "#/$defs/claim-work-unit-input"
             },
@@ -227,6 +236,9 @@
           "type": "object",
           "properties": {
             "operation": {
+              "const": "record-progress"
+            },
+            "name": {
               "const": "record-progress"
             },
             "input_schema": {
@@ -250,6 +262,9 @@
             "operation": {
               "const": "reflect-disposition"
             },
+            "name": {
+              "const": "reflect-disposition"
+            },
             "input_schema": {
               "const": "#/$defs/reflect-disposition-input"
             },
@@ -269,6 +284,9 @@
           "type": "object",
           "properties": {
             "operation": {
+              "const": "close-out"
+            },
+            "name": {
               "const": "close-out"
             },
             "input_schema": {
@@ -292,6 +310,9 @@
             "operation": {
               "const": "deliver-change-proposal"
             },
+            "name": {
+              "const": "deliver-change-proposal"
+            },
             "input_schema": {
               "const": "#/$defs/deliver-change-proposal-input"
             },
@@ -311,6 +332,9 @@
           "type": "object",
           "properties": {
             "operation": {
+              "const": "apply-approved-change"
+            },
+            "name": {
               "const": "apply-approved-change"
             },
             "input_schema": {
