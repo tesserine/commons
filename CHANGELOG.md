@@ -57,6 +57,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `ECOSYSTEM-RELEASE.md`, reconciling the roster across README,
   ecosystem-release docs, and published manifests.
 
+### Fixed
+
+- `scripts/verify-release-adoption.sh` now seeds release-cut adoption checks
+  with a controlled changelog fixture, so the Release Metadata workflow stays
+  green on release commits while still turning red on genuine `release-cut`
+  defects.
+
 - Superseded six principle-shaped ADRs (0001–0004, 0007, 0013): replaced
   each with a pointer document to the canonical principles corpus at
   `pentaxis93/principles`, where each principle has been ascended to its
