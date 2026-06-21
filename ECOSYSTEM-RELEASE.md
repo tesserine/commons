@@ -37,6 +37,18 @@ For `commons`, the verifier confirms the local manifest content is identical
 to the manifest published at the `commons` component tag, as required by
 ADR-0011.
 
+## Historical manifests
+
+`releases/ecosystem/v0.2.0.json` is a historical `schema_version: 1`
+six-component manifest. Its `ops v0.1.0` entry pins commit `4c399d08…`, the
+host-ful release commit that shipped at v0.2.0. The host-agnostic rewrite of
+`ops` (tesserine/ops#73) produced a different-tree `v0.1.0` commit
+(`ccc42cc…`) and re-rooted the tag onto it, and `ops` is now retired.
+Verifying v0.2.0 against live tags therefore fails on the orphaned `ops`
+reference by design: the manifest records what shipped, not the current tag
+target. v0.2.0 is superseded by the first `schema_version: 2` ecosystem
+release.
+
 ## Verification
 
 Verify a manifest with:
