@@ -29,6 +29,31 @@ run_release_cut() {
     )
 }
 
+write_release_fixture_changelog() {
+    local changelog="$1"
+
+    cat >"$changelog" <<'EOF'
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Added
+
+- Release adoption fixture notes controlled by verify-release-adoption.sh.
+
+## [0.0.1] — 2026-05-01
+
+### Added
+
+- Historical release fixture.
+EOF
+}
+
 seed_release_repo() {
     local source_repo="$1"
     local remote_repo="$2"
@@ -40,6 +65,7 @@ seed_release_repo() {
         -C "$workspace_root" \
         -cf - . \
         | tar -C "$source_repo" -xf -
+    write_release_fixture_changelog "$source_repo/CHANGELOG.md"
 
     git -C "$source_repo" init -q
     git -C "$source_repo" config user.name "commons release verification"
@@ -224,12 +250,12 @@ assert_rc_to_stable_requires_curated_notes() {
     fi
 
     python3 - "$source_repo/CHANGELOG.md" <<'PY'
+import re
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
-marker = "## [0.1.1] — "
 # Fixed date models operator-authored notes, which need not be curated today.
 section = """## [1.2.3] — 2026-05-10
 
@@ -238,10 +264,11 @@ section = """## [1.2.3] — 2026-05-10
 - Stable release notes curated by the operator.
 
 """
-if marker not in text:
+match = re.search(r"(?m)^## \[[^]]+\] — [0-9]{4}-[0-9]{2}-[0-9]{2}$", text)
+if match is None:
     print("could not find insertion point for curated stable notes", file=sys.stderr)
     sys.exit(1)
-path.write_text(text.replace(marker, section + marker, 1), encoding="utf-8")
+path.write_text(text[:match.start()] + section + text[match.start():], encoding="utf-8")
 PY
     git -C "$source_repo" add CHANGELOG.md
     git -C "$source_repo" commit -q -m "docs: curate stable release notes"
