@@ -59,6 +59,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Recorded `releases/ecosystem/v0.2.0.json` as a historical manifest in
+  `ECOSYSTEM-RELEASE.md`: its `ops v0.1.0` reference pins the pre-rewrite
+  commit that shipped, orphaned when tesserine/ops#73 re-rooted the tag, and
+  is superseded by the first `schema_version: 2` ecosystem release. Verifying
+  it against live tags fails by design; the manifest records what shipped.
+
 - `scripts/verify-release-adoption.sh` now seeds release-cut adoption checks
   with a controlled changelog fixture, so the Release Metadata workflow stays
   green on release commits while still turning red on genuine `release-cut`
