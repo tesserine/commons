@@ -109,17 +109,23 @@ The operator procedure is:
    ```
 
 4. Evaluate the agent session against the pass criteria below.
-5. If the session passes, proceed to stable publication. If it fails,
+5. Choose the intended ecosystem version under
+   [ADR-0014](adr/0014-component-independent-versioning.md). If that version
+   is minor or major, exercise the new or changed operator-facing capability
+   the release introduces, as required by
+   [ADR-0019](adr/0019-capability-specific-integration-verification.md).
+6. If integration verification passes, proceed to stable publication. If it fails,
    file substrate fix issues at the current milestone, cut the next RC, and
    retry the integration verification procedure.
 
 Stable publication is ordered by the verifier's release identity requirements:
 
-1. Choose the ecosystem version per [ADR-0014](adr/0014-component-independent-versioning.md):
-   the release author reads ecosystem-level shape (operator-facing impact,
-   substrate evolution, manifest-level change shape since the prior ecosystem
-   release) and chooses major, minor, or patch at the ecosystem layer
-   following the SemVer grammar of [ADR-0012](adr/0012-ecosystem-release-version-grammar.md).
+1. Use the ecosystem version chosen for integration verification per
+   [ADR-0014](adr/0014-component-independent-versioning.md): the release
+   author reads ecosystem-level shape (operator-facing impact, substrate
+   evolution, manifest-level change shape since the prior ecosystem release)
+   and chooses major, minor, or patch at the ecosystem layer following the
+   SemVer grammar of [ADR-0012](adr/0012-ecosystem-release-version-grammar.md).
    Component versions are not aggregated to derive the ecosystem version.
 2. Cut stable tags only for components whose own changes require a new
    component release. Components without changes keep their prior stable tag
@@ -155,6 +161,25 @@ The agent session passes only when:
   mismatches;
 - the agent delivers artifacts through the MCP tools, with no direct writes
   to `.runa/workspace/`.
+
+For minor and major ecosystem releases, stable publication also requires a
+capability-specific integration exercise of the new or changed operator-facing
+capability introduced by the release. The exercise may be automated when a
+fixture exists, or human-in-the-loop when no fixture exists yet. The
+discriminator is the ecosystem version chosen under
+[ADR-0014](adr/0014-component-independent-versioning.md): minor means
+ecosystem-level new capability, major means ecosystem-level breaking change in
+operator-facing contracts, and patch means bugfix or hardening. For patch
+ecosystem releases, the canonical fixture gate above is the complete
+integration-verification gate.
+
+The capability exercise is acid-test-coupled, per
+[ADR-0019](adr/0019-capability-specific-integration-verification.md). Friction
+that exposes a substrate defect blocks stable publication, is repaired at its
+source, and requires a new RC before retry. Friction that reveals only the next
+shape of the capability is recorded as a change-vector and does not block
+unless publishing through it would fake the pass. The exit condition is a clean
+acid-test-blocking-friction ledger: no blocking friction remains.
 
 The supporting procedure documents are:
 
