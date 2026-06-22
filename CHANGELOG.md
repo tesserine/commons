@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `concepts/README.md` — concepts index making the exploratory,
   non-committed status of `concepts/_drafts/cognitive-state-machine.md`
   explicit and README-visible (tracking: commons#16).
+- ADR-0019 and the release-process documentation gate for capability-specific
+  integration verification on minor and major ecosystem releases.
 
 ### Changed
 
@@ -56,6 +58,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   integration fixture, retired) and defers the release-set definition to
   `ECOSYSTEM-RELEASE.md`, reconciling the roster across README,
   ecosystem-release docs, and published manifests.
+- `ECOSYSTEM-RELEASE.md` now requires a capability-specific integration
+  exercise before stable publication for minor and major ecosystem releases,
+  while retaining the canonical fixture gate as the complete patch-release
+  integration gate.
 
 ### Fixed
 

@@ -15,6 +15,7 @@ on:
       - "scripts/release-check"
       - "scripts/release-cut"
       - "scripts/test-release-check"
+      - "scripts/test-release-process-docs"
       - "scripts/test-ecosystem-manifest"
       - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
@@ -34,6 +35,7 @@ on:
       - "scripts/release-check"
       - "scripts/release-cut"
       - "scripts/test-release-check"
+      - "scripts/test-release-process-docs"
       - "scripts/test-ecosystem-manifest"
       - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
@@ -67,6 +69,11 @@ jobs:
         run: |
           . .venv/bin/activate
           ./scripts/test-release-check
+
+      - name: Run release-process documentation tests
+        run: |
+          . .venv/bin/activate
+          ./scripts/test-release-process-docs
 
       - name: Run ecosystem manifest tests
         run: |

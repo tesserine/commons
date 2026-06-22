@@ -55,8 +55,9 @@ inherit these principles by default.
   the commons release tooling (`release-check`, `release-cut` — see
   [RELEASING.md](RELEASING.md)), and their test harnesses
   (`test-ecosystem-manifest`, `test-release-check`,
+  `test-release-process-docs`,
   `verify-release-adoption.sh`). Python dependencies: `pip install -r requirements.txt`.
-- **[adr/](adr/)** — architectural decision records, indexed with status and lineage in [adr/README.md](adr/README.md). Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Ten genuine decisions (0005–0006, 0008–0012, 0014–0016) remain active.
+- **[adr/](adr/)** — architectural decision records, indexed with status and lineage in [adr/README.md](adr/README.md). Six principle-shaped ADRs (0001–0004, 0007, 0013) have been superseded by the canonical corpus at `pentaxis93/principles` and replaced with pointer documents. Thirteen genuine decisions (0005–0006, 0008–0012, 0014–0019) remain active.
 - **[concepts/](concepts/)** — conceptual foundation documents, indexed in [concepts/README.md](concepts/README.md). Currently holds only **exploratory drafts** (`concepts/_drafts/`), which are not committed project direction.
 
 ## Relationship to individual repos

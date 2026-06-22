@@ -1,0 +1,151 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+
+python3 - "$workspace_root" <<'PY'
+import re
+import sys
+from pathlib import Path
+
+root = Path(sys.argv[1])
+failures: list[str] = []
+
+
+def fail(message: str) -> None:
+    failures.append(message)
+
+
+def require_contains(name: str, text: str, needle: str) -> None:
+    if needle not in text:
+        fail(f"{name} missing required text: {needle}")
+
+
+def require_prose_contains(name: str, text: str, needle: str) -> None:
+    normalized_text = re.sub(r"\s+", " ", text)
+    normalized_needle = re.sub(r"\s+", " ", needle)
+    if normalized_needle not in normalized_text:
+        fail(f"{name} missing required text: {needle}")
+
+
+adr_path = root / "adr" / "0019-capability-specific-integration-verification.md"
+if not adr_path.exists():
+    fail("adr/0019-capability-specific-integration-verification.md exists")
+    adr_text = ""
+else:
+    adr_text = adr_path.read_text(encoding="utf-8")
+
+if adr_text:
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "# ADR-0019: Capability-Specific Integration Verification",
+    )
+    require_contains("ADR-0019", adr_text, "**Status:** Accepted")
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "Verifiable Completion",
+    )
+    require_prose_contains(
+        "ADR-0019",
+        adr_text,
+        "minor or major ecosystem release requires a capability-specific integration exercise",
+    )
+    require_prose_contains(
+        "ADR-0019",
+        adr_text,
+        "patch ecosystem release does not add that exercise",
+    )
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "ADR-0014",
+    )
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "clean acid-test-blocking-friction ledger",
+    )
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "Substrate-defect friction blocks",
+    )
+    require_contains(
+        "ADR-0019",
+        adr_text,
+        "Capability-shape friction is recorded as a change-vector",
+    )
+
+register_text = (root / "adr" / "README.md").read_text(encoding="utf-8")
+require_contains("ADR register", register_text, "Thirteen genuine ecosystem decisions remain active.")
+require_contains(
+    "ADR register",
+    register_text,
+    "[0019](0019-capability-specific-integration-verification.md) | Capability-Specific Integration Verification | Accepted | Verifiable Completion (primary), Sequence, Honest Signal | extends 0011/0014 | Minor and major ecosystem releases exercise the new or changed operator-facing capability before stable publication; patch releases retain the fixture-only gate",
+)
+require_contains(
+    "ADR register",
+    register_text,
+    "Verification: the table has one row per `adr/*.md` decision file",
+)
+require_contains("ADR register", register_text, "equals the row count (19).")
+
+row_lines = [
+    line
+    for line in register_text.splitlines()
+    if re.match(r"^\| \[[0-9]{4}\]\([^)]*\.md\) \|", line)
+]
+decision_files = [
+    path
+    for path in (root / "adr").glob("*.md")
+    if path.name != "README.md"
+]
+if len(row_lines) != len(decision_files):
+    fail(
+        "ADR register row count matches decision files "
+        f"({len(row_lines)} rows, {len(decision_files)} files)"
+    )
+
+ecosystem_text = (root / "ECOSYSTEM-RELEASE.md").read_text(encoding="utf-8")
+for criterion in [
+    "the session reaches a terminal success state, rather than stopping blocked\n  mid-protocol;",
+    "the session progresses past every artifact-producing protocol's deliver\n  step without schema-validation failures from envelope or identity-in-body\n  mismatches;",
+    "the agent delivers artifacts through the MCP tools, with no direct writes\n  to `.runa/workspace/`.",
+]:
+    require_contains("ECOSYSTEM-RELEASE.md", ecosystem_text, criterion)
+
+require_prose_contains(
+    "ECOSYSTEM-RELEASE.md",
+    ecosystem_text,
+    "For minor and major ecosystem releases, stable publication also requires a capability-specific integration exercise",
+)
+require_prose_contains(
+    "ECOSYSTEM-RELEASE.md",
+    ecosystem_text,
+    "For patch ecosystem releases, the canonical fixture gate above is the complete integration-verification gate",
+)
+require_contains(
+    "ECOSYSTEM-RELEASE.md",
+    ecosystem_text,
+    "[ADR-0014](adr/0014-component-independent-versioning.md)",
+)
+require_contains(
+    "ECOSYSTEM-RELEASE.md",
+    ecosystem_text,
+    "[ADR-0019](adr/0019-capability-specific-integration-verification.md)",
+)
+require_prose_contains(
+    "ECOSYSTEM-RELEASE.md",
+    ecosystem_text,
+    "clean acid-test-blocking-friction ledger",
+)
+
+if failures:
+    for message in failures:
+        print(f"not ok - {message}", file=sys.stderr)
+    sys.exit(1)
+
+print("ok - release-process documentation contract")
+PY
