@@ -20,6 +20,29 @@ says which one is wrong. The bedrock principles themselves live at their
 canonical home, [pentaxis93/principles](https://github.com/pentaxis93/principles);
 this repo carries the pointers and the decisions that trace to them.
 
+## Foundation
+
+This repo is not free-standing: it **inherits** two upstream homes and adds the
+Tesserine layer on top — a config overlay (base + add/override), not a fresh
+constitution.
+
+- **[pentaxis93/principles](https://github.com/pentaxis93/principles)** — the
+  domain-neutral universals.
+- **[pentaxis93/commons](https://github.com/pentaxis93/commons)** — the base
+  layer of cross-cutting conventions and the
+  **[golden-rules](https://github.com/pentaxis93/commons/blob/main/golden-rules/README.md)**
+  stratum: domain-specific architectural rules, rooted in those universals.
+
+Everything here relates to that base in exactly one of three ways:
+
+- **Add** — a convention in a domain the base does not cover (EXIT-CODES, the
+  REQUEST schema, the forge-capability contract): pure extension.
+- **Override** — a domain the base covers, with a *different* value Tesserine
+  genuinely needs: an explicit, documented override.
+- **Consume** — the base value already holds for Tesserine: do **not** restate
+  it; point to the base
+  ([Single Home](https://github.com/pentaxis93/principles/blob/main/principles/single-home.md)).
+
 ## Ecosystem repos
 
 The canonical roster and ownership map live in

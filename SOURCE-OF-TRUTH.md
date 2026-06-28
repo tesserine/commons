@@ -57,6 +57,7 @@ manifests use the five-component release set. See
 | Concept | Canonical | Owner | Everyone else |
 | --- | --- | --- | --- |
 | Principles | [`pentaxis93/principles`](https://github.com/pentaxis93/principles) | external | `commons` holds redirect pointers ([PRINCIPLES.md](PRINCIPLES.md), [DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md), superseded ADRs); `groundwork/principles/` is an independent *fallback default*, not a mirror |
+| Golden rules | [`pentaxis93/commons` `golden-rules/`](https://github.com/pentaxis93/commons/blob/main/golden-rules/README.md) | external | domain-specific architectural rules rooted in the universals; this repo cites the rules it instantiates (e.g. [ADR-0016](adr/0016-connector-layer-architecture-and-forge-capability.md)) rather than restating them |
 | Ecosystem ADRs | [`adr/`](adr/) + [`adr/README.md`](adr/README.md) register | `commons` | repos cite ADRs by link; repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover repo-local scope only |
 | Repository merge & history policy | [ADR-0018](adr/0018-repository-merge-and-history-policy.md) | `commons` | every org repository conforms via its forge settings (squash-or-rebase merges, no merge commits, enforced linear history); the settings are the live configuration, the ADR is the decision and rationale |
 | Exit codes | [`EXIT-CODES.md`](EXIT-CODES.md) | `commons` | `runa` and `agentd` implement and back-reference; they do not redefine |
