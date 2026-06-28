@@ -2,6 +2,7 @@
 
 **Status:** Accepted
 **Traces to:** [Sovereignty](https://github.com/pentaxis93/principles/blob/main/principles/sovereignty.md) (primary), [Grounding](https://github.com/pentaxis93/principles/blob/main/principles/grounding.md) (secondary)
+**Instantiates:** [Architectural layers bounded by contracts](https://github.com/pentaxis93/commons/blob/main/golden-rules/README.md) — the pentaxis93 golden rule this decision realizes for the forge domain: the capability is the contract; connectors are the swappable adapters behind it.
 
 ## Decision
 
