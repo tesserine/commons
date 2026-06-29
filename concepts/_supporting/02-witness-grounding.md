@@ -154,15 +154,22 @@ is therefore no-current-warrant for broad refinement machinery, with a reserved
 case for future protocols that need refined predicates as dispatchable input
 facts.
 
-Gazette reinforces that caution. `dispatch`, `draft`, `grounding`, and `issue`
-schemas already require source trails, claim confidence, grounding verdicts,
-and published issue constraints that exclude unsupported claims
+Gazette partly reinforces that caution while also showing the boundary.
+`dispatch`, `draft`, `grounding`, and `issue` schemas already require source
+trails, claim confidence, grounding verdict structure, and published issue
+fields that preserve story, coverage, and qualified-claim shape
 [`gazette:schemas/dispatch.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
 `gazette:schemas/draft.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
 `gazette:schemas/grounding.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
 `gazette:schemas/issue.schema.json@80d167ac826acad143399b71edf273933cf4ce37`].
-Layer-2 refinement would add value only where those content predicates need to
-become named, reusable type-level evidence instead of local schema checks.
+They do not, however, schema-enforce the `publish` protocol's grounding gate:
+`issue` carries no field tying published stories to `grounding` verdicts or
+`unsupported_count`, and the protocol classifies an unsupported published
+claim as a methodological red signal not caught by schema validation
+[`gazette:protocols/publish/PROTOCOL.md@80d167ac826acad143399b71edf273933cf4ce37`].
+Layer-2 refinement would add value where content predicates or protocol
+obligations need to become named, reusable type-level evidence instead of
+local schema checks or unwitnessed protocol discipline.
 
 ## Provenance-as-Identity
 
@@ -249,12 +256,14 @@ identity.
 
 Gazette shows the positive and negative sides. `publish` composes `draft` and
 `grounding` into `issue` and `ledger`; `issue` content preserves candidate
-ids, coverage accounting, qualified claims, archive gaps, and a ban on
-unsupported published grounding
+ids, coverage accounting, qualified claims, and archive gaps, while the
+`publish` protocol separately bans unsupported published grounding as a
+methodological obligation
 [`gazette:schemas/draft.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
 `gazette:schemas/grounding.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
 `gazette:schemas/issue.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
-`gazette:schemas/ledger.schema.json@80d167ac826acad143399b71edf273933cf4ce37`].
+`gazette:schemas/ledger.schema.json@80d167ac826acad143399b71edf273933cf4ce37`;
+`gazette:protocols/publish/PROTOCOL.md@80d167ac826acad143399b71edf273933cf4ce37`].
 That content preserves enough evidence for a reader and for current workflow
 checks. It does not prove, as a general algebraic fact, that all witnesses in
 the input product survive into the output product.
