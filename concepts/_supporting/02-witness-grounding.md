@@ -29,7 +29,7 @@ inspect the same surfaces.
 | Repo | Commit | Ground used |
 | --- | --- | --- |
 | `commons` | `09961fd686744e6b28bc7c955d3e265717cdf815` | `concepts/_drafts/cognitive-state-machine.md`, `concepts/_supporting/01-artifact-protocol-audit.md`, `concepts/README.md`, `SOURCE-OF-TRUTH.md`, `FORGE-CAPABILITY.md`, `adr/0017-forge-work-unit-identity-model.md` |
-| `runa` | `7e0c2170eeb554f51f3d7fc1e99cca26082acde1` | `docs/interface-contract.md`, `docs/session-surface-contract.md`, `ARCHITECTURE.md`, `libagent/src/{store,session,enforcement,selection,context}.rs`, `runa-mcp/src/handler.rs` |
+| `runa` | `beb996ced42d525979a4a8d6e237ae7b0a4b9676` | `docs/interface-contract.md`, `docs/session-surface-contract.md`, `ARCHITECTURE.md`, `libagent/src/{store,session,enforcement,selection,context}.rs`, `runa-mcp/src/handler.rs` |
 | `groundwork` | `11f0bec0f081f03b660e2084999b55cc09edb9d2` | `manifest.toml`, `schemas/{behavior-contract,implementation-plan,test-evidence,completion-evidence,change-proposal,change-approved,change-needs-revision,work-unit}.schema.json`, scoped protocol declarations |
 | `gazette` | `80d167ac826acad143399b71edf273933cf4ce37` | `manifest.toml`, `schemas/{dispatch,draft,grounding,issue,ledger}.schema.json`, editorial protocol declarations |
 | `agent-protocols` | `b31d6dbd95fa573f0d787ab99e719fca9794239d` | `bindings/tesserine.md`, `schemas/protocol.schema.json` |
@@ -61,9 +61,9 @@ tool and enforces declared postconditions before a session advances. The output
 tool schema is derived from the artifact schema, `work_unit` is injected for
 scoped work, and postconditions require declared outputs or exactly one
 required output choice member to exist and validate
-[`runa:runa-mcp/src/handler.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/enforcement.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/session.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+[`runa:runa-mcp/src/handler.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/enforcement.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/session.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 That is real constructor discipline for the live production path.
 
 The current substrate does not make that discipline a universal inhabitation
@@ -71,10 +71,10 @@ rule. `runa scan` reconciles JSON files under `.runa/workspace/{type}/` into
 the store, and readiness uses valid artifacts from that store. A valid
 workspace artifact can therefore become an input even when its file was not
 produced by the protocol that conventionally constructs that type
-[`runa:ARCHITECTURE.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:docs/interface-contract.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/store.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/selection.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+[`runa:ARCHITECTURE.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:docs/interface-contract.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/store.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/selection.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 
 The admitted failure is concrete in groundwork. `verify` requires
 `test-evidence`, `submit` requires `completion-evidence`, and `land` requires
@@ -104,9 +104,9 @@ that a valid verdict-shaped file is present.
 The cheaper mechanism that already exists is execution recording. runa records
 freshness-relevant input snapshots per `(protocol, work_unit)` and uses those
 records to suppress reruns only when the current input set matches
-[`runa:docs/interface-contract.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/store.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/selection.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+[`runa:docs/interface-contract.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/store.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/selection.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 That closes freshness, not constructor identity. The operational case for
 Layer-2 constructor gating is therefore narrow but real: make production
 evidence part of artifact inhabitation for artifact types that downstream
@@ -147,7 +147,7 @@ future protocol must consume only gate-form contracts, `behavior-contract`
 currently gives it a valid artifact whose form must be inspected from content;
 there is no artifact type such as `gate-behavior-contract` or inhabitation fact
 the runtime can route on
-[`runa:docs/interface-contract.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
+[`runa:docs/interface-contract.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
 `groundwork:schemas/behavior-contract.schema.json@11f0bec0f081f03b660e2084999b55cc09edb9d2`].
 No current protocol in the inspected substrate needs that routing. The finding
 is therefore no-current-warrant for broad refinement machinery, with a reserved
@@ -195,15 +195,15 @@ review-round version, and a connector-issued handle. Review artifacts carry
 [`groundwork:schemas/change-proposal.schema.json@11f0bec0f081f03b660e2084999b55cc09edb9d2`;
 `groundwork:schemas/change-approved.schema.json@11f0bec0f081f03b660e2084999b55cc09edb9d2`;
 `groundwork:schemas/change-needs-revision.schema.json@11f0bec0f081f03b660e2084999b55cc09edb9d2`;
-`runa:libagent/src/context.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/selection.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+`runa:libagent/src/context.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/selection.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 The runtime can compare scope and validate content, but downstream consumers
 must still inspect fields to know which commit or review round a proposal or
 approval describes.
 
 runa's store records content hashes, schema hashes, modification timestamps,
 optional work-unit extraction, and execution-record input snapshots
-[`runa:libagent/src/store.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+[`runa:libagent/src/store.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 Those facts are strong local provenance for freshness and audit. The admitted
 gap is that they are not consulted as type identity by consumers: the type
 `completion-evidence` does not say "completion evidence for behavior contract
@@ -237,8 +237,8 @@ requires `draft`, `grounding`, `lineup`, and `beat`
 `gazette:manifest.toml@80d167ac826acad143399b71edf273933cf4ce37`].
 runa can enforce that those inputs exist and validate, and its execution
 records can preserve the input snapshot used for freshness
-[`runa:libagent/src/enforcement.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/store.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+[`runa:libagent/src/enforcement.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/store.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 That is operationally useful, but it does not construct a first-class product
 witness saying the output preserves each input's production evidence.
 
@@ -246,8 +246,8 @@ Sums appear most clearly as required output choices. Groundwork `review`
 requires exactly one of `change-approved` or `change-needs-revision`, and runa
 postconditions reject zero or multiple members
 [`groundwork:manifest.toml@11f0bec0f081f03b660e2084999b55cc09edb9d2`;
-`runa:docs/interface-contract.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
-`runa:libagent/src/enforcement.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`].
+`runa:docs/interface-contract.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
+`runa:libagent/src/enforcement.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`].
 For this case, the current cheaper mechanism is strong: the selected branch is
 preserved as the produced artifact type. A general sum-witness mechanism would
 not obviously buy much more for review unless downstream protocols need to
@@ -290,7 +290,7 @@ unless a real cross-methodology composition case needs stronger witnesses.
 2. **Constructor gating has a real admitted failure.** Valid workspace
    artifacts can participate in readiness without type-level proof that the
    declared producer protocol constructed them
-   [`runa:docs/interface-contract.md@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
+   [`runa:docs/interface-contract.md@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
    `groundwork:manifest.toml@11f0bec0f081f03b660e2084999b55cc09edb9d2`].
 3. **Refinement is not the first place to spend machinery.** JSON Schema
    conditionals, enums, separate artifact types, and required output choices
@@ -303,7 +303,7 @@ unless a real cross-methodology composition case needs stronger witnesses.
    records are concrete material that could be lifted from content or metadata
    into identity-level evidence
    [`commons:FORGE-CAPABILITY.md@09961fd686744e6b28bc7c955d3e265717cdf815`;
-   `runa:libagent/src/store.rs@7e0c2170eeb554f51f3d7fc1e99cca26082acde1`;
+   `runa:libagent/src/store.rs@beb996ced42d525979a4a8d6e237ae7b0a4b9676`;
    `groundwork:schemas/change-proposal.schema.json@11f0bec0f081f03b660e2084999b55cc09edb9d2`].
 5. **Evidence-preserving composition is a later, sharper question.** Current
    products and sums have local enforcement and content evidence; a general
