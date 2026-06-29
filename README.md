@@ -43,6 +43,15 @@ Everything here relates to that base in exactly one of three ways:
   it; point to the base
   ([Single Home](https://github.com/pentaxis93/principles/blob/main/principles/single-home.md)).
 
+This overlay is the **authority axis** of a larger structure. The full
+cross-stratum ontology of the shared-knowledge body — both hierarchies
+(authority, the inheritance chain above; and stature, the
+principle → golden-rule → convention → decision → asset gradient) and how a
+band is Added, Overridden, or Consumed at each tier — is stated authoritatively
+in
+[`pentaxis93/commons`'s `ONTOLOGY.md`](https://github.com/pentaxis93/commons/blob/main/ONTOLOGY.md).
+This section is its Tesserine instance, not a second statement of it.
+
 ## Ecosystem repos
 
 The canonical roster and ownership map live in
