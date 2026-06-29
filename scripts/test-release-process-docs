@@ -79,7 +79,7 @@ if adr_text:
     )
 
 register_text = (root / "adr" / "README.md").read_text(encoding="utf-8")
-require_contains("ADR register", register_text, "Thirteen genuine ecosystem decisions remain active.")
+require_contains("ADR register", register_text, "Twelve genuine ecosystem decisions remain active.")
 require_contains(
     "ADR register",
     register_text,
