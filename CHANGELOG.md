@@ -31,6 +31,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `PRINCIPLES.md` and `DESIGN-PRINCIPLES.md` reduced to redirect tombstones:
+  the restated principle and design-principle text — a second home of content
+  already ascended in full to the canonical corpus
+  ([`pentaxis93/principles`](https://github.com/pentaxis93/principles)) — is
+  removed, leaving a status pointer to the corpus and its per-item coverage
+  map. The files remain so existing links resolve; they now hold no principle
+  content of their own ([Single Home](https://github.com/pentaxis93/principles/blob/main/principles/single-home.md)).
+  This makes the `SOURCE-OF-TRUTH.md` "redirect pointers" description accurate.
+- README `## Foundation` now points at
+  [`pentaxis93/commons`'s `ONTOLOGY.md`](https://github.com/pentaxis93/commons/blob/main/ONTOLOGY.md)
+  as the authoritative cross-stratum ontology of the shared-knowledge body,
+  framing the Tesserine overlay as that ontology's authority-axis instance.
 - README hero rewritten: commons positioned as the ecosystem's enforced
   constitution, leading with the mechanically-checked contracts and the
   source-of-truth map; principles correctly attributed to their canonical
