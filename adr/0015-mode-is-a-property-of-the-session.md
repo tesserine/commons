@@ -27,7 +27,7 @@ produced by the methodology and validated by runa. This is the only transition
 gate, and it is identical in both modes.
 
 **Intent authority.** The operator holds intent authority. Operator intent
-enters once at the request seed, through the canonical request artifact and the
+enters once at the intent seed, through the canonical intent artifact and the
 session direction declared from it. The operator may alter or withdraw that
 intent, and the session regenerates from the changed seed. The operator is not
 inserted as a per-operation approver of conforming output.
@@ -48,7 +48,7 @@ interactive mode becomes a route around the substrate. That fork violates
 the [Sovereignty](https://github.com/pentaxis93/principles/blob/main/principles/sovereignty.md) principle's boundary because the mechanical caller begins to change
 who owns transition authority.
 
-The request artifact is the canonical door for operator intent. It lets the
+The intent artifact is the canonical door for operator intent. It lets the
 operator declare what is being asked for without becoming the owner of every
 operation the session later performs. The runtime and methodology retain
 conformance authority over transitions; the operator retains sovereignty over
@@ -68,7 +68,7 @@ modes.
 
 **Authorization is attached to authority, not mechanics.** The act that invokes
 an operation is not the source of authority. Authority comes from the
-authorized role at the correct boundary: operator intent at the request seed;
+authorized role at the correct boundary: operator intent at the intent seed;
 runtime-validated conformance at transition gates.
 
 **Conformance is the transition gate.** A transition moves when the methodology

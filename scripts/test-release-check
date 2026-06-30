@@ -116,7 +116,7 @@ make_valid_fixture() {
     local version="${2:-1.2.3}"
     local root="$scratch/$name"
 
-    mkdir -p "$root/adr" "$root/schemas/request/v1" "$root/scripts"
+    mkdir -p "$root/adr" "$root/schemas/intent/v1" "$root/scripts"
     cp "$release_check_source" "$root/scripts/release-check"
     cat >"$root/CHANGELOG.md" <<EOF
 # Changelog
@@ -144,10 +144,10 @@ EOF
 **Status:** Accepted
 EOF
 
-    cat >"$root/schemas/request/v1/request.schema.json" <<'EOF'
+    cat >"$root/schemas/intent/v1/intent.schema.json" <<'EOF'
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Request",
+  "title": "Intent",
   "type": "object",
   "required": ["description"],
   "additionalProperties": false,
@@ -239,10 +239,10 @@ assert_workflow_path_filter_contains push "releases/ecosystem/**"
 assert_workflow_path_filter_contains pull_request "releases/ecosystem/**"
 
 bad_schema="$(make_valid_fixture bad-schema)"
-cat >"$bad_schema/schemas/request/v1/request.schema.json" <<'EOF'
+cat >"$bad_schema/schemas/intent/v1/intent.schema.json" <<'EOF'
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Request",
+  "title": "Intent",
   "type": "definitely-not-a-json-schema-type"
 }
 EOF
@@ -320,10 +320,10 @@ assert_failure_contains \
     run_in_fixture "$duplicate_changelog" notes v1.2.3
 
 unknown_schema="$(make_valid_fixture unknown-schema)"
-cat >"$unknown_schema/schemas/request/v1/request.schema.json" <<'EOF'
+cat >"$unknown_schema/schemas/intent/v1/intent.schema.json" <<'EOF'
 {
   "$schema": "http://json-schema.org/draft-99/schema#",
-  "title": "Request",
+  "title": "Intent",
   "type": "object"
 }
 EOF
@@ -333,10 +333,10 @@ assert_failure_contains \
     run_in_fixture "$unknown_schema" metadata
 
 empty_schema_uri="$(make_valid_fixture empty-schema-uri)"
-cat >"$empty_schema_uri/schemas/request/v1/request.schema.json" <<'EOF'
+cat >"$empty_schema_uri/schemas/intent/v1/intent.schema.json" <<'EOF'
 {
   "$schema": "",
-  "title": "Request",
+  "title": "Intent",
   "type": "object"
 }
 EOF

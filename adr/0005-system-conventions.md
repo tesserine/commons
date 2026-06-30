@@ -9,11 +9,11 @@ commons is the spec authority for artifact types that are system-level conventio
 
 ## Context
 
-The Tesserine ecosystem has components that produce and consume the same artifact types across methodology boundaries. groundwork produces a request artifact today; agentd is being extended (agentd #81) to construct one without coupling to any specific methodology; runa orchestrates the sessions that consume it. When a producer's private schema is the only definition that exists, any methodology-agnostic consumer either couples to that producer or re-authors its own schema — either path creates drift and obscures which definition is authoritative.
+The Tesserine ecosystem has components that produce and consume the same artifact types across methodology boundaries. groundwork produces an intent artifact today; agentd constructs one without coupling to any specific methodology; runa orchestrates the sessions that consume it. When a producer's private schema is the only definition that exists, any methodology-agnostic consumer either couples to that producer or re-authors its own schema — either path creates drift and obscures which definition is authoritative.
 
 commons already plays the spec-authority role for `EXIT-CODES.md`: a shared convention that neither runners nor callers own individually. Extending this role to schematized artifacts is a natural generalization, and it surfaces a set of decisions — where canonicals live, how they version, how methodologies adopt them, what reference forms count as conformance targets — that will recur whenever a new system-level convention emerges.
 
-This ADR formalizes the pattern so future canonicalizations land consistently. The motivating instance is the request artifact, authored concurrently at `REQUEST.md` and `schemas/request/v1/request.schema.json`.
+This ADR formalizes the pattern so future canonicalizations land consistently. The motivating instance is the intent artifact, authored concurrently at `INTENT.md` and `schemas/intent/v1/intent.schema.json`.
 
 ## Consequences
 
