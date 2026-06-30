@@ -44,8 +44,8 @@ block:
 ```json
 "x-tesserine-canonical": {
   "version": "1.0.0",
-  "schema_url": "https://raw.githubusercontent.com/tesserine/commons/main/schemas/intent/v1/intent.schema.json",
-  "prose_url": "https://raw.githubusercontent.com/tesserine/commons/main/INTENT.md"
+  "schema_url": "https://raw.githubusercontent.com/tesserine/commons/5230acd0d58b99f447f5f7576e3e74f73f19759b/schemas/intent/v1/intent.schema.json",
+  "prose_url": "https://raw.githubusercontent.com/tesserine/commons/5230acd0d58b99f447f5f7576e3e74f73f19759b/INTENT.md"
 }
 ```
 
