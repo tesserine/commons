@@ -15,10 +15,6 @@
       "type": "string",
       "description": "Where this came from (operator, user report, automated detection).",
       "minLength": 1
-    },
-    "context": {
-      "type": "string",
-      "description": "Anything else the requester wants to include."
     }
   }
 }
