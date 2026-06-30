@@ -111,7 +111,7 @@ implementation.
 
 **Invocation input is agentd's concern.** The
 `.runa/workspace/<type>/<id>.json` materialized from operator
-`--request` input is agentd's write — it enters the system via the
+`--intent` input is agentd's write — it enters the system via the
 agentd CLI and is per-invocation, not part of session shape. This
 is a clean boundary straddle: runa init creates the workspace
 directory skeleton; agentd populates per-invocation files inside

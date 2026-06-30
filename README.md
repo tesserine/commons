@@ -7,7 +7,7 @@ commons is built so that drifting from the constitution *fails a test
 somewhere*: the shared exit-code contract is vendored downstream with
 provenance and verified by parity tests
 ([EXIT-CODES.md § Downstream Conformance](EXIT-CODES.md#downstream-conformance)),
-the request-artifact schema is vendored with immutable provenance and a
+the intent-artifact schema is vendored with provenance and a
 coherence gate ([ADR-0005](adr/0005-system-conventions.md)), and the release
 ceremony is checked by executable verifiers in every release-component repo.
 
@@ -76,7 +76,7 @@ inherit these principles by default.
 - **[PRINCIPLES.md](PRINCIPLES.md)** — seven bedrock principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
 - **[DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md)** — 21 engineering design principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
 - **[EXIT-CODES.md](EXIT-CODES.md)** — shared session-outcome exit code contract for runners and callers across the ecosystem
-- **[REQUEST.md](REQUEST.md)** — canonical contract for the request artifact, the entry point that triggers a session
+- **[INTENT.md](INTENT.md)** — canonical contract for the intent artifact, the operator's crystallized session seed
 - **[FORGE-CAPABILITY.md](FORGE-CAPABILITY.md)** — canonical connector-layer contract for provider-agnostic forge operations and opaque handles
 - **[RELEASE.md](RELEASE.md)** — release process for Tesserine cargo-workspace repos, formalized by [ADR-0006](adr/0006-release-discipline.md)
 - **[RELEASING.md](RELEASING.md)** — commons-specific release ceremony for this docs and schemas repository

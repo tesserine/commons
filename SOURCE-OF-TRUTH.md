@@ -61,7 +61,7 @@ manifests use the five-component release set. See
 | Ecosystem ADRs | [`adr/`](adr/) + [`adr/README.md`](adr/README.md) register | `commons` | repos cite ADRs by link; repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover repo-local scope only |
 | Repository merge & history policy | [`pentaxis93/commons` ADR-0001](https://github.com/pentaxis93/commons/blob/main/adr/0001-repository-merge-and-history-policy.md) | external | inherited from the pentaxis93 base layer; every org repository conforms via its forge settings (squash-or-rebase merges, no merge commits, enforced linear history where the plan permits); the settings are the live configuration. The retired [ADR-0018](adr/0018-repository-merge-and-history-policy.md) is a Superseded pointer to this base |
 | Exit codes | [`EXIT-CODES.md`](EXIT-CODES.md) | `commons` | `runa` and `agentd` implement and back-reference; they do not redefine |
-| Request artifact | [`REQUEST.md`](REQUEST.md) + [`schemas/request/v1/`](schemas/request/v1/) | `commons` | methodologies vendor with provenance per [ADR-0005](adr/0005-system-conventions.md) |
+| Intent artifact | [`INTENT.md`](INTENT.md) + [`schemas/intent/v1/`](schemas/intent/v1/) | `commons` | methodologies vendor with provenance per [ADR-0005](adr/0005-system-conventions.md) |
 | Forge capability contract | [`FORGE-CAPABILITY.md`](FORGE-CAPABILITY.md) + [`schemas/forge-capability/v1/`](schemas/forge-capability/v1/) + [ADR-0016](adr/0016-connector-layer-architecture-and-forge-capability.md) + [ADR-0017](adr/0017-forge-work-unit-identity-model.md) | `commons` | `runa`, forge connectors, and methodologies vendor or cite with provenance; they do not expose provider coordinates or reconstruct provider identities outside connectors |
 | Schema authority pattern | [ADR-0005](adr/0005-system-conventions.md) + [`schemas/README.md`](schemas/README.md) | `commons` | methodology-private schemas stay in their methodology |
 | Release convention | [`RELEASE.md`](RELEASE.md), [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md), ADR-0006/0010/0011/0012/0014/0019 | `commons` | per-repo `RELEASING.md` files are thin operator runbooks that defer convention here |
@@ -90,14 +90,14 @@ as **vendored artifacts with provenance**:
 - Where practical, a coherence test must fail when the copy drifts from
   its declared canonical.
 
-The exemplar to imitate: groundwork vendors the commons request schema with
+The exemplar to imitate: groundwork vendors the commons intent schema with
 an `x-tesserine-canonical` provenance block
-([`groundwork/schemas/request.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/request.schema.json))
+([`groundwork/schemas/intent.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/intent.schema.json))
 and a test that enforces content parity
-([`groundwork/tests/test_request_schema_vendoring.py`](https://github.com/tesserine/groundwork/blob/main/tests/test_request_schema_vendoring.py)).
+([`groundwork/tests/test_intent_schema_vendoring.py`](https://github.com/tesserine/groundwork/blob/main/tests/test_intent_schema_vendoring.py)).
 
 Prohibited: new mirrors of principles, exit codes, release convention,
-request schema, the ecosystem roster, methodology format, the forge capability
+intent schema, the ecosystem roster, methodology format, the forge capability
 contract, current forge mechanics implementation, or operational runbooks.
 Reduce existing duplicates to links. The ADR-0016 / commons#60 connector
 relocation is a move of provider-specific mechanics, not a new mirror.

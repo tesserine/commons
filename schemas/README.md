@@ -10,7 +10,7 @@ disagree, the schema is the defect.
 
 | Schema | Canonical prose | Versioning | Downstream vendors |
 | --- | --- | --- | --- |
-| [`request/v1/request.schema.json`](request/v1/request.schema.json) | [`REQUEST.md`](../REQUEST.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver (currently `1.0.0`) in prose header and schema description | `groundwork` ([`schemas/request.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/request.schema.json), provenance-marked, coherence-tested) |
+| [`intent/v1/intent.schema.json`](intent/v1/intent.schema.json) | [`INTENT.md`](../INTENT.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver (currently `1.0.0`) in prose header and schema description | `groundwork` ([`schemas/intent.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/intent.schema.json), provenance-marked, coherence-tested) |
 | [`forge-capability/v1/forge-capability.schema.json`](forge-capability/v1/forge-capability.schema.json) | [`FORGE-CAPABILITY.md`](../FORGE-CAPABILITY.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver (currently `1.0.0`) in prose header and schema description | none yet — downstream connector, runa, and methodology slices of the connector epic will vendor with provenance |
 | [`ecosystem-release-manifest.schema.json`](ecosystem-release-manifest.schema.json) | [`ECOSYSTEM-RELEASE.md`](../ECOSYSTEM-RELEASE.md) | internal `schema_version` field: `1` (historical six-component manifests), `2` (current five-component release set); flat placement predates ADR-0005 and is grandfathered | none — consumed in-repo by [`scripts/verify-ecosystem-manifest`](../scripts/verify-ecosystem-manifest) |
 
@@ -38,19 +38,19 @@ active methodology, never from commons.
 
 ## Worked provenance example
 
-groundwork's vendored request schema carries an `x-tesserine-canonical`
+groundwork's vendored intent schema carries an `x-tesserine-canonical`
 block:
 
 ```json
 "x-tesserine-canonical": {
   "version": "1.0.0",
-  "schema_url": "https://raw.githubusercontent.com/tesserine/commons/v0.1.1/schemas/request/v1/request.schema.json",
-  "prose_url": "https://raw.githubusercontent.com/tesserine/commons/v0.1.1/REQUEST.md"
+  "schema_url": "https://raw.githubusercontent.com/tesserine/commons/main/schemas/intent/v1/intent.schema.json",
+  "prose_url": "https://raw.githubusercontent.com/tesserine/commons/main/INTENT.md"
 }
 ```
 
 and a coherence test
-([`tests/test_request_schema_vendoring.py`](https://github.com/tesserine/groundwork/blob/main/tests/test_request_schema_vendoring.py))
+([`tests/test_intent_schema_vendoring.py`](https://github.com/tesserine/groundwork/blob/main/tests/test_intent_schema_vendoring.py))
 that fails when the vendored copy drifts from its declared canonical. New
 vendored copies imitate both halves: provenance block + drift test.
 

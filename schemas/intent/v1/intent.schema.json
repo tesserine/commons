@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Intent",
+  "description": "Canonical schema for the intent artifact — the operator's crystallized intent at the session seed. Version 1.0.0. commons is the spec authority; INTENT.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and INTENT.md disagree, INTENT.md is authoritative.",
+  "type": "object",
+  "required": ["description", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "description": {
+      "type": "string",
+      "description": "What is being asked for.",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this came from (operator, user report, automated detection).",
+      "minLength": 1
+    },
+    "references": {
+      "type": "array",
+      "description": "Typed pointers the runtime may resolve to derive the entry route.",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["kind", "ref"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["ticket", "work-unit"],
+            "description": "What kind of referent the opaque ref names."
+          },
+          "ref": {
+            "type": "string",
+            "description": "Opaque reference string. Commons does not decompose provider coordinates.",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  }
+}

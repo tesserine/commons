@@ -105,7 +105,7 @@ The operator procedure is:
 3. Run the integration test session against `tesserine/example-hello`:
 
    ```sh
-   agentd run site-builder https://github.com/tesserine/example-hello --request 'add a `greet(name)` function'
+   agentd run site-builder https://github.com/tesserine/example-hello --intent 'add a `greet(name)` function'
    ```
 
 4. Evaluate the agent session against the pass criteria below.
@@ -150,7 +150,7 @@ Stable publication is ordered by the verifier's release identity requirements:
 
 The canonical integration fixture is
 [`tesserine/example-hello`](https://github.com/tesserine/example-hello). Its
-README names the canonical request: add a `greet(name)` function.
+README names the canonical intent: add a `greet(name)` function.
 
 The agent session passes only when:
 
