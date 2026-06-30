@@ -47,7 +47,6 @@ A request is a JSON object with the following fields:
 | --- | --- | --- | --- | --- |
 | `description` | yes | string | non-empty | What is being asked for. |
 | `source` | yes | string | non-empty | Where the request originated (operator, user report, automated detection). |
-| `context` | no | string | — | Anything else the requester wants to include. |
 
 Additional properties are not permitted.
 
