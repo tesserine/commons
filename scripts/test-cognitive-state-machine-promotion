@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+  printf 'FAIL: %s\n' "$*" >&2
+  exit 1
+}
+
+doc="concepts/cognitive-state-machine.md"
+
+[[ -f "$doc" ]] || fail "$doc is missing"
+[[ ! -d concepts/_drafts ]] || fail "concepts/_drafts still exists"
+[[ ! -d concepts/_supporting ]] || fail "concepts/_supporting still exists"
+
+if rg -n '_drafts/cognitive-state-machine\.md|concepts/_drafts' SOURCE-OF-TRUTH.md concepts/README.md README.md "$doc"; then
+  fail "promoted surfaces still reference the old draft path"
+fi
+
+rg -q 'Ratified conceptual foundation' "$doc" || fail "foundation document does not declare ratified status"
+rg -q 'does not create a roadmap commitment' "$doc" || fail "foundation document does not fence roadmap commitment"
+rg -q 'No ADR is derived from this ratification' "$doc" || fail "foundation document does not state the no-ADR decision"
+rg -q 'Layer 1 is present' "$doc" || fail "foundation document does not state the grounded Layer-1 account"
+rg -q 'evented runtime over validated' "$doc" || fail "Layer-1 runtime qualifier is missing"
+rg -q 'not a pure algebraic type system' "$doc" || fail "Layer-1 algebraic qualifier is missing"
+rg -q 'cluster of separable transitions' "$doc" || fail "threshold cluster finding is missing"
+rg -q 'Layer 3 is not currently operational' "$doc" || fail "Layer-3 non-operational finding is missing"
+
+rg -q '\(cognitive-state-machine\.md\)' concepts/README.md || fail "concepts index does not point to promoted concept"
+rg -q 'Ratified conceptual foundation' concepts/README.md || fail "concepts index does not mark the concept ratified"
+rg -q '\(concepts/cognitive-state-machine\.md\)' SOURCE-OF-TRUTH.md || fail "source-of-truth map does not point to promoted concept"
+rg -q 'ratified conceptual foundation' SOURCE-OF-TRUTH.md || fail "source-of-truth map does not mark the concept ratified"
+rg -q 'cognitive-state-machine concept' README.md || fail "README contents do not reflect the promoted concept"
