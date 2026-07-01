@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Intent",
-  "description": "Canonical schema for the intent artifact — the operator's crystallized intent at the session seed. Version 1.0.0. commons is the spec authority; INTENT.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and INTENT.md disagree, INTENT.md is authoritative.",
+  "description": "Canonical schema for the intent artifact -- the operator's crystallized intent at the session seed. Version 1.0.0. commons is the spec authority; schemas/intent/v1/INTENT.md carries the retained v1 governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and schemas/intent/v1/INTENT.md disagree, schemas/intent/v1/INTENT.md is authoritative.",
   "type": "object",
   "required": ["description", "source"],
   "additionalProperties": false,

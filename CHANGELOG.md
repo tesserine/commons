@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   `schemas/intent/v2/intent.schema.json`: `description` becomes
   `statement`, typed `references` are removed, optional opaque `target` is
   added, and `INTENT.md` now points conformance guidance at the v2 schema
-  while retaining v1 for existing consumers.
+  while retaining v1 schema and prose authority for existing consumers.
 - `PRINCIPLES.md` and `DESIGN-PRINCIPLES.md` reduced to redirect tombstones:
   the restated principle and design-principle text — a second home of content
   already ascended in full to the canonical corpus
