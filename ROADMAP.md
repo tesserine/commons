@@ -105,8 +105,8 @@ flowchart TB
         direction TB
         q5_492["groundwork#492<br/>keystone: the one contract machine"]:::landed
         q5_493["groundwork#493<br/>the skill states the uniform form<br/>(doctrine corrected by #498)"]:::landed
-        q5_494["groundwork#494<br/>pipeline carries the contract;<br/>conformance pins symmetry"]:::ready
-        q5_495["groundwork#495<br/>documentation first-class"]:::open
+        q5_494["groundwork#494<br/>pipeline carries the contract;<br/>conformance pins symmetry"]:::landed
+        q5_495["groundwork#495<br/>documentation first-class"]:::ready
         q5_485["groundwork#485<br/>code quality first-class"]:::open
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
@@ -196,10 +196,14 @@ dead.
   #498 (teeth on every dimension the change has — correcting #493's doctrine that
   structural symmetry alone had let license a silent/pointer-covered dimension,
   now removed from all four authoring surfaces) have **landed**. The leveling set
-  finishes with three sequenced landings — **#494 → #495 → #485** (pipeline +
+  lands as three sequenced landings — **#494 → #495 → #485** (pipeline +
   conformance, which also enforces #498's invariant; then documentation; then
-  code quality) — edge rationale recorded on groundwork#484 (2026-07-02). The
-  runtime persist half split out of #494 to **runa#225**, off the M1 gate. **The
+  code quality) — edge rationale recorded on groundwork#484 (2026-07-02).
+  **#494 has landed** (PR #508, squash `c21e0bf5`, 2026-07-02): the pipeline
+  schemas key off contract criteria by `criterion_id`, the criterion-join
+  detector serves every dimension, and the conformance tests pin symmetry.
+  **#495 is the live front.** The runtime persist half split out of #494 to
+  **runa#225**, off the M1 gate. **The
   leveling set gates M1 integration verification (commons#50)** by operator
   decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
   deferred off the M1 path.
@@ -233,10 +237,10 @@ Four units are unblocked and craftable this moment:
   should exercise the corrected symmetric contract, so the leveling set
   lands first — sequencing relative to it is the operator's call.
 - **runa#153** — decompose the cycling capstone against the live substrate.
-- **groundwork#494** — the pipeline carries the uniform contract; conformance
-  pins symmetry — and enforces #498's teeth-per-dimension invariant. First of
-  the sequenced leveling landings (#494 → #495 → #485; rationale on
-  groundwork#484); #495 and #485 come ready as each predecessor lands.
+- **groundwork#495** — documentation becomes a first-class evidenced
+  dimension, against #494's landed uniform mechanism. Second of the sequenced
+  leveling landings (#494 ✅ → #495 → #485; rationale on groundwork#484);
+  #485 comes ready when this lands.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
 
 Everything else is either landed, gated on an upstream quest, or work named in
