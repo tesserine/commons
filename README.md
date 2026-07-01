@@ -72,6 +72,7 @@ inherit these principles by default.
 
 ## Contents
 
+- **[ROADMAP.md](ROADMAP.md)** — the program-line map (quest map): the feature lines that build the Tesserine system, their work units, the dependency stack, and each line's progress — one legible Mermaid document over the trackers. Realizes epic [#85](https://github.com/tesserine/commons/issues/85).
 - **[SOURCE-OF-TRUTH.md](SOURCE-OF-TRUTH.md)** — canonical ownership map: which repository and document owns each ecosystem-level concept
 - **[PRINCIPLES.md](PRINCIPLES.md)** — seven bedrock principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
 - **[DESIGN-PRINCIPLES.md](DESIGN-PRINCIPLES.md)** — 21 engineering design principles (historical). Canonical home: [`pentaxis93/principles`](https://github.com/pentaxis93/principles).
