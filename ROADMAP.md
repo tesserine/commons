@@ -106,8 +106,8 @@ flowchart TB
         q5_492["groundwork#492<br/>keystone: the one contract machine"]:::landed
         q5_493["groundwork#493<br/>the skill states the uniform form<br/>(doctrine corrected by #498)"]:::landed
         q5_494["groundwork#494<br/>pipeline carries the contract;<br/>conformance pins symmetry"]:::landed
-        q5_495["groundwork#495<br/>documentation first-class"]:::ready
-        q5_485["groundwork#485<br/>code quality first-class"]:::open
+        q5_495["groundwork#495<br/>documentation first-class"]:::landed
+        q5_485["groundwork#485<br/>code quality first-class"]:::ready
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
         q5_492 --> q5_493
@@ -202,7 +202,11 @@ dead.
   **#494 has landed** (PR #508, squash `c21e0bf5`, 2026-07-02): the pipeline
   schemas key off contract criteria by `criterion_id`, the criterion-join
   detector serves every dimension, and the conformance tests pin symmetry.
-  **#495 is the live front.** The runtime persist half split out of #494 to
+  **#495 has landed** (PR #509, squash `98d1f158`, 2026-07-02): the canonical
+  exemplar's documentation criterion is a user-pillar audience outcome, the
+  three recipient pillars are machine-touched exemplar criteria, and a hollow
+  documentation criterion fails the shared warranted check — all pinned by
+  focused conformance. **#485 is the live front.** The runtime persist half split out of #494 to
   **runa#225**, off the M1 gate. **The
   leveling set gates M1 integration verification (commons#50)** by operator
   decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
@@ -237,10 +241,10 @@ Five units are unblocked and craftable this moment:
   should exercise the corrected symmetric contract, so the leveling set
   lands first — sequencing relative to it is the operator's call.
 - **runa#153** — decompose the cycling capstone against the live substrate.
-- **groundwork#495** — documentation becomes a first-class evidenced
-  dimension, against #494's landed uniform mechanism. Second of the sequenced
-  leveling landings (#494 ✅ → #495 → #485; rationale on groundwork#484);
-  #485 comes ready when this lands.
+- **groundwork#485** — code quality becomes a first-class evidenced
+  dimension, against the landed uniform mechanism and documentation's exemplar
+  pattern. Last of the sequenced leveling landings (#494 ✅ → #495 ✅ → #485;
+  rationale on groundwork#484); the leveling set completes when this lands.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
 - **groundwork#504** — protocol artifact prose matches the enforced schema: the
   prose-is-projection ADR + the schema-conformance gate that closes the class.
