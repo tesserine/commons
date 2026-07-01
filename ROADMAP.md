@@ -86,9 +86,9 @@ flowchart TB
         q3_61["commons#61<br/>forge capability +<br/>connector contract (L0)"]:::landed
         q3_203["runa#203<br/>MCP surface composes connectors;<br/>github + sourcehut native"]:::landed
         q3_440["groundwork#440<br/>methodology declares + consumes<br/>the forge capability"]:::landed
-        q3_ret["⟨retire forge-address dyad +<br/>engine forge-modeling⟩ · next to craft"]:::open
+        q3_226["runa#226<br/>retire forge-address dyad +<br/>engine forge-modeling"]:::ready
         q3_rel["⟨terminal release —<br/>capability seal⟩ · not yet filed"]:::open
-        q3_61 --> q3_203 --> q3_440 --> q3_ret --> q3_rel
+        q3_61 --> q3_203 --> q3_440 --> q3_226 --> q3_rel
     end
 
     %% ================= QUEST 4: session composition (host) =================
@@ -179,8 +179,9 @@ dead.
   provides it over one provider, the agent receives it as native MCP tools.
   The L0 contract (#61), the runa surface with both provider connectors
   (runa#203), and the methodology's consumption (groundwork#440) have all
-  **landed**. Next to craft: retiring the forge-address dyad and engine
-  forge-modeling; then the capability-seal release.
+  **landed**. Next up: **runa#226** (retire the forge-address dyad and engine
+  forge-modeling) is filed and ready; then the capability-seal release, still
+  ⟨not yet filed⟩ and gated on #226.
 - **session composition** (agentd#87) is the **host** the cycle runs in
   (ADR-0008: agentd composes the runtime; runa owns `.runa/`). Its engineering
   is **landed** across all three repos (runa#138, agentd#88, ops#2). The
@@ -224,7 +225,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Three units are unblocked and craftable this moment:
+Four units are unblocked and craftable this moment:
 
 - **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
   routes, to a landed change); every drawn predecessor is landed. Recorded
@@ -236,6 +237,7 @@ Three units are unblocked and craftable this moment:
   pins symmetry — and enforces #498's teeth-per-dimension invariant. First of
   the sequenced leveling landings (#494 → #495 → #485; rationale on
   groundwork#484); #495 and #485 come ready as each predecessor lands.
+- **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
