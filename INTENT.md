@@ -13,32 +13,38 @@ methodology.
 
 ## Version
 
-`1.0.0`
+`2.0.0`
 
 ## Stable identifier
 
 Two reference forms exist and serve different purposes:
 
-- **Navigation (mutable).** `https://raw.githubusercontent.com/tesserine/commons/main/schemas/intent/v1/intent.schema.json`.
+- **Navigation (mutable).** `https://raw.githubusercontent.com/tesserine/commons/main/schemas/intent/v2/intent.schema.json`.
   Useful for humans browsing the current authoritative version. Not
   acceptable as a conformance target: `main` moves.
 - **Conformance (immutable).** Either a commit-SHA URL
-  (`https://raw.githubusercontent.com/tesserine/commons/<commit-sha>/schemas/intent/v1/intent.schema.json`)
+  (`https://raw.githubusercontent.com/tesserine/commons/<commit-sha>/schemas/intent/v2/intent.schema.json`)
   or a release-tag URL
-  (`https://raw.githubusercontent.com/tesserine/commons/<release-tag>/schemas/intent/v1/intent.schema.json`).
+  (`https://raw.githubusercontent.com/tesserine/commons/<release-tag>/schemas/intent/v2/intent.schema.json`).
   These URLs are schematic; provenance and conformance claims must replace
   the placeholder token with a real immutable identifier. Methodology
   vendoring provenance and cross-repo conformance claims must use an
   immutable form; a conformance claim against a moving target is not a
   conformance claim.
 
-The versioned path segment (`schemas/intent/v1/...`) is the major-version
-URL-stability boundary described by ADR-0005: once published, `v1` keeps
-the same identity and location. Minor and patch releases may evolve the
-content in place only through additive optional fields and clarifications
-that do not break a conforming consumer. Breaking changes go to a new
-directory. Conformance claims pin to a full semver such as `1.0.0`, not
-to the major version alone.
+The versioned path segment (`schemas/intent/v2/...`) is the major-version
+URL-stability boundary described by ADR-0005: once published, each `vN`
+keeps the same identity and location. Minor and patch releases may evolve
+the content in place only through additive optional fields and
+clarifications that do not break a conforming consumer. Breaking changes
+go to a new directory. Conformance claims pin to a full semver such as
+`2.0.0`, not to the major version alone.
+
+Version `2.0.0` is a major-version break from `1.0.0`: `description`
+became `statement`, `references` was removed, and optional `target` was
+added as an opaque locator. The `v1/` schema remains published for existing
+consumers; consumers migrate by declaring conformance to `2.0.0` and the
+`v2/` schema.
 
 ## Contract
 
@@ -46,23 +52,16 @@ An intent is a JSON object with the following fields:
 
 | Field | Required | Type | Constraints | Meaning |
 | --- | --- | --- | --- | --- |
-| `description` | yes | string | non-empty | What is being asked for. |
+| `statement` | yes | string | non-empty | The operator's statement of intent. |
 | `source` | yes | string | non-empty | Where the intent originated (operator, user report, automated detection). |
-| `references` | no | array of reference objects | non-empty when present | Typed pointers the runtime may resolve to derive the entry route. |
-
-Each `references` entry is an object with the following fields:
-
-| Field | Required | Type | Constraints | Meaning |
-| --- | --- | --- | --- | --- |
-| `kind` | yes | string | one of `ticket`, `work-unit` | What kind of referent `ref` names. |
-| `ref` | yes | string | non-empty | Opaque reference string. Commons does not decompose provider coordinates. |
+| `target` | no | string | non-empty when present | Opaque locator for what the intent is aimed at. Deployment entry-resolution interprets it. |
 
 Additional properties are not permitted.
 
 ## Machine-checkable schema
 
 The authoritative JSON Schema for this contract lives at
-[`schemas/intent/v1/intent.schema.json`](schemas/intent/v1/intent.schema.json).
+[`schemas/intent/v2/intent.schema.json`](schemas/intent/v2/intent.schema.json).
 The authoritative schema intentionally omits `$id`; machine identity for
 this canonical lives in immutable provenance and conformance references,
 not in embedded schema metadata.
