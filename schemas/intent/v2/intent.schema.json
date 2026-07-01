@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Intent",
+  "description": "Canonical schema for the intent artifact -- the operator's crystallized intent at the session seed. Version 2.0.0. commons is the spec authority; INTENT.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and INTENT.md disagree, INTENT.md is authoritative.",
+  "type": "object",
+  "required": ["statement", "source"],
+  "additionalProperties": false,
+  "properties": {
+    "statement": {
+      "type": "string",
+      "description": "The operator's statement of intent.",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "description": "Where this came from (operator, user report, automated detection).",
+      "minLength": 1
+    },
+    "target": {
+      "type": "string",
+      "description": "Optional opaque locator for what the intent is aimed at.",
+      "minLength": 1
+    }
+  }
+}

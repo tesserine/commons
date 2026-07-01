@@ -4,13 +4,16 @@ Machine-checkable realizations of commons' canonical artifact specs. The
 governing pattern is [ADR-0005](../adr/0005-system-conventions.md): a
 canonical is a *pair* — a prose authority at repo root plus a versioned
 JSON Schema here. The prose is authoritative; when prose and schema
-disagree, the schema is the defect.
+disagree, the schema is the defect. The repo-root prose names the current
+major version; retained majors keep version-local prose when the root
+contract advances.
 
 ## Index
 
 | Schema | Canonical prose | Versioning | Downstream vendors |
 | --- | --- | --- | --- |
-| [`intent/v1/intent.schema.json`](intent/v1/intent.schema.json) | [`INTENT.md`](../INTENT.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver (currently `1.0.0`) in prose header and schema description | `groundwork` ([`schemas/intent.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/intent.schema.json), provenance-marked, coherence-tested) |
+| [`intent/v1/intent.schema.json`](intent/v1/intent.schema.json) | [`intent/v1/INTENT.md`](intent/v1/INTENT.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver `1.0.0`; retained for existing consumers | `groundwork` ([`schemas/intent.schema.json`](https://github.com/tesserine/groundwork/blob/main/schemas/intent.schema.json), provenance-marked, coherence-tested) |
+| [`intent/v2/intent.schema.json`](intent/v2/intent.schema.json) | [`INTENT.md`](../INTENT.md) | ADR-0005 layout: major version in the directory (`v2/`), full semver (currently `2.0.0`) in prose header and schema description | none yet — consumers migrate under their own units |
 | [`forge-capability/v1/forge-capability.schema.json`](forge-capability/v1/forge-capability.schema.json) | [`FORGE-CAPABILITY.md`](../FORGE-CAPABILITY.md) | ADR-0005 layout: major version in the directory (`v1/`), full semver (currently `1.0.0`) in prose header and schema description | none yet — downstream connector, runa, and methodology slices of the connector epic will vendor with provenance |
 | [`ecosystem-release-manifest.schema.json`](ecosystem-release-manifest.schema.json) | [`ECOSYSTEM-RELEASE.md`](../ECOSYSTEM-RELEASE.md) | internal `schema_version` field: `1` (historical six-component manifests), `2` (current five-component release set); flat placement predates ADR-0005 and is grandfathered | none — consumed in-repo by [`scripts/verify-ecosystem-manifest`](../scripts/verify-ecosystem-manifest) |
 
