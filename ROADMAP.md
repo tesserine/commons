@@ -64,8 +64,8 @@ flowchart TB
         q1_154["agentd#154<br/>one intake arm"]:::landed
         q1_217["runa#217<br/>seed target · --ticket retired"]:::landed
         q1_218["runa#218<br/>route derived from intent.target"]:::landed
-        q1_152["agentd#152<br/>wish authors the flat intent"]:::ready
-        q1_499["groundwork#499<br/>acquisition surface reachable<br/>at cold-start entry"]:::ready
+        q1_152["agentd#152<br/>wish authors the flat intent"]:::landed
+        q1_499["groundwork#499<br/>acquisition surface reachable<br/>at cold-start entry"]:::landed
         q1_97 --> q1_490
         q1_490 --> q1_154 --> q1_152
         q1_490 --> q1_217 --> q1_152
@@ -127,7 +127,7 @@ flowchart TB
     BO66["babbie-ops#66 ✓<br/>clean-room converge (pentaxis93)"]:::landed --> BO67
     q1_152 --> BO67
     q1_499 --> BO67
-    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::blocked --> M1INT
+    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::ready --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
@@ -153,14 +153,16 @@ dead.
 
 - **wish / unified intent** (agentd#152) is the **whole entry gesture**: the
   operator wishes; the system receives a flat, conforming `intent`
-  (`{statement, target?, source}`) and derives everything else from state. Its
-  upstream landing set (commons#97 → groundwork#490 → agentd#154 →
-  runa#217/#218) has **landed**. Two units complete the gesture, both ready:
-  **agentd#152** (the verb that authors the seed) and **groundwork#499** (the
-  methodology's acquisition surface reachable at cold-start, so a *targeted*
-  intent materializes its work-unit — operator decision 2026-07-01: every
-  entry route the shipped surface exposes is exercised end-to-end before
-  publication). Both feed the full-stack acceptance.
+  (`{statement, target?, source}`) and derives everything else from state. The
+  quest's unit set is **fully landed**: the upstream landing set (commons#97 →
+  groundwork#490 → agentd#154 → runa#217/#218), the verb **agentd#152**
+  (`agentd wish` authors the flat seed; PR #156 → `dd565a72`), and
+  **groundwork#499** (the methodology's acquisition surface reachable at
+  cold-start, so a *targeted* intent materializes its work-unit). Both
+  terminal units feed the full-stack acceptance, now unblocked. The
+  capability ships at M1; operator decision 2026-07-01 stands: every entry
+  route the shipped surface exposes is exercised end-to-end before
+  publication.
 - **autonomous cycling** (runa#152) is the **capstone** — the runtime layer
   that consumes the seed and drives the take→…→land cascade to completion
   without an operator between intent and done. It runs its forge operations
@@ -218,12 +220,13 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Six units are unblocked and craftable this moment:
+Five units are unblocked and craftable this moment:
 
-- **agentd#152** — wish authors the flat unified intent (whole upstream set
-  landed). *In relay.*
-- **groundwork#499** — the acquisition surface reachable at cold-start entry
-  (the targeted route's methodology half). *In relay.*
+- **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
+  routes, to a landed change); every drawn predecessor is landed. Recorded
+  consideration (operator decision B, 2026-07-01, on the issue): the cascade
+  should exercise the corrected symmetric contract, so the leveling set
+  lands first — sequencing relative to it is the operator's call.
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **groundwork#494** — the pipeline carries the uniform contract; conformance
   pins symmetry — and enforces #498's teeth-per-dimension invariant.
