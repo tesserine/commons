@@ -104,11 +104,11 @@ flowchart TB
     subgraph Q5["⚖️ QUEST · uniform contract machine — every dimension first-class · groundwork#484"]
         direction TB
         q5_492["groundwork#492<br/>keystone: the one contract machine"]:::landed
-        q5_493["groundwork#493<br/>the skill states the uniform form"]:::landed
+        q5_493["groundwork#493<br/>the skill states the uniform form<br/>(doctrine corrected by #498)"]:::landed
         q5_494["groundwork#494<br/>pipeline carries the contract;<br/>conformance pins symmetry"]:::ready
         q5_485["groundwork#485<br/>code quality first-class"]:::ready
         q5_495["groundwork#495<br/>documentation first-class"]:::ready
-        q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::ready
+        q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
@@ -186,13 +186,16 @@ dead.
 - **uniform contract machine** (groundwork#484) is the **cascade's contract
   spine**: one contract surface, one evidence surface, one detectability
   mechanism — behavior, documentation, and code quality symmetric citizens,
-  criteria typed executable-or-attested, teeth mandatory. The keystone (#492)
-  and the skill's uniform form (#493) have **landed**; the leveling set
-  completes with #494 (pipeline + conformance), #485 (code quality), #495
-  (documentation), and #498 (teeth on every dimension the change has,
-  correcting #493's doctrine) — all ready. **The leveling set gates M1
-  integration verification (commons#50)** by operator decision (2026-07-01);
-  the enrichments (#486/#487/#488) are deliberately deferred off the M1 path.
+  criteria typed executable-or-attested, teeth mandatory. The **contract-doctrine
+  layer is complete**: the keystone (#492), the skill's uniform form (#493), and
+  #498 (teeth on every dimension the change has — correcting #493's doctrine that
+  structural symmetry alone had let license a silent/pointer-covered dimension,
+  now removed from all four authoring surfaces) have **landed**. The leveling set
+  finishes with #494 (pipeline + conformance — which also enforces #498's
+  invariant), #485 (code quality), and #495 (documentation), all ready. **The
+  leveling set gates M1 integration verification (commons#50)** by operator
+  decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
+  deferred off the M1 path.
 
 ## Release sequencing
 
@@ -215,7 +218,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Seven units are unblocked and craftable this moment:
+Six units are unblocked and craftable this moment:
 
 - **agentd#152** — wish authors the flat unified intent (whole upstream set
   landed). *In relay.*
@@ -223,11 +226,9 @@ Seven units are unblocked and craftable this moment:
   (the targeted route's methodology half). *In relay.*
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **groundwork#494** — the pipeline carries the uniform contract; conformance
-  pins symmetry.
+  pins symmetry — and enforces #498's teeth-per-dimension invariant.
 - **groundwork#485** — code quality becomes a first-class evidenced dimension.
 - **groundwork#495** — documentation becomes a first-class evidenced dimension.
-- **groundwork#498** — every dimension the change has carries teeth-bearing
-  criteria.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
