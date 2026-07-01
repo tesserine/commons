@@ -229,7 +229,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Four units are unblocked and craftable this moment:
+Five units are unblocked and craftable this moment:
 
 - **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
   routes, to a landed change); every drawn predecessor is landed. Recorded
@@ -242,6 +242,11 @@ Four units are unblocked and craftable this moment:
   leveling landings (#494 ✅ → #495 → #485; rationale on groundwork#484);
   #485 comes ready when this lands.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
+- **groundwork#504** — protocol artifact prose matches the enforced schema: the
+  prose-is-projection ADR + the schema-conformance gate that closes the class.
+  First unit (layer 0) of the methodology-quality line **groundwork#503**;
+  **off the M1 path** — operator decision 2026-07-02: a parallel pick, the
+  leveling set keeps the M1 lever. #505–#507 come ready when it lands.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
