@@ -103,6 +103,7 @@ flowchart TB
 
     %% ============================ CONVERGENCE / RELEASE ===============================
     Q2 == "ships as v0.2.0" ==> M1REL
+    GWACQ["groundwork#499<br/>acquisition surface reachable<br/>at cold-start entry"]:::ready --> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish<br/>commons#48 — ecosystem release manifest"]:::gate
 ```
