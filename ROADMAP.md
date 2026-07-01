@@ -106,15 +106,17 @@ flowchart TB
         q5_492["groundwork#492<br/>keystone: the one contract machine"]:::landed
         q5_493["groundwork#493<br/>the skill states the uniform form<br/>(doctrine corrected by #498)"]:::landed
         q5_494["groundwork#494<br/>pipeline carries the contract;<br/>conformance pins symmetry"]:::ready
-        q5_485["groundwork#485<br/>code quality first-class"]:::ready
-        q5_495["groundwork#495<br/>documentation first-class"]:::ready
+        q5_495["groundwork#495<br/>documentation first-class"]:::open
+        q5_485["groundwork#485<br/>code quality first-class"]:::open
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
+        q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
-        q5_492 --> q5_485
-        q5_492 --> q5_495
         q5_493 --> q5_498
+        q5_494 --> q5_495
+        q5_495 --> q5_485
+        q5_494 --> q5_225
     end
 
     %% ================= THE STACK =================
@@ -193,8 +195,10 @@ dead.
   #498 (teeth on every dimension the change has — correcting #493's doctrine that
   structural symmetry alone had let license a silent/pointer-covered dimension,
   now removed from all four authoring surfaces) have **landed**. The leveling set
-  finishes with #494 (pipeline + conformance — which also enforces #498's
-  invariant), #485 (code quality), and #495 (documentation), all ready. **The
+  finishes with three sequenced landings — **#494 → #495 → #485** (pipeline +
+  conformance, which also enforces #498's invariant; then documentation; then
+  code quality) — edge rationale recorded on groundwork#484 (2026-07-02). The
+  runtime persist half split out of #494 to **runa#225**, off the M1 gate. **The
   leveling set gates M1 integration verification (commons#50)** by operator
   decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
   deferred off the M1 path.
@@ -220,7 +224,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Five units are unblocked and craftable this moment:
+Three units are unblocked and craftable this moment:
 
 - **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
   routes, to a landed change); every drawn predecessor is landed. Recorded
@@ -229,9 +233,9 @@ Five units are unblocked and craftable this moment:
   lands first — sequencing relative to it is the operator's call.
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **groundwork#494** — the pipeline carries the uniform contract; conformance
-  pins symmetry — and enforces #498's teeth-per-dimension invariant.
-- **groundwork#485** — code quality becomes a first-class evidenced dimension.
-- **groundwork#495** — documentation becomes a first-class evidenced dimension.
+  pins symmetry — and enforces #498's teeth-per-dimension invariant. First of
+  the sequenced leveling landings (#494 → #495 → #485; rationale on
+  groundwork#484); #495 and #485 come ready as each predecessor lands.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
