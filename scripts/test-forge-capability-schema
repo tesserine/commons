@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+"""Validate the canonical forge-capability v1 schema against its contract fixtures."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+
+import jsonschema
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+SCHEMA_PATH = (
+    REPO_ROOT / "schemas" / "forge-capability" / "v1" / "forge-capability.schema.json"
+)
+
+
+def load_schema() -> dict:
+    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+
+
+def assert_valid(validator: jsonschema.Validator, document: dict) -> None:
+    validator.validate(document)
+
+
+def assert_invalid(validator: jsonschema.Validator, document: dict, label: str) -> None:
+    try:
+        validator.validate(document)
+    except jsonschema.ValidationError:
+        return
+    raise AssertionError(f"{label} unexpectedly validated")
+
+
+def assert_contract_shape(schema: dict) -> None:
+    assert schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema"
+    assert schema.get("title") == "Forge Capability"
+    assert "Version 1.2.0" in schema.get("description", "")
+    assert "FORGE-CAPABILITY.md is authoritative" in schema.get("description", "")
+    assert schema["properties"]["version"]["const"] == "1.2.0"
+
+    snapshot = schema["$defs"]["ticket-snapshot"]
+    assert snapshot["required"] == ["handle", "title", "state"]
+    assert snapshot["additionalProperties"] is False
+    assert set(snapshot["properties"]) == {"handle", "title", "body", "state", "comments"}
+    assert snapshot["properties"]["comments"]["type"] == "array"
+    assert snapshot["properties"]["comments"]["items"] == {"$ref": "#/$defs/comment-entry"}
+
+    entry = schema["$defs"]["comment-entry"]
+    assert entry["required"] == ["body"]
+    assert entry["additionalProperties"] is False
+    assert set(entry["properties"]) == {"body", "author", "created_at"}
+    for name in ("body", "author", "created_at"):
+        assert entry["properties"][name]["type"] == "string"
+        assert entry["properties"][name]["minLength"] == 1
+
+
+def snapshot_validator(schema: dict) -> jsonschema.Draft202012Validator:
+    return jsonschema.Draft202012Validator(
+        {"$ref": "#/$defs/ticket-snapshot", "$defs": schema["$defs"]}
+    )
+
+
+def main() -> int:
+    schema = load_schema()
+    jsonschema.validators.validator_for(schema).check_schema(schema)
+    assert_contract_shape(schema)
+
+    validator = snapshot_validator(schema)
+    handle = {"id": "forge/repo#1", "display": "repo#1"}
+
+    assert_valid(
+        validator,
+        {"handle": handle, "title": "unit", "body": "spec", "state": "open"},
+    )
+    assert_valid(
+        validator,
+        {"handle": handle, "title": "unit", "body": None, "state": "open", "comments": []},
+    )
+    assert_valid(
+        validator,
+        {
+            "handle": handle,
+            "title": "unit",
+            "body": "spec",
+            "state": "open",
+            "comments": [
+                {"body": "freshen record"},
+                {
+                    "body": "review directive",
+                    "author": "operator",
+                    "created_at": "2026-07-02T10:53:26Z",
+                },
+            ],
+        },
+    )
+
+    def with_comments(comments) -> dict:
+        return {
+            "handle": handle,
+            "title": "unit",
+            "body": "spec",
+            "state": "open",
+            "comments": comments,
+        }
+
+    invalid_documents = {
+        "comments_not_array": with_comments("first!"),
+        "entry_not_object": with_comments(["first!"]),
+        "entry_missing_body": with_comments([{"author": "operator"}]),
+        "entry_empty_body": with_comments([{"body": ""}]),
+        "entry_extra_property": with_comments([{"body": "x", "reactions": 3}]),
+        "entry_author_not_string": with_comments([{"body": "x", "author": 7}]),
+        "entry_empty_author": with_comments([{"body": "x", "author": ""}]),
+        "entry_empty_created_at": with_comments([{"body": "x", "created_at": ""}]),
+        "snapshot_extra_property": {
+            "handle": handle,
+            "title": "unit",
+            "state": "open",
+            "labels": [],
+        },
+    }
+    for label, document in invalid_documents.items():
+        assert_invalid(validator, document, label)
+
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main())
+    except AssertionError as error:
+        print(f"forge-capability-schema-test: {error}", file=sys.stderr)
+        raise SystemExit(1)

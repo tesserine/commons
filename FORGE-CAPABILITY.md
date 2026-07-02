@@ -16,7 +16,7 @@ configuration. A caller supplies only capability-domain data.
 
 ## Version
 
-`1.1.0`
+`1.2.0`
 
 ## Stable Identifier
 
@@ -148,6 +148,14 @@ Output:
 | `title` | yes | string | Ticket title or subject. |
 | `body` | no | string or null | Ticket body text if present. |
 | `state` | yes | string | Connector-normalized ticket state label. |
+| `comments` | no | array of comment entries | The ticket's comment log, ordered oldest first. |
+
+The ticket body is the work-unit's spec; the comment log is its running
+record — review state, dispositions, and directives live there. The snapshot
+carries the log so a caller grounds on the whole ticket, not the spec alone.
+Each comment entry carries `body` (required, string); the connector includes
+`author` (string) and `created_at` (string, a provider-normalized timestamp)
+when the provider supplies them.
 
 The reference is opaque to the engine and methodology: they never parse it. It
 is the caller-facing form of a forge work-unit identity (see **Forge Work-Unit
@@ -169,7 +177,8 @@ Caller input:
 | `title` | yes | string | Work-unit ticket title. |
 | `body` | yes | string | Work-unit ticket body. |
 
-Output is the same ticket snapshot shape returned by `read-ticket`.
+Output is the same ticket snapshot shape returned by `read-ticket`. A
+just-created ticket carries an absent or empty comment log.
 
 ### `claim-work-unit`
 
