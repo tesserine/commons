@@ -135,7 +135,10 @@ flowchart TB
     BO66["babbie-ops#66 ✓<br/>clean-room converge (pentaxis93)"]:::landed --> BO67
     q1_152 --> BO67
     q1_499 --> BO67
-    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::ready --> M1INT
+    BO81["babbie-ops#81<br/>installer passes through agentd<br/>generic bind mounts (OAuth ~/.claude ro)"]:::ready --> BO67
+    BO81 -. "reference for" .-> BO82
+    BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::blocked
+    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
@@ -233,7 +236,9 @@ Two publications, in order, both through the ecosystem-release ceremony
    Binds the component tags **runa v0.2.0 · commons v0.3.0 · groundwork
    v0.3.0**. Gated on integration verification (`commons#50`), which is gated
    on the contract-machine leveling set **and** the full-stack acceptance
-   chain: `agentd#152` + `groundwork#499` → `babbie-ops#67` (entry via
+   chain: `agentd#152` + `groundwork#499` → **`babbie-ops#81`** (generic bind-mount
+   pass-through — carries the acceptance run's read-only `~/.claude`
+   subscriber-OAuth credential mount) → `babbie-ops#67` (entry via
    `agentd wish`, **both** entry routes exercised to a landed change) →
    `commons#50` → publish. *runa v0.2.0 is M1's component tag — it is not the
    cycling release's name.*
@@ -247,11 +252,13 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 Three units are unblocked and craftable this moment:
 
-- **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
-  routes, to a landed change); every drawn predecessor is landed. The
-  recorded consideration (operator decision B, 2026-07-01, on the issue) is
-  satisfied: the leveling set landed 2026-07-02, so the cascade exercises the
-  corrected symmetric contract. #67 is the M1 critical-path front.
+- **babbie-ops#81** — pass the installer through agentd's generic additional
+  bind mounts (`[[agents.mounts]]`: source/target/read_only). The M1
+  critical-path front now that it gates **babbie-ops#67**: the acceptance
+  run's subscriber-OAuth model credential rides a read-only `~/.claude` mount
+  (decided 2026-07-02). #67's other predecessors are all landed; #81 is its
+  sole remaining blocker. Follow-on **#82** (codex, both credential options)
+  is filed off the M1 path, blocked by #81 as reference, targeted next release.
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
 
