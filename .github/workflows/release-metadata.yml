@@ -17,6 +17,7 @@ on:
       - "scripts/test-release-check"
       - "scripts/test-release-process-docs"
       - "scripts/test-intent-schema"
+      - "scripts/test-forge-capability-schema"
       - "scripts/test-ecosystem-manifest"
       - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
@@ -38,6 +39,7 @@ on:
       - "scripts/test-release-check"
       - "scripts/test-release-process-docs"
       - "scripts/test-intent-schema"
+      - "scripts/test-forge-capability-schema"
       - "scripts/test-ecosystem-manifest"
       - "scripts/verify-ecosystem-manifest"
       - "scripts/verify-release-adoption.sh"
@@ -81,6 +83,11 @@ jobs:
         run: |
           . .venv/bin/activate
           ./scripts/test-intent-schema
+
+      - name: Run forge-capability schema tests
+        run: |
+          . .venv/bin/activate
+          ./scripts/test-forge-capability-schema
 
       - name: Run ecosystem manifest tests
         run: |

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Forge Capability",
-  "description": "Canonical schema for the forge capability connector tool-set and operation payloads. Version 1.1.0. commons is the spec authority; FORGE-CAPABILITY.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and FORGE-CAPABILITY.md disagree, FORGE-CAPABILITY.md is authoritative.",
+  "description": "Canonical schema for the forge capability connector tool-set and operation payloads. Version 1.2.0. commons is the spec authority; FORGE-CAPABILITY.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and FORGE-CAPABILITY.md disagree, FORGE-CAPABILITY.md is authoritative.",
   "type": "object",
   "required": ["capability", "version", "handle_schema", "tools"],
   "additionalProperties": false,
@@ -10,7 +10,7 @@
       "const": "forge"
     },
     "version": {
-      "const": "1.1.0"
+      "const": "1.2.0"
     },
     "handle_schema": {
       "const": "#/$defs/handle"
@@ -398,6 +398,26 @@
         }
       }
     },
+    "comment-entry": {
+      "type": "object",
+      "required": ["body"],
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Provider-normalized timestamp.",
+          "minLength": 1
+        }
+      }
+    },
     "ticket-snapshot": {
       "type": "object",
       "required": ["handle", "title", "state"],
@@ -416,6 +436,13 @@
         "state": {
           "type": "string",
           "minLength": 1
+        },
+        "comments": {
+          "type": "array",
+          "description": "Ordered comment log, oldest first. The ticket body is the work-unit's spec; the comment log is its running record — review state, dispositions, and directives.",
+          "items": {
+            "$ref": "#/$defs/comment-entry"
+          }
         }
       }
     },
