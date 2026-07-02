@@ -89,6 +89,12 @@ flowchart TB
         q3_226["runa#226<br/>retire forge-address dyad +<br/>engine forge-modeling"]:::ready
         q3_rel["⟨terminal release —<br/>capability seal⟩ · not yet filed"]:::open
         q3_61 --> q3_203 --> q3_440 --> q3_226 --> q3_rel
+        q3_100["commons#100<br/>ticket snapshot carries the<br/>comment log (v1.2.0)"]:::ready
+        q3_516["groundwork#516<br/>entry grounds on the whole ticket<br/>(body = spec, log = review state)"]:::blocked
+        q3_228["runa#228<br/>read-ticket returns<br/>the comment log"]:::blocked
+        q3_61 --> q3_100
+        q3_100 --> q3_516
+        q3_100 --> q3_228
     end
 
     %% ================= QUEST 4: session composition (host) =================
@@ -239,7 +245,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Three units are unblocked and craftable this moment:
+Four units are unblocked and craftable this moment:
 
 - **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
   routes, to a landed change); every drawn predecessor is landed. The
@@ -248,6 +254,7 @@ Three units are unblocked and craftable this moment:
   corrected symmetric contract. #67 is the M1 critical-path front.
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
+- **commons#100** — the ticket snapshot carries the comment log (forge-capability v1.2.0; connectors line, **off the M1 path**). Contract-first head of the entry-grounds-on-the-whole-ticket set (→ groundwork#516, runa#228), filed 2026-07-02 from the babbie-ops#67 review-round loss.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
