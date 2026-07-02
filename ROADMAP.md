@@ -239,7 +239,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Five units are unblocked and craftable this moment:
+Four units are unblocked and craftable this moment:
 
 - **babbie-ops#67** — the full-stack acceptance (`agentd wish`, both entry
   routes, to a landed change); every drawn predecessor is landed. The
@@ -248,13 +248,14 @@ Five units are unblocked and craftable this moment:
   corrected symmetric contract. #67 is the M1 critical-path front.
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
-- **groundwork#505 / #507** — the prose-is-projection layer-1 remainder
-  (take closes at its capstone; rationale-only connecting-structure).
-  Unblocked by **groundwork#504** (landed 2026-07-02: ADR-0008 + the
-  schema-consulting conformance gate, PR #512 `c0878b48`); each traces to
-  the ADR. Sibling **groundwork#506** (one work-unit-craft home) landed
-  2026-07-02 (PR #514 `add9d5d0`). Independent of each other; **off the M1
-  path** (methodology-quality line **groundwork#503**).
+- **groundwork#505** — the prose-is-projection layer-1 remainder (take
+  closes at its capstone). Unblocked by **groundwork#504** (landed
+  2026-07-02: ADR-0008 + the schema-consulting conformance gate, PR #512
+  `c0878b48`); traces to the ADR. Siblings **groundwork#506** (one
+  work-unit-craft home, PR #514 `add9d5d0`) and **groundwork#507**
+  (rationale-only connecting-structure + the docs/ managed-set gate, PR
+  #515 `e9f0879f`) landed 2026-07-02. **Off the M1 path**
+  (methodology-quality line **groundwork#503**).
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
