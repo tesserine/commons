@@ -135,12 +135,12 @@ flowchart TB
     BO66["babbie-ops#66 ✓<br/>clean-room converge (pentaxis93)"]:::landed --> BO67
     q1_152 --> BO67
     q1_499 --> BO67
-    BO81["babbie-ops#81 ✓<br/>installer passes through agentd<br/>generic bind mounts (OAuth ~/.claude ro)"]:::landed --> BO67
+    BO81["babbie-ops#81 ✓<br/>installer passes through agentd<br/>generic bind mounts (~/.claude rw)"]:::landed --> BO67
     AGENTD158["agentd#158 ✓<br/>runner accepts host-only additional-mount<br/>source (containerized daemon → host Podman)"]:::landed --> BO67
     BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
-    BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::blocked
-    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::blocked --> M1INT
+    BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
+    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::ready --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
@@ -253,17 +253,23 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-Three units are unblocked and craftable this moment:
+The M1 critical-path front is now a single operator-owned run:
 
-- **babbie-ops#81** — pass the installer through agentd's generic additional
-  bind mounts (`[[agents.mounts]]`: source/target/read_only). The M1
-  critical-path front now that it gates **babbie-ops#67**: the acceptance
-  run's subscriber-OAuth model credential rides a read-only `~/.claude` mount
-  (decided 2026-07-02). #67's other predecessors are all landed; #81 is its
-  sole remaining blocker. Follow-on **#82** (codex, both credential options)
-  is filed off the M1 path, blocked by #81 as reference, targeted next release.
+- **babbie-ops#67** — the full-stack acceptance run. Every predecessor has
+  landed: **#66**, **agentd#152**, **groundwork#499**, **#81** (generic
+  additional-mount passthrough), **#85** (daemon SELinux `connectto`), and the
+  run-discovered **agentd#158** (host-only mount source, fixed at `b80c6a2`).
+  Nothing gates it upstream. What remains is structurally operator-owned and
+  station-inaccessible: on babbie-dev, re-converge at an agentd ref carrying
+  `b80c6a2`, drive both `agentd wish` routes against `tesserine/example-hello`
+  to a landed change, and declare acceptance — closing epic **#58** and
+  unblocking **commons#50 → #48** (M1).
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
+
+Follow-on **babbie-ops#82** (codex runtime, both credential options) is now
+unblocked — its **#81** reference landed — but sits off the M1 path, targeted
+the next ecosystem release.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
