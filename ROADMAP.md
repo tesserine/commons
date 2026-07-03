@@ -135,7 +135,9 @@ flowchart TB
     BO66["babbie-ops#66 ✓<br/>clean-room converge (pentaxis93)"]:::landed --> BO67
     q1_152 --> BO67
     q1_499 --> BO67
-    BO81["babbie-ops#81<br/>installer passes through agentd<br/>generic bind mounts (OAuth ~/.claude ro)"]:::ready --> BO67
+    BO81["babbie-ops#81 ✓<br/>installer passes through agentd<br/>generic bind mounts (OAuth ~/.claude ro)"]:::landed --> BO67
+    AGENTD158["agentd#158 ✓<br/>runner accepts host-only additional-mount<br/>source (containerized daemon → host Podman)"]:::landed --> BO67
+    BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::blocked
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::blocked --> M1INT
@@ -238,7 +240,8 @@ Two publications, in order, both through the ecosystem-release ceremony
    on the contract-machine leveling set **and** the full-stack acceptance
    chain: `agentd#152` + `groundwork#499` → **`babbie-ops#81`** (generic bind-mount
    pass-through — carries the acceptance run's read-only `~/.claude`
-   subscriber-OAuth credential mount) → `babbie-ops#67` (entry via
+   subscriber-OAuth credential mount, resolved host-side by **`agentd#158`** so
+   the containerized daemon accepts the host-only source) → `babbie-ops#67` (entry via
    `agentd wish`, **both** entry routes exercised to a landed change) →
    `commons#50` → publish. *runa v0.2.0 is M1's component tag — it is not the
    cycling release's name.*
