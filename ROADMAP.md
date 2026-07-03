@@ -140,7 +140,8 @@ flowchart TB
     BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
-    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change"]:::ready --> M1INT
+    AGENTD122["agentd#122<br/>live session progress observation<br/>(the integration test's observability capability)"]:::ready --> BO67
+    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
@@ -242,7 +243,8 @@ Two publications, in order, both through the ecosystem-release ceremony
    pass-through — carries the acceptance run's read-only `~/.claude`
    subscriber-OAuth credential mount, resolved host-side by **`agentd#158`** so
    the containerized daemon accepts the host-only source) → `babbie-ops#67` (entry via
-   `agentd wish`, **both** entry routes exercised to a landed change) →
+   `agentd wish`, **both** entry routes exercised to a landed change, with
+   **live progress observed** — gated on `agentd#122`) →
    `commons#50` → publish. *runa v0.2.0 is M1's component tag — it is not the
    cycling release's name.*
 2. **Post-M1 — autonomous cycling** (runa#152's capability). Ships as the
@@ -253,17 +255,23 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-The M1 critical-path front is now a single operator-owned run:
+The M1 critical-path front now carries one added prerequisite — the
+observability capability the integration test gates on:
 
-- **babbie-ops#67** — the full-stack acceptance run. Every predecessor has
-  landed: **#66**, **agentd#152**, **groundwork#499**, **#81** (generic
-  additional-mount passthrough), **#85** (daemon SELinux `connectto`), and the
-  run-discovered **agentd#158** (host-only mount source, fixed at `b80c6a2`).
-  Nothing gates it upstream. What remains is structurally operator-owned and
+- **agentd#122** — live session progress observation, freshened relay-ready
+  (`agentd main @ b80c6a2`, 2026-07-03). The full-stack acceptance is the
+  observability gate, so #122's capability must land before the run can
+  exercise it. Craftable now; nothing gates it upstream.
+- **babbie-ops#67** — the full-stack acceptance run, now gated on **agentd#122**.
+  Its other predecessors have all landed: **#66**, **agentd#152**,
+  **groundwork#499**, **#81** (generic additional-mount passthrough), **#85**
+  (daemon SELinux `connectto`), and run-discovered **agentd#158** (host-only
+  mount source, `b80c6a2`). Once #122 lands, what remains is operator-owned and
   station-inaccessible: on babbie-dev, re-converge at an agentd ref carrying
-  `b80c6a2`, drive both `agentd wish` routes against `tesserine/example-hello`
-  to a landed change, and declare acceptance — closing epic **#58** and
-  unblocking **commons#50 → #48** (M1).
+  #122 + `b80c6a2`, drive both `agentd wish` routes against
+  `tesserine/example-hello` to a landed change — with live progress observed —
+  and declare acceptance, closing epic **#58** and unblocking
+  **commons#50 → #48** (M1).
 - **runa#153** — decompose the cycling capstone against the live substrate.
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
 
