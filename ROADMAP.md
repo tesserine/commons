@@ -140,8 +140,9 @@ flowchart TB
     BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
-    COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision landed →" --> AGENTD122
-    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl<br/>(#102 decided; directory move + read-path fix now craftable)"]:::blocked --> BO67
+    COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
+    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; plan-gated; ready)"]:::ready --> AGENTD122
+    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
@@ -276,12 +277,19 @@ line is now **landed**, and the line's front is the implementation it authorized
   seals a flat `events.jsonl` while runa writes a nested per-run path
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), so
   live observation streams nothing and sealed audit records come out empty
-  (`coverage: no_events`) though the events exist. The fix — agentd injecting a
-  deterministic run/deployment identity and reading runa's real nested path, for
-  both the live tail and the finalize/manifest — is now the **craftable front**:
-  the **#102** locus decision landed (ADR-0020), so the transcript-path-contract
-  impl (directory relocation + read-path fix) is unblocked. #122 stays blocked on
-  that impl.
+  (`coverage: no_events`) though the events exist. The fix is now **filed as
+  agentd#162** and is the **ready front** (below); #122 stays blocked on it.
+- **agentd#162** — the transcript path-contract fix ADR-0020 named as its
+  separate impl: agentd injects a deterministic run/deployment identity and
+  reads runa's real project-keyed nested path
+  (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), for
+  **both** the live tailer (agentd#122) and the audit finalize/manifest —
+  repairing #122's empty stream and the pre-existing empty-audit-record bug
+  together, and reconciling the v2 event schema. **Ready** and **plan-gated**
+  (the subsystem saw repeated same-class regressions under #122; the multi-run
+  identity contract carries design risk). Its end-to-end evidence half is
+  operator-owned on babbie-dev; the non-gated half lands in CI. This is the
+  M1-front unit to relay next.
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
