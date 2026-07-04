@@ -28,6 +28,38 @@ def require_prose_contains(name: str, text: str, needle: str) -> None:
         fail(f"{name} missing required text: {needle}")
 
 
+_ONES = {
+    "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4, "five": 5,
+    "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11,
+    "twelve": 12, "thirteen": 13, "fourteen": 14, "fifteen": 15,
+    "sixteen": 16, "seventeen": 17, "eighteen": 18, "nineteen": 19,
+}
+_TENS = {
+    "twenty": 20, "thirty": 30, "forty": 40, "fifty": 50, "sixty": 60,
+    "seventy": 70, "eighty": 80, "ninety": 90,
+}
+
+
+def parse_count_token(token: str) -> int | None:
+    """Parse a register count written as digits ('20') or an English
+    number word ('Twenty', 'twenty-one') into an int; None if unparseable.
+
+    The register authors these counts as prose; the test consults that
+    prose rather than freezing the value, so it must read either form."""
+    token = token.strip().lower()
+    if token.isdigit():
+        return int(token)
+    if token in _ONES:
+        return _ONES[token]
+    if token in _TENS:
+        return _TENS[token]
+    if "-" in token:
+        tens, ones = token.split("-", 1)
+        if tens in _TENS and ones in _ONES and 0 < _ONES[ones] < 10:
+            return _TENS[tens] + _ONES[ones]
+    return None
+
+
 adr_path = root / "adr" / "0019-capability-specific-integration-verification.md"
 if not adr_path.exists():
     fail("adr/0019-capability-specific-integration-verification.md exists")
@@ -79,7 +111,6 @@ if adr_text:
     )
 
 register_text = (root / "adr" / "README.md").read_text(encoding="utf-8")
-require_contains("ADR register", register_text, "Thirteen genuine ecosystem decisions remain active.")
 require_contains(
     "ADR register",
     register_text,
@@ -90,7 +121,6 @@ require_contains(
     register_text,
     "Verification: the table has one row per `adr/*.md` decision file",
 )
-require_contains("ADR register", register_text, "equals the row count (20).")
 
 row_lines = [
     line
@@ -106,6 +136,59 @@ if len(row_lines) != len(decision_files):
     fail(
         "ADR register row count matches decision files "
         f"({len(row_lines)} rows, {len(decision_files)} files)"
+    )
+
+# Counts are derived from substrate and the register prose is checked
+# against them — never frozen as literals in this test. The single home
+# of each count is the substrate: decision-file count for the total row
+# count, and the table's Status column for the superseded/active split.
+# The register (an authored index) states each count in prose; this test
+# consults that prose and asserts it matches the derived value, so an ADR
+# add/supersede requires no edit here and a drifted register count fails.
+superseded_rows = [
+    line
+    for line in row_lines
+    if len(line.split("|")) > 3 and line.split("|")[3].strip() == "Superseded"
+]
+derived_active = len(decision_files) - len(superseded_rows)
+
+active_match = re.search(
+    r"([A-Za-z]+(?:-[A-Za-z]+)?|\d+)\s+genuine ecosystem decisions remain active\.",
+    register_text,
+)
+if active_match is None:
+    fail(
+        "ADR register states the active-decision count "
+        "('<count> genuine ecosystem decisions remain active.')"
+    )
+else:
+    stated_active = parse_count_token(active_match.group(1))
+    if stated_active is None:
+        fail(
+            "ADR register active-decision count is an unparseable token: "
+            f"{active_match.group(1)!r}"
+        )
+    elif stated_active != derived_active:
+        fail(
+            "ADR register active-decision count matches derived "
+            f"(states {active_match.group(1)!r} = {stated_active}, derived "
+            f"{derived_active} = {len(decision_files)} files "
+            f"- {len(superseded_rows)} superseded)"
+        )
+
+rowcount_match = re.search(
+    r"equals the row count \((\d+)\)\.",
+    register_text,
+)
+if rowcount_match is None:
+    fail(
+        "ADR register Verification line states the row count "
+        "('equals the row count (<N>).')"
+    )
+elif int(rowcount_match.group(1)) != len(decision_files):
+    fail(
+        "ADR register stated row count matches decision files "
+        f"(states {rowcount_match.group(1)}, {len(decision_files)} files)"
     )
 
 ecosystem_text = (root / "ECOSYSTEM-RELEASE.md").read_text(encoding="utf-8")
