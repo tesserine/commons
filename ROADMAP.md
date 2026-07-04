@@ -140,7 +140,8 @@ flowchart TB
     BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
-    AGENTD122["agentd#122<br/>live session progress observation<br/>(the integration test's observability capability)"]:::ready --> BO67
+    COMMONS102["commons#102<br/>ADR: storage locus of run-records<br/>(sovereignty — executor vs project ownership)"]:::ready --> AGENTD122
+    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract (→ #102 locus decision)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
@@ -244,7 +245,8 @@ Two publications, in order, both through the ecosystem-release ceremony
    subscriber-OAuth credential mount, resolved host-side by **`agentd#158`** so
    the containerized daemon accepts the host-only source) → `babbie-ops#67` (entry via
    `agentd wish`, **both** entry routes exercised to a landed change, with
-   **live progress observed** — gated on `agentd#122`) →
+   **live progress observed** — gated on `agentd#122`, itself now gated on
+  the transcript-locus decision `commons#102`) →
    `commons#50` → publish. *runa v0.2.0 is M1's component tag — it is not the
    cycling release's name.*
 2. **Post-M1 — autonomous cycling** (runa#152's capability). Ships as the
@@ -255,29 +257,41 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-The M1 critical-path front now carries one added prerequisite — the
-observability capability the integration test gates on:
+The M1 critical-path front's observability prerequisite deepened this session.
+The real-session gate exposed that #122's live observation rests on a broken
+transcript path-contract, and resolving it now turns on a sovereignty decision
+that leads the line:
 
-- **agentd#122** — live session progress observation, freshened relay-ready
-  (`agentd main @ b80c6a2`, 2026-07-03). The full-stack acceptance is the
-  observability gate, so #122's capability must land before the run can
-  exercise it. Craftable now; nothing gates it upstream.
-- **babbie-ops#67** — the full-stack acceptance run, now gated on **agentd#122**.
-  Its other predecessors have all landed: **#66**, **agentd#152**,
-  **groundwork#499**, **#81** (generic additional-mount passthrough), **#85**
-  (daemon SELinux `connectto`), and run-discovered **agentd#158** (host-only
-  mount source, `b80c6a2`). Once #122 lands, what remains is operator-owned and
-  station-inaccessible: on babbie-dev, re-converge at an agentd ref carrying
-  #122 + `b80c6a2`, drive both `agentd wish` routes against
-  `tesserine/example-hello` to a landed change — with live progress observed —
-  and declare acceptance, closing epic **#58** and unblocking
-  **commons#50 → #48** (M1).
-- **runa#153** — decompose the cycling capstone against the live substrate.
-- **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path** — advances the post-M1 cycling runway at no critical-path cost).
+- **commons#102** — the ADR deciding the **storage locus of session
+  run-records**: executor-owned (today's per-agent/session audit store on the
+  agentd host, which the project cannot access) versus project-owned. Grounded
+  in Sovereignty via the WeForge-subscriber limit-test. Craftable now; it is
+  the new front of the observability line. Its decision — realized as a
+  directory move, with COBs deferred to the Radicle era after **#50** —
+  gates the agentd transcript-path-contract fix, and through it #122.
+- **agentd#122** — live session progress observation. **Code-complete**
+  (the whole-frame writer, tailer, and rendering are sound, verified over six
+  review rounds), but **blocked**. The real-session run proved agentd tails and
+  seals a flat `events.jsonl` while runa writes a nested per-run path
+  (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), so
+  live observation streams nothing and sealed audit records come out empty
+  (`coverage: no_events`) though the events exist. The fix — agentd reading
+  runa's real path, for both the live tail and the finalize/manifest — is
+  gated on the **#102** locus decision, then a directory-move implementation.
+  Not craftable until #102 decides.
+- **babbie-ops#67** — the full-stack acceptance run, gated on
+  **agentd#122**'s observability, now itself gated on **#102**. Its other
+  predecessors have all landed (**#66**, **agentd#152**, **groundwork#499**,
+  **#81**, **#85**, run-discovered **agentd#158**). The acceptance run stays
+  operator-owned and station-inaccessible on babbie-dev; when the chain clears
+  it drives both `agentd wish` routes against `tesserine/example-hello` to a
+  landed change — with live progress observed — closing epic **#58**
+  and unblocking **commons#50 → #48** (M1).
+- **runa#153** — decompose the cycling capstone against the live substrate (**off the M1 path**; advances the post-M1 runway).
+- **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path**).
 
-Follow-on **babbie-ops#82** (codex runtime, both credential options) is now
-unblocked — its **#81** reference landed — but sits off the M1 path, targeted
-the next ecosystem release.
+Follow-on **babbie-ops#82** (codex runtime, both credential options) is
+unblocked but off the M1 path, targeted the next ecosystem release.
 
 Everything else is either landed, gated on an upstream quest, or work named in
 an epic body that has not yet been filed as a discrete unit.
