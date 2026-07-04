@@ -141,7 +141,7 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; plan-gated; ready)"]:::ready --> AGENTD122
+    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; contract approved → at plan gate)"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
@@ -285,11 +285,12 @@ line is now **landed**, and the line's front is the implementation it authorized
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), for
   **both** the live tailer (agentd#122) and the audit finalize/manifest —
   repairing #122's empty stream and the pre-existing empty-audit-record bug
-  together, and reconciling the v2 event schema. **Ready** and **plan-gated**
-  (the subsystem saw repeated same-class regressions under #122; the multi-run
-  identity contract carries design risk). Its end-to-end evidence half is
-  operator-owned on babbie-dev; the non-gated half lands in CI. This is the
-  M1-front unit to relay next.
+  together, and reconciling the v2 event schema. **Contract gate PASSED** (2026-07-04): the multi-dimensional contract is
+  reviewed and approved — identities split into executable path-match criteria,
+  the no-`libagent`-coupling guard made executable via a Cargo-metadata check.
+  Now at the **plan gate** under the new two-gate flow (contract → plan → implement).
+  End-to-end evidence half is operator-owned on babbie-dev; the non-gated half
+  lands in CI. Next relay: `plan agentd#162`.
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
