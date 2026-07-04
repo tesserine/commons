@@ -141,7 +141,7 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; contract + plan approved → implement)"]:::ready --> AGENTD122
+    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; PR #163 code-approved @ d6201f9 → awaiting deploy evidence)"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
@@ -285,16 +285,18 @@ line is now **landed**, and the line's front is the implementation it authorized
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), for
   **both** the live tailer (agentd#122) and the audit finalize/manifest —
   repairing #122's empty stream and the pre-existing empty-audit-record bug
-  together, and reconciling the v2 event schema. **Both gates PASSED (2026-07-04).** Contract re-approved (round 2, 14 criteria)
-  after the #162/#122 scope split; plan re-reviewed and **approved as-is**. The
-  plan already commits to matching runa's path-component encoding and to bounded
-  streaming, so nothing is appended to the implement relay. One PR-review landing
-  check is on record: the path-match tests must show agentd's constructed path
-  equals runa's `encode_path_component` for a non-encoding-safe component (test
-  adequacy, judged at PR review, not a pre-implement obligation). **Implement
-  authorized — clean relay `implement agentd#162`.** Landing gated on the
-  enumerated tests + operator rootless-Podman evidence (nested seal on #162; live
-  progress on the #122-on-#162 verification branch).
+  together, and reconciling the v2 event schema. **PR #163 code-approved @ `d6201f9` (2026-07-04).** Both governance gates
+  passed (contract 14 criteria; plan approved as-is). Implementation reviewed at
+  head SHA against the contract: encoding mirrors runa's `encode_path_component`
+  byte-for-byte (verified independently; tested on unsafe/`_empty`/all-dots
+  inputs — the named landing check), identities agentd-owned + injected + reserved,
+  resolver re-scan growth test present, finalize nested-only with flat-decoy
+  rejected, manifest schema reconciled, no `libagent` (CI-green). PR marked ready.
+  **Merge gated on two evidence layers not in the diff:** (1) operator-owned
+  rootless-Podman real session on babbie-dev (live progress + sealed non-`no_events`
+  record); (2) verification-only #122-on-#162 rebase branch proving the #122 tailer
+  streams every stage via the shared source. SHA-guarded squash merge fires only
+  after both are recorded on PR #163; #162 stays open until then.
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
