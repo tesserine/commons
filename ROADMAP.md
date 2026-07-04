@@ -286,14 +286,15 @@ line is now **landed**, and the line's front is the implementation it authorized
   **both** the live tailer (agentd#122) and the audit finalize/manifest —
   repairing #122's empty stream and the pre-existing empty-audit-record bug
   together, and reconciling the v2 event schema. **Both gates PASSED (2026-07-04).** Contract re-approved (round 2, 14 criteria)
-  after the #162/#122 scope split; plan re-reviewed and approved with two
-  implement-obligation refinements folded in: (1) name+test the exact
-  `encode_path_component` percent-encoding contract agentd mirrors (latent
-  silent-divergence guard — the class #162 exists to close); (2) keep the
-  on-each-call re-scan bounded. No contract regen — both within scope. **Implement
-  authorized.** Next relay: `implement agentd#162`. Landing gated on the
-  enumerated tests (incl. encoding round-trip) + operator rootless-Podman evidence
-  (nested seal on #162; live progress on the #122-on-#162 verification branch).
+  after the #162/#122 scope split; plan re-reviewed and **approved as-is**. The
+  plan already commits to matching runa's path-component encoding and to bounded
+  streaming, so nothing is appended to the implement relay. One PR-review landing
+  check is on record: the path-match tests must show agentd's constructed path
+  equals runa's `encode_path_component` for a non-encoding-safe component (test
+  adequacy, judged at PR review, not a pre-implement obligation). **Implement
+  authorized — clean relay `implement agentd#162`.** Landing gated on the
+  enumerated tests + operator rootless-Podman evidence (nested seal on #162; live
+  progress on the #122-on-#162 verification branch).
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
