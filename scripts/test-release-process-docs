@@ -79,7 +79,7 @@ if adr_text:
     )
 
 register_text = (root / "adr" / "README.md").read_text(encoding="utf-8")
-require_contains("ADR register", register_text, "Twelve genuine ecosystem decisions remain active.")
+require_contains("ADR register", register_text, "Thirteen genuine ecosystem decisions remain active.")
 require_contains(
     "ADR register",
     register_text,
@@ -90,7 +90,7 @@ require_contains(
     register_text,
     "Verification: the table has one row per `adr/*.md` decision file",
 )
-require_contains("ADR register", register_text, "equals the row count (19).")
+require_contains("ADR register", register_text, "equals the row count (20).")
 
 row_lines = [
     line
