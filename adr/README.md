@@ -11,7 +11,7 @@ files here are pointer documents naming each principle's canonical home.
 ADR-0018 is superseded by inheritance: its policy is homed in the pentaxis93
 base layer at [`pentaxis93/commons`](https://github.com/pentaxis93/commons)
 (ADR-0001), which this ecosystem inherits, and the file here points to that
-base. Twelve genuine ecosystem decisions remain active.
+base. Thirteen genuine ecosystem decisions remain active.
 
 Repo-local ADRs (e.g. `groundwork/docs/architecture/decisions/`) cover
 repo-local scope and are not registered here.
@@ -37,6 +37,7 @@ repo-local scope and are not registered here.
 | [0017](0017-forge-work-unit-identity-model.md) | Forge Work-Unit Identity Model | Accepted | Grounding (primary), Single Home, Sovereignty | refines 0016 | A forge work-unit identity is complete and scoped; connectors validate scope before any effect; a provider is a projection of the model, not its source |
 | [0018](0018-repository-merge-and-history-policy.md) | Repository Merge and History Policy | Superseded | — | inherited → [pentaxis93/commons ADR-0001](https://github.com/pentaxis93/commons/blob/main/adr/0001-repository-merge-and-history-policy.md) | Pointer to the inheriting base ADR |
 | [0019](0019-capability-specific-integration-verification.md) | Capability-Specific Integration Verification | Accepted | Verifiable Completion (primary), Sequence, Honest Signal | extends 0011/0014 | Minor and major ecosystem releases exercise the new or changed operator-facing capability before stable publication; patch releases retain the fixture-only gate |
+| [0020](0020-session-run-record-storage-locus.md) | Session Run-Record Storage Locus and Ownership | Accepted | Sovereignty (primary), Single Home, Grounding | relates to 0008, 0016/0017; commons#19 family | Session run-records are owned by the project/deployment and keyed by project identity as their single home; the executor hosts and projects the store, it does not own it; near-term a directory relocation, the COB/Radicle form deferred |
 
 ## Conventions
 
@@ -47,4 +48,4 @@ repo-local scope and are not registered here.
   change policy).
 
 Verification: the table has one row per `adr/*.md` decision file —
-`ls adr/*.md | grep -v README | wc -l` equals the row count (19).
+`ls adr/*.md | grep -v README | wc -l` equals the row count (20).
