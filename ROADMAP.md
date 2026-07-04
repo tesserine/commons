@@ -140,8 +140,8 @@ flowchart TB
     BO81 -. "host-side resolve via" .-> AGENTD158
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
-    COMMONS102["commons#102<br/>ADR: storage locus of run-records<br/>(sovereignty — executor vs project ownership)"]:::ready --> AGENTD122
-    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract (→ #102 locus decision)"]:::blocked --> BO67
+    COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision landed →" --> AGENTD122
+    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl<br/>(#102 decided; directory move + read-path fix now craftable)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
@@ -246,7 +246,7 @@ Two publications, in order, both through the ecosystem-release ceremony
    the containerized daemon accepts the host-only source) → `babbie-ops#67` (entry via
    `agentd wish`, **both** entry routes exercised to a landed change, with
    **live progress observed** — gated on `agentd#122`, itself now gated on
-  the transcript-locus decision `commons#102`) →
+  the transcript-path-contract impl (locus decided in ADR-0020, `commons#102`)) →
    `commons#50` → publish. *runa v0.2.0 is M1's component tag — it is not the
    cycling release's name.*
 2. **Post-M1 — autonomous cycling** (runa#152's capability). Ships as the
@@ -257,30 +257,34 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-The M1 critical-path front's observability prerequisite deepened this session.
-The real-session gate exposed that #122's live observation rests on a broken
-transcript path-contract, and resolving it now turns on a sovereignty decision
-that leads the line:
+The M1 critical-path front's observability prerequisite deepened, then took its
+first step. The real-session gate exposed that #122's live observation rests on
+a broken transcript path-contract; the sovereignty decision that had to lead the
+line is now **landed**, and the line's front is the implementation it authorized:
 
-- **commons#102** — the ADR deciding the **storage locus of session
-  run-records**: executor-owned (today's per-agent/session audit store on the
-  agentd host, which the project cannot access) versus project-owned. Grounded
-  in Sovereignty via the WeForge-subscriber limit-test. Craftable now; it is
-  the new front of the observability line. Its decision — realized as a
-  directory move, with COBs deferred to the Radicle era after **#50** —
-  gates the agentd transcript-path-contract fix, and through it #122.
+- **commons#102** — ✓ **landed** as **ADR-0020** (run-record storage locus and
+  ownership). Session run-records are **owned by the project/deployment** and
+  keyed by project identity as their single home; the **executor hosts and
+  projects** the store, it does not own it. Grounded in Sovereignty via the
+  WeForge-subscriber limit-test. Near-term realization is a **directory
+  relocation** of the existing store; the COB/Radicle-replicated form is
+  deferred to after **#50**. The ADR names the agentd↔runa path contract the
+  implementation must realize.
 - **agentd#122** — live session progress observation. **Code-complete**
   (the whole-frame writer, tailer, and rendering are sound, verified over six
   review rounds), but **blocked**. The real-session run proved agentd tails and
   seals a flat `events.jsonl` while runa writes a nested per-run path
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), so
   live observation streams nothing and sealed audit records come out empty
-  (`coverage: no_events`) though the events exist. The fix — agentd reading
-  runa's real path, for both the live tail and the finalize/manifest — is
-  gated on the **#102** locus decision, then a directory-move implementation.
-  Not craftable until #102 decides.
+  (`coverage: no_events`) though the events exist. The fix — agentd injecting a
+  deterministic run/deployment identity and reading runa's real nested path, for
+  both the live tail and the finalize/manifest — is now the **craftable front**:
+  the **#102** locus decision landed (ADR-0020), so the transcript-path-contract
+  impl (directory relocation + read-path fix) is unblocked. #122 stays blocked on
+  that impl.
 - **babbie-ops#67** — the full-stack acceptance run, gated on
-  **agentd#122**'s observability, now itself gated on **#102**. Its other
+  **agentd#122**'s observability, itself now gated on the
+  transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
   predecessors have all landed (**#66**, **agentd#152**, **groundwork#499**,
   **#81**, **#85**, run-discovered **agentd#158**). The acceptance run stays
   operator-owned and station-inaccessible on babbie-dev; when the chain clears
