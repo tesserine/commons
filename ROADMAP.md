@@ -141,7 +141,7 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; contract re-approved w/ symlink-safe-traversal (16 crit) → plan the fix)"]:::ready --> AGENTD122
+    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; P2-fix plan approved → implement traversal fix on PR #163)"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
@@ -285,18 +285,17 @@ line is now **landed**, and the line's front is the implementation it authorized
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), for
   **both** the live tailer (agentd#122) and the audit finalize/manifest —
   repairing #122's empty stream and the pre-existing empty-audit-record bug
-  together, and reconciling the v2 event schema. **Contract re-approved (2026-07-04, 16 criteria) with symlink-safe-traversal
-  coverage.** After the P2 (nested discovery/open followed symlinked ancestors
-  below agentd/transcript; PR #163 approval rescinded), the body gained an
-  executable no-follow-at-every-component property. Regenerated contract adds
-  `behavior-nested-transcript-path-refuses-symlink-ancestors` (plants ancestor
-  symlinks at every rung; asserts outside events are not rendered/summarized/
-  chmoded/sealed) and `code-quality-safe-traversal-is-component-wise-and-central`
-  (one shared no-follow traversal, leaf O_NOFOLLOW as final guard only). Forward+
-  reverse mapped, prior 14 intact. **Now at the plan gate for the fix.** Next
-  relay: `plan agentd#162`. The existing PR #163 impl satisfies the other 14, so
-  the plan centers on the component-wise no-follow traversal + planted-ancestor
-  tests. Merge still additionally gated on the two deployment-evidence layers.
+  together, and reconciling the v2 event schema. **P2-fix plan APPROVED (2026-07-04); implement authorized.** Contract re-approved
+  at 16 criteria (symlink-safe-traversal added). Plan realizes both new criteria:
+  one central `openat`/`O_NOFOLLOW`/`O_DIRECTORY` traversal surface owned by
+  `TranscriptEventSource` so finalize cannot fall back to an unsafe open (API-level
+  single-home — stronger than per-call-site patching), planted-ancestor tests at
+  every rung. Verified: both read consumers routed through the safe surface; the
+  chmod walk is already symlink-safe (left untouched); other 14 criteria preserved.
+  Two PR-review landing checks recorded (tests exercise the new surface; no fd leak
+  on error paths). **Next relay: `implement agentd#162`** (fix on PR #163's branch),
+  then re-review the diff at the new head SHA. Merge still additionally gated on the
+  two deployment-evidence layers.
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
