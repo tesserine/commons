@@ -141,7 +141,7 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; contract re-approved post scope-split → plan re-review)"]:::ready --> AGENTD122
+    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; contract + plan approved → implement)"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
     BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
@@ -285,13 +285,15 @@ line is now **landed**, and the line's front is the implementation it authorized
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), for
   **both** the live tailer (agentd#122) and the audit finalize/manifest —
   repairing #122's empty stream and the pre-existing empty-audit-record bug
-  together, and reconciling the v2 event schema. **Contract re-approved (2026-07-04, round 2) after the #162/#122 scope split.**
-  The single live-reader criterion split into an in-#162 resolver-exposes-growth
-  proof (executable, in-tree) and a #122-on-#162 verification-branch live-follow
-  proof; single-home preserved across the seam (one resolver, both readers call
-  it). 14 criteria, schema-valid, forward+reverse mapped. The plan already
-  anticipated this split, so it re-affirms cheaply. Next relay: `plan agentd#162`
-  (plan re-review against the approved contract), then implement.
+  together, and reconciling the v2 event schema. **Both gates PASSED (2026-07-04).** Contract re-approved (round 2, 14 criteria)
+  after the #162/#122 scope split; plan re-reviewed and approved with two
+  implement-obligation refinements folded in: (1) name+test the exact
+  `encode_path_component` percent-encoding contract agentd mirrors (latent
+  silent-divergence guard — the class #162 exists to close); (2) keep the
+  on-each-call re-scan bounded. No contract regen — both within scope. **Implement
+  authorized.** Next relay: `implement agentd#162`. Landing gated on the
+  enumerated tests (incl. encoding round-trip) + operator rootless-Podman evidence
+  (nested seal on #162; live progress on the #122-on-#162 verification branch).
 - **babbie-ops#67** — the full-stack acceptance run, gated on
   **agentd#122**'s observability, itself now gated on the
   transcript-path-contract impl the landed **#102** (ADR-0020) authorized. Its other
