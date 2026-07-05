@@ -170,9 +170,9 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162<br/>transcript path-contract fix — agentd reads runa's<br/>project-keyed nested event path (live tailer + audit finalize)<br/>(ADR-0020's named impl; P2 fixed, PR #163 code-approved @ ba5fcbd → awaiting deploy evidence)"]:::ready --> AGENTD122
-    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>blocked on transcript path-contract impl (#162)"]:::blocked --> BO67
-    BO67["babbie-ops#67<br/>full-stack acceptance — agentd wish,<br/>both entry routes, to a landed change<br/>(observability gate, among other things)"]:::blocked --> M1INT
+    AGENTD162["agentd#162<br/>nested transcript path-contract fix (ADR-0020) — resolver + audit finalize<br/>code-approved @ ba5fcbd · PR #163 live<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> AGENTD122
+    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>live tailer rebased onto #162 for the verification build<br/>operator-evidence → #67 · merges on #67 session pass"]:::blocked --> BO67
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>one agentd wish session on the #122-on-#162 verification build<br/>collects #162 (live+sealed) · #122 (live obs) · #67 (DX judgment)<br/>pass → merge #162 + #122, close #58"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
@@ -286,6 +286,8 @@ Two publications, in order, both through the ecosystem-release ceremony
    concert with this quest once M1 lands.
 
 ## What's ready right now
+
+**Shape change — 2026-07-05 (operator decision): operator-eyes DX validation consolidated into babbie-ops#67.** The three units needing a human watching a real `agentd wish` session — **#162** (live progress + sealed non-`no_events` record), **#122** (live progress observation), and **#67** (DX/observability judgment) — collect their operator-owned evidence in **one** session on the #122-on-#162 verification build, owned by #67. #162 and #122 keep their automated evidence and **merge on #67's session pass**; #67's acceptance closes epic #58. The runbook (`interactive-tesserine-full-stack.md`, babbie-ops) extends to cover that consolidated lifecycle. commons#50 (runa interactive→interactive handover, RC refs) stays a separate downstream operator gate. The per-unit bullets below predate this and are superseded by it wherever they describe the operator-evidence gate.
 
 The M1 critical-path front's observability prerequisite deepened, then took its
 first step. The real-session gate exposed that #122's live observation rests on
