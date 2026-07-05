@@ -9,13 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Forge-capability canonical advanced to `1.2.0` (additive minor per
-  ADR-0005): the ticket snapshot gains an optional ordered `comments` log —
-  the body is the work-unit's spec, the log its running record — with entry
-  shape `body` (required) plus `author`/`created_at` when the provider
-  supplies them, inherited by `create-ticket`'s output, enforced by the
-  schema, and gated by `scripts/test-forge-capability-schema` in the
-  release-metadata workflow.
+- Retained forge-capability v1 reached `1.2.0` (additive minor per ADR-0005):
+  the ticket snapshot gains an optional ordered `comments` log — the body is
+  the work-unit's spec, the log its running record — with entry shape `body`
+  (required) plus `author`/`created_at` when the provider supplies them,
+  inherited by `create-ticket`'s output and preserved under
+  `schemas/forge-capability/v1/` for existing v1 consumers.
 - `FORGE-CAPABILITY.md`, `schemas/forge-capability/v1/forge-capability.schema.json`,
   and ADR-0016 establish the connector-layer architecture and the first
   capability contract: provider-agnostic forge operations, connector-owned
@@ -38,6 +37,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Forge-capability canonical advanced to `2.0.0` under
+  `schemas/forge-capability/v2/`: `read-ticket`/`create-ticket` and
+  `ticket-snapshot` are replaced by `read-work-unit`/`create-work-unit` and
+  `work-unit-snapshot`; v1 remains frozen under `schemas/forge-capability/v1/`;
+  provider nouns such as GitHub issue and SourceHut ticket are documented as
+  connector-internal projections rather than capability operation names.
 - Intent artifact canonical updated to `2.0.0` at
   `schemas/intent/v2/intent.schema.json`: `description` becomes
   `statement`, typed `references` are removed, optional opaque `target` is

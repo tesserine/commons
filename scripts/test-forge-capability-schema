@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the canonical forge-capability v1 schema against its contract fixtures."""
+"""Validate the canonical forge-capability v2 schema against its contract fixtures."""
 
 from __future__ import annotations
 
@@ -11,13 +11,83 @@ import jsonschema
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_PATH = (
+CURRENT_SCHEMA_PATH = (
+    REPO_ROOT / "schemas" / "forge-capability" / "v2" / "forge-capability.schema.json"
+)
+RETAINED_V1_SCHEMA_PATH = (
     REPO_ROOT / "schemas" / "forge-capability" / "v1" / "forge-capability.schema.json"
 )
+RETAINED_V1_PROSE_PATH = (
+    REPO_ROOT / "schemas" / "forge-capability" / "v1" / "FORGE-CAPABILITY.md"
+)
+
+EXPECTED_OPERATIONS = [
+    "read-work-unit",
+    "create-work-unit",
+    "claim-work-unit",
+    "record-progress",
+    "reflect-disposition",
+    "close-out",
+    "deliver-change-proposal",
+    "apply-approved-change",
+]
+
+CANONICAL_TOOLS = [
+    {
+        "operation": "read-work-unit",
+        "name": "read-work-unit",
+        "input_schema": "#/$defs/read-work-unit-input",
+        "output_schema": "#/$defs/work-unit-snapshot",
+    },
+    {
+        "operation": "create-work-unit",
+        "name": "create-work-unit",
+        "input_schema": "#/$defs/create-work-unit-input",
+        "output_schema": "#/$defs/work-unit-snapshot",
+    },
+    {
+        "operation": "claim-work-unit",
+        "name": "claim-work-unit",
+        "input_schema": "#/$defs/claim-work-unit-input",
+        "output_schema": "#/$defs/work-unit-effect",
+    },
+    {
+        "operation": "record-progress",
+        "name": "record-progress",
+        "input_schema": "#/$defs/record-progress-input",
+        "output_schema": "#/$defs/work-unit-effect",
+    },
+    {
+        "operation": "reflect-disposition",
+        "name": "reflect-disposition",
+        "input_schema": "#/$defs/reflect-disposition-input",
+        "output_schema": "#/$defs/disposition-effect",
+    },
+    {
+        "operation": "close-out",
+        "name": "close-out",
+        "input_schema": "#/$defs/close-out-input",
+        "output_schema": "#/$defs/close-out-effect",
+    },
+    {
+        "operation": "deliver-change-proposal",
+        "name": "deliver-change-proposal",
+        "input_schema": "#/$defs/deliver-change-proposal-input",
+        "output_schema": "#/$defs/change-proposal",
+    },
+    {
+        "operation": "apply-approved-change",
+        "name": "apply-approved-change",
+        "input_schema": "#/$defs/apply-approved-change-input",
+        "output_schema": "#/$defs/apply-result",
+    },
+]
+
+OLD_READ_CREATE_NAMES = ("read-ticket", "create-ticket", "ticket-snapshot")
 
 
-def load_schema() -> dict:
-    return json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+def load_schema(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def assert_valid(validator: jsonschema.Validator, document: dict) -> None:
@@ -35,11 +105,29 @@ def assert_invalid(validator: jsonschema.Validator, document: dict, label: str) 
 def assert_contract_shape(schema: dict) -> None:
     assert schema.get("$schema") == "https://json-schema.org/draft/2020-12/schema"
     assert schema.get("title") == "Forge Capability"
-    assert "Version 1.2.0" in schema.get("description", "")
+    assert "Version 2.0.0" in schema.get("description", "")
     assert "FORGE-CAPABILITY.md is authoritative" in schema.get("description", "")
-    assert schema["properties"]["version"]["const"] == "1.2.0"
+    assert schema["properties"]["version"]["const"] == "2.0.0"
+    assert schema["$defs"]["operation-name"]["enum"] == EXPECTED_OPERATIONS
+    for old_name in OLD_READ_CREATE_NAMES:
+        assert old_name not in json.dumps(schema, sort_keys=True)
 
-    snapshot = schema["$defs"]["ticket-snapshot"]
+    assert "read-work-unit-tool" in schema["$defs"]
+    assert "create-work-unit-tool" in schema["$defs"]
+    assert schema["$defs"]["read-work-unit-tool"]["allOf"][1]["properties"] == {
+        "operation": {"const": "read-work-unit"},
+        "name": {"const": "read-work-unit"},
+        "input_schema": {"const": "#/$defs/read-work-unit-input"},
+        "output_schema": {"const": "#/$defs/work-unit-snapshot"},
+    }
+    assert schema["$defs"]["create-work-unit-tool"]["allOf"][1]["properties"] == {
+        "operation": {"const": "create-work-unit"},
+        "name": {"const": "create-work-unit"},
+        "input_schema": {"const": "#/$defs/create-work-unit-input"},
+        "output_schema": {"const": "#/$defs/work-unit-snapshot"},
+    }
+
+    snapshot = schema["$defs"]["work-unit-snapshot"]
     assert snapshot["required"] == ["handle", "title", "state"]
     assert snapshot["additionalProperties"] is False
     assert set(snapshot["properties"]) == {"handle", "title", "body", "state", "comments"}
@@ -57,14 +145,63 @@ def assert_contract_shape(schema: dict) -> None:
 
 def snapshot_validator(schema: dict) -> jsonschema.Draft202012Validator:
     return jsonschema.Draft202012Validator(
-        {"$ref": "#/$defs/ticket-snapshot", "$defs": schema["$defs"]}
+        {"$ref": "#/$defs/work-unit-snapshot", "$defs": schema["$defs"]}
     )
 
 
+def assert_descriptor_contract(schema: dict) -> None:
+    validator = jsonschema.Draft202012Validator(schema)
+    document = {
+        "capability": "forge",
+        "version": "2.0.0",
+        "handle_schema": "#/$defs/handle",
+        "tools": CANONICAL_TOOLS,
+    }
+    assert_valid(validator, document)
+    assert [tool["operation"] for tool in document["tools"]] == EXPECTED_OPERATIONS
+
+    old_operation = {**CANONICAL_TOOLS[0], "operation": "read-ticket", "name": "read-ticket"}
+    assert_invalid(
+        validator,
+        {**document, "tools": [old_operation, *CANONICAL_TOOLS[1:]]},
+        "old_read_operation",
+    )
+
+    old_create = {**CANONICAL_TOOLS[1], "operation": "create-ticket", "name": "create-ticket"}
+    assert_invalid(
+        validator,
+        {**document, "tools": [CANONICAL_TOOLS[0], old_create, *CANONICAL_TOOLS[2:]]},
+        "old_create_operation",
+    )
+
+    old_output_alias = {**CANONICAL_TOOLS[0], "output_schema": "#/$defs/ticket-snapshot"}
+    assert_invalid(
+        validator,
+        {**document, "tools": [old_output_alias, *CANONICAL_TOOLS[1:]]},
+        "old_snapshot_alias",
+    )
+
+
+def assert_retained_v1_is_frozen() -> None:
+    retained = load_schema(RETAINED_V1_SCHEMA_PATH)
+    assert retained["properties"]["version"]["const"] == "1.2.0"
+    assert retained["$defs"]["operation-name"]["enum"][:2] == [
+        "read-ticket",
+        "create-ticket",
+    ]
+    assert "ticket-snapshot" in retained["$defs"]
+    retained_prose = RETAINED_V1_PROSE_PATH.read_text(encoding="utf-8")
+    assert "Retained contract for forge capability version `1.2.0`." in retained_prose
+    assert "repository-root" in retained_prose
+    assert "[`FORGE-CAPABILITY.md`](../../../FORGE-CAPABILITY.md)" in retained_prose
+
+
 def main() -> int:
-    schema = load_schema()
+    schema = load_schema(CURRENT_SCHEMA_PATH)
     jsonschema.validators.validator_for(schema).check_schema(schema)
     assert_contract_shape(schema)
+    assert_descriptor_contract(schema)
+    assert_retained_v1_is_frozen()
 
     validator = snapshot_validator(schema)
     handle = {"id": "forge/repo#1", "display": "repo#1"}
