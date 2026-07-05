@@ -127,6 +127,17 @@ flowchart TB
         q5_494 --> q5_225
     end
 
+    %% ================= QUEST 6: Radicle-native substrate =================
+    subgraph Q6["🕸️ QUEST · Radicle-native substrate — the forge is the network · commons#108"]
+        direction TB
+        q6_mig["commons#109<br/>Tesserine repo homes migrate to Radicle<br/>(commons ✓ live · runa / groundwork / agentd)"]:::ready
+        q6_adr["commons#108<br/>ADR: Radicle as native collaboration substrate<br/>(forge neutrality retired · gated on #50)"]:::blocked
+        q6_gw["groundwork#538<br/>Radicle-native layer supersedes<br/>the connector system (stub)"]:::blocked
+        q6_adr --> q6_gw
+    end
+    M1INT --> q6_adr
+    q6_adr -. "supersedes on landing" .-> Q3
+
     %% ================= THE STACK =================
     Q4 == "hosts" ==> Q3
     Q3 == "substrate for forge ops" ==> Q2
