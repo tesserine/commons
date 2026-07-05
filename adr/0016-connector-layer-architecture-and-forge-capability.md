@@ -14,8 +14,8 @@ domain by itself; a specific capability carries a substrate domain as content.
 The first capability is the **forge capability**: domain `forge`, with these
 eight operations:
 
-- `read-ticket`
-- `create-ticket`
+- `read-work-unit`
+- `create-work-unit`
 - `claim-work-unit`
 - `record-progress`
 - `reflect-disposition`
@@ -24,7 +24,7 @@ eight operations:
 - `apply-approved-change`
 
 A methodology binds to a capability, not a provider, and may use any subset of
-the capability's operations. A methodology using only ticket creation and
+the capability's operations. A methodology using only work-unit creation and
 progress recording does not have to exercise change-proposal delivery; a
 publishing methodology that owns its own repository can use proposal and apply
 operations without taking on tracker creation. Subset use must compose without
@@ -75,7 +75,7 @@ The forge capability contract is a cross-component artifact governed by
 [ADR-0005](0005-system-conventions.md). Its canonical form is the prose
 authority [`FORGE-CAPABILITY.md`](../FORGE-CAPABILITY.md) at repo root plus
 the versioned schema
-[`schemas/forge-capability/v1/forge-capability.schema.json`](../schemas/forge-capability/v1/forge-capability.schema.json).
+[`schemas/forge-capability/v2/forge-capability.schema.json`](../schemas/forge-capability/v2/forge-capability.schema.json).
 The prose is authoritative; the schema is its mechanical realization.
 
 ## Context

@@ -1,0 +1,710 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Forge Capability",
+  "description": "Canonical schema for the forge capability connector tool-set and operation payloads. Version 2.0.0. commons is the spec authority; FORGE-CAPABILITY.md carries the governing prose and ADR-0005 describes the system-conventions pattern under which this lives. When this schema and FORGE-CAPABILITY.md disagree, FORGE-CAPABILITY.md is authoritative.",
+  "type": "object",
+  "required": ["capability", "version", "handle_schema", "tools"],
+  "additionalProperties": false,
+  "properties": {
+    "capability": {
+      "const": "forge"
+    },
+    "version": {
+      "const": "2.0.0"
+    },
+    "handle_schema": {
+      "const": "#/$defs/handle"
+    },
+    "tools": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/tool"
+      },
+      "allOf": [
+        {
+          "contains": {
+            "$ref": "#/$defs/read-work-unit-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/create-work-unit-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/claim-work-unit-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/record-progress-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/reflect-disposition-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/close-out-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/deliver-change-proposal-tool"
+          }
+        },
+        {
+          "contains": {
+            "$ref": "#/$defs/apply-approved-change-tool"
+          }
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "handle": {
+      "type": "object",
+      "required": ["id", "display"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Connector-issued identity token; compared for equality only by the engine. Must be a complete, scoped work-unit identity per FORGE-CAPABILITY.md (Forge Work-Unit Identity); the prose is authoritative.",
+          "minLength": 1
+        },
+        "display": {
+          "type": "string",
+          "description": "Human-readable rendering of the handled object.",
+          "minLength": 1
+        }
+      }
+    },
+    "operation-name": {
+      "type": "string",
+      "enum": [
+        "read-work-unit",
+        "create-work-unit",
+        "claim-work-unit",
+        "record-progress",
+        "reflect-disposition",
+        "close-out",
+        "deliver-change-proposal",
+        "apply-approved-change"
+      ]
+    },
+    "tool-name": {
+      "type": "string",
+      "description": "Connector descriptor tool name. The exposed connector name is the canonical operation name; aliases are explicit composition-layer decisions outside this schema.",
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9]*([-.][a-z0-9]+)*$"
+    },
+    "schema-ref": {
+      "type": "string",
+      "pattern": "^#/[A-Za-z0-9_$./-]+$"
+    },
+    "tool-base": {
+      "type": "object",
+      "required": ["operation", "name", "input_schema", "output_schema"],
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "$ref": "#/$defs/operation-name"
+        },
+        "name": {
+          "$ref": "#/$defs/tool-name"
+        },
+        "input_schema": {
+          "$ref": "#/$defs/schema-ref"
+        },
+        "output_schema": {
+          "$ref": "#/$defs/schema-ref"
+        }
+      }
+    },
+    "tool": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/read-work-unit-tool"
+        },
+        {
+          "$ref": "#/$defs/create-work-unit-tool"
+        },
+        {
+          "$ref": "#/$defs/claim-work-unit-tool"
+        },
+        {
+          "$ref": "#/$defs/record-progress-tool"
+        },
+        {
+          "$ref": "#/$defs/reflect-disposition-tool"
+        },
+        {
+          "$ref": "#/$defs/close-out-tool"
+        },
+        {
+          "$ref": "#/$defs/deliver-change-proposal-tool"
+        },
+        {
+          "$ref": "#/$defs/apply-approved-change-tool"
+        }
+      ]
+    },
+    "read-work-unit-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "read-work-unit"
+            },
+            "name": {
+              "const": "read-work-unit"
+            },
+            "input_schema": {
+              "const": "#/$defs/read-work-unit-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/work-unit-snapshot"
+            }
+          }
+        }
+      ]
+    },
+    "create-work-unit-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "create-work-unit"
+            },
+            "name": {
+              "const": "create-work-unit"
+            },
+            "input_schema": {
+              "const": "#/$defs/create-work-unit-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/work-unit-snapshot"
+            }
+          }
+        }
+      ]
+    },
+    "claim-work-unit-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "claim-work-unit"
+            },
+            "name": {
+              "const": "claim-work-unit"
+            },
+            "input_schema": {
+              "const": "#/$defs/claim-work-unit-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/work-unit-effect"
+            }
+          }
+        }
+      ]
+    },
+    "record-progress-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "record-progress"
+            },
+            "name": {
+              "const": "record-progress"
+            },
+            "input_schema": {
+              "const": "#/$defs/record-progress-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/work-unit-effect"
+            }
+          }
+        }
+      ]
+    },
+    "reflect-disposition-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "reflect-disposition"
+            },
+            "name": {
+              "const": "reflect-disposition"
+            },
+            "input_schema": {
+              "const": "#/$defs/reflect-disposition-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/disposition-effect"
+            }
+          }
+        }
+      ]
+    },
+    "close-out-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "close-out"
+            },
+            "name": {
+              "const": "close-out"
+            },
+            "input_schema": {
+              "const": "#/$defs/close-out-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/close-out-effect"
+            }
+          }
+        }
+      ]
+    },
+    "deliver-change-proposal-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "deliver-change-proposal"
+            },
+            "name": {
+              "const": "deliver-change-proposal"
+            },
+            "input_schema": {
+              "const": "#/$defs/deliver-change-proposal-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/change-proposal"
+            }
+          }
+        }
+      ]
+    },
+    "apply-approved-change-tool": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/tool-base"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "operation": {
+              "const": "apply-approved-change"
+            },
+            "name": {
+              "const": "apply-approved-change"
+            },
+            "input_schema": {
+              "const": "#/$defs/apply-approved-change-input"
+            },
+            "output_schema": {
+              "const": "#/$defs/apply-result"
+            }
+          }
+        }
+      ]
+    },
+    "read-work-unit-input": {
+      "type": "object",
+      "required": ["reference"],
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "type": "string",
+          "description": "Connector-interpreted work-unit reference in the active deployment; may carry provider coordinates the connector validates against its configured scope. See FORGE-CAPABILITY.md (Forge Work-Unit Identity).",
+          "minLength": 1
+        }
+      }
+    },
+    "create-work-unit-input": {
+      "type": "object",
+      "required": ["title", "body"],
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "claim-work-unit-input": {
+      "type": "object",
+      "required": ["handle"],
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/handle"
+        }
+      }
+    },
+    "record-progress-input": {
+      "type": "object",
+      "required": ["handle", "body"],
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/handle"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "comment-entry": {
+      "type": "object",
+      "required": ["body"],
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "author": {
+          "type": "string",
+          "minLength": 1
+        },
+        "created_at": {
+          "type": "string",
+          "description": "Provider-normalized timestamp.",
+          "minLength": 1
+        }
+      }
+    },
+    "work-unit-snapshot": {
+      "type": "object",
+      "required": ["handle", "title", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/handle"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": ["string", "null"]
+        },
+        "state": {
+          "type": "string",
+          "minLength": 1
+        },
+        "comments": {
+          "type": "array",
+          "description": "Ordered comment log, oldest first. The body is the work-unit's spec; the comment log is its running record — review state, dispositions, and directives.",
+          "items": {
+            "$ref": "#/$defs/comment-entry"
+          }
+        }
+      }
+    },
+    "work-unit-effect": {
+      "type": "object",
+      "required": ["handle", "receipt"],
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/handle"
+        },
+        "receipt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "source-control-fact": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*\\.\\.)[^:\\s\\u0000-\\u001F\\u007F]+$"
+    },
+    "deliver-change-proposal-input": {
+      "type": "object",
+      "required": ["work_unit", "branch", "commit", "base", "summary", "body", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "branch": {
+          "$ref": "#/$defs/source-control-fact"
+        },
+        "commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base": {
+          "$ref": "#/$defs/source-control-fact"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "change-proposal": {
+      "type": "object",
+      "required": ["handle", "work_unit", "commit", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "handle": {
+          "$ref": "#/$defs/handle"
+        },
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "required": ["observation", "classification"],
+      "additionalProperties": false,
+      "properties": {
+        "observation": {
+          "type": "string",
+          "minLength": 1
+        },
+        "classification": {
+          "type": "string",
+          "enum": ["blocking", "non-blocking"]
+        },
+        "location": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "required": ["kind", "against_version", "reviewer", "reviewed_at", "findings"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["approved", "needs-revision"]
+        },
+        "against_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "reviewer": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time",
+          "minLength": 1
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/finding"
+          }
+        }
+      }
+    },
+    "reflect-disposition-input": {
+      "type": "object",
+      "required": ["work_unit", "change", "disposition", "body"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "change": {
+          "$ref": "#/$defs/handle"
+        },
+        "disposition": {
+          "$ref": "#/$defs/disposition"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "disposition-effect": {
+      "type": "object",
+      "required": ["work_unit", "change", "receipt"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "change": {
+          "$ref": "#/$defs/handle"
+        },
+        "receipt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "apply-approved-change-input": {
+      "type": "object",
+      "required": ["work_unit", "change", "approved_version", "approved_commit", "base"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "change": {
+          "$ref": "#/$defs/handle"
+        },
+        "approved_version": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "approved_commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "base": {
+          "$ref": "#/$defs/source-control-fact"
+        }
+      }
+    },
+    "apply-result": {
+      "type": "object",
+      "required": ["work_unit", "change", "applied_commit", "receipt"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "change": {
+          "$ref": "#/$defs/handle"
+        },
+        "applied_commit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "receipt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "completion": {
+      "type": "object",
+      "required": ["criterion_summary", "gaps", "change_reference", "documentation_status"],
+      "additionalProperties": false,
+      "properties": {
+        "criterion_summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "change_reference": {
+          "type": "string",
+          "minLength": 1
+        },
+        "documentation_status": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "close-out-input": {
+      "type": "object",
+      "required": ["work_unit", "completion", "body"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "completion": {
+          "$ref": "#/$defs/completion"
+        },
+        "body": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "close-out-effect": {
+      "type": "object",
+      "required": ["work_unit", "receipt"],
+      "additionalProperties": false,
+      "properties": {
+        "work_unit": {
+          "$ref": "#/$defs/handle"
+        },
+        "receipt": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

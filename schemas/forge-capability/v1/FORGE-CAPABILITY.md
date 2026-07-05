@@ -1,4 +1,12 @@
-# Forge Capability
+# Forge Capability v1
+
+Retained contract for forge capability version `1.2.0`.
+
+This document is the governing prose for
+[`forge-capability.schema.json`](forge-capability.schema.json). The
+repository-root [`FORGE-CAPABILITY.md`](../../../FORGE-CAPABILITY.md)
+describes the current authoritative major version; this file preserves the v1
+contract for existing consumers.
 
 Canonical contract for the forge capability: the connector-layer interface for
 work-unit tracker and change-proposal operations across forge providers.
@@ -16,43 +24,30 @@ configuration. A caller supplies only capability-domain data.
 
 ## Version
 
-`2.0.0`
-
-This is a major rename from v1.2.0. The active capability surface uses
-`read-work-unit`, `create-work-unit`, and `work-unit-snapshot`; the v1 names
-`read-ticket`, `create-ticket`, and `ticket-snapshot` remain only in the
-retained v1 authority under `schemas/forge-capability/v1/`.
-
-Provider nouns are connector projections, not capability terms. GitHub maps a
-work-unit to an issue, and SourceHut maps a work-unit to a ticket; those nouns
-belong inside provider connectors and provider-facing examples, not in the
-canonical operation surface.
+`1.2.0`
 
 ## Stable Identifier
 
 Two reference forms exist and serve different purposes:
 
-- **Navigation (mutable).** `https://raw.githubusercontent.com/tesserine/commons/main/schemas/forge-capability/v2/forge-capability.schema.json`.
-  Useful for humans browsing the current authoritative version. Not
-  acceptable as a conformance target: `main` moves.
+- **Navigation (mutable).** `https://raw.githubusercontent.com/tesserine/commons/main/schemas/forge-capability/v1/forge-capability.schema.json`.
+  Useful for humans browsing the retained v1 schema. Not acceptable as a
+  conformance target: `main` moves.
 - **Conformance (immutable).** Either a commit-SHA URL
-  (`https://raw.githubusercontent.com/tesserine/commons/<commit-sha>/schemas/forge-capability/v2/forge-capability.schema.json`)
+  (`https://raw.githubusercontent.com/tesserine/commons/<commit-sha>/schemas/forge-capability/v1/forge-capability.schema.json`)
   or a release-tag URL
-  (`https://raw.githubusercontent.com/tesserine/commons/<release-tag>/schemas/forge-capability/v2/forge-capability.schema.json`).
+  (`https://raw.githubusercontent.com/tesserine/commons/<release-tag>/schemas/forge-capability/v1/forge-capability.schema.json`).
   These URLs are schematic; provenance and conformance claims must replace
   the placeholder token with a real immutable identifier. Connector,
   methodology, and runtime vendoring provenance must use an immutable form.
 
-The versioned path segment (`schemas/forge-capability/v2/...`) is the
+The versioned path segment (`schemas/forge-capability/v1/...`) is the
 major-version URL-stability boundary described by ADR-0005. Once published,
-`v2` keeps the same identity and location. Minor and patch releases may evolve
+`v1` keeps the same identity and location. Minor and patch releases may evolve
 the content in place only through additive optional fields and clarifications
 that do not break a conforming consumer. Breaking changes go to a new
-directory. Conformance claims pin to a full semver such as `2.0.0`, not to the
+directory. Conformance claims pin to a full semver such as `1.2.0`, not to the
 major version alone.
-
-The retained v1 prose and schema remain under `schemas/forge-capability/v1/`
-for existing v1 consumers. They are publication history, not an alias for v2.
 
 ## Concepts
 
@@ -63,7 +58,7 @@ binds to for one substrate domain. The concept itself names no domain. A
 specific capability carries a substrate domain as content.
 
 The forge capability is the first capability. It covers forge-domain work:
-work-unit tracking, work-unit progress, change proposal delivery, review
+tracker tickets, work-unit progress, change proposal delivery, review
 disposition reflection, close-out, and application of approved change.
 
 ### Connector
@@ -101,7 +96,7 @@ toward the others.
 Two forms of identity cross the capability seam:
 
 - A **reference** is the caller-facing locator used to first reach a unit (the
-  input to `read-work-unit`). It may carry provider coordinates. It is opaque to
+  input to `read-ticket`). It may carry provider coordinates. It is opaque to
   the engine and methodology — they never parse it — but the connector resolves
   it, and validates any coordinate it carries against the connector's
   configured scope, rejecting a foreign scope.
@@ -142,31 +137,30 @@ methodology.
 Every operation name below is canonical. Provider coordinates and credentials
 are never operation inputs.
 
-### `read-work-unit`
+### `read-ticket`
 
-Reads an existing deployment-local work-unit and returns its work-unit
-snapshot. A connector projects this onto the provider's tracked item: GitHub
-issues for the GitHub connector, SourceHut tickets for the SourceHut connector.
+Reads an existing deployment-local tracker ticket and returns its work-unit
+snapshot.
 
 Caller input:
 
 | Field | Required | Type | Meaning |
 | --- | --- | --- | --- |
-| `reference` | yes | string | A connector-interpreted work-unit reference in the active deployment. |
+| `reference` | yes | string | A connector-interpreted ticket reference in the active deployment. |
 
 Output:
 
 | Field | Required | Type | Meaning |
 | --- | --- | --- | --- |
-| `handle` | yes | handle | Opaque work-unit handle produced by the connector. |
-| `title` | yes | string | Work-unit title or subject. |
-| `body` | no | string or null | Work-unit body text if present. |
-| `state` | yes | string | Connector-normalized work-unit state label. |
-| `comments` | no | array of comment entries | The work-unit's comment log, ordered oldest first. |
+| `handle` | yes | handle | Opaque work-unit ticket handle produced by the connector. |
+| `title` | yes | string | Ticket title or subject. |
+| `body` | no | string or null | Ticket body text if present. |
+| `state` | yes | string | Connector-normalized ticket state label. |
+| `comments` | no | array of comment entries | The ticket's comment log, ordered oldest first. |
 
-The body is the work-unit's spec; the comment log is its running record —
-review state, dispositions, and directives live there. The snapshot carries the
-log so a caller grounds on the whole work-unit, not the spec alone.
+The ticket body is the work-unit's spec; the comment log is its running
+record — review state, dispositions, and directives live there. The snapshot
+carries the log so a caller grounds on the whole ticket, not the spec alone.
 Each comment entry carries `body` (required, string); the connector includes
 `author` (string) and `created_at` (string, a provider-normalized timestamp)
 when the provider supplies them.
@@ -175,25 +169,24 @@ The reference is opaque to the engine and methodology: they never parse it. It
 is the caller-facing form of a forge work-unit identity (see **Forge Work-Unit
 Identity**), so it may carry provider coordinates — a deployment renders
 references in a coordinate-bearing form. The connector resolves the reference
-to the provider's tracked item and validates any coordinate it carries against
-the connector's configured scope, rejecting a foreign scope. The reference
-grammar and its resolution are connector-owned; the caller never needs to know
-them.
+to a provider ticket and validates any coordinate it carries against the
+connector's configured scope, rejecting a foreign scope. The reference grammar
+and its resolution are connector-owned; the caller never needs to know them.
 
-### `create-work-unit`
+### `create-ticket`
 
-Creates a work-unit in the connector's configured work-unit home and
+Creates a tracker ticket in the connector's configured work-unit home and
 returns the connector-issued work-unit handle.
 
 Caller input:
 
 | Field | Required | Type | Meaning |
 | --- | --- | --- | --- |
-| `title` | yes | string | Work-unit title. |
-| `body` | yes | string | Work-unit body. |
+| `title` | yes | string | Work-unit ticket title. |
+| `body` | yes | string | Work-unit ticket body. |
 
-Output is the same work-unit snapshot shape returned by `read-work-unit`. A
-just-created work-unit carries an absent or empty comment log.
+Output is the same ticket snapshot shape returned by `read-ticket`. A
+just-created ticket carries an absent or empty comment log.
 
 ### `claim-work-unit`
 
@@ -335,7 +328,7 @@ A connector implementing the forge capability contributes a tool-set
 descriptor with:
 
 - `capability`: `forge`
-- `version`: full semver, currently `2.0.0`
+- `version`: full semver, initially `1.0.0`
 - `handle_schema`: `#/$defs/handle`
 - one MCP tool for each of the eight canonical operations
 
@@ -353,8 +346,8 @@ identity grammar.
 ## Machine-Checkable Schema
 
 The authoritative JSON Schema for this contract lives at
-[`schemas/forge-capability/v2/forge-capability.schema.json`](schemas/forge-capability/v2/forge-capability.schema.json).
-The authoritative schema intentionally omits `$id`; machine identity for this
+[`forge-capability.schema.json`](forge-capability.schema.json). The
+authoritative schema intentionally omits `$id`; machine identity for this
 canonical lives in immutable provenance and conformance references, not in
 embedded schema metadata.
 

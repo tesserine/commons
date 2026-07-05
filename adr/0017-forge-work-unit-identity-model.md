@@ -19,7 +19,7 @@ connector's identities, regardless of provider:
   especially.
 
 This holds for both forms that cross the capability seam. A **reference**
-(the `read-ticket` input) is the caller-facing locator; it may carry provider
+(the `read-work-unit` input) is the caller-facing locator; it may carry provider
 coordinates, is opaque to the engine and methodology, and is resolved and
 scope-validated by the connector. A **handle** (`{ id, display }`) is the
 connector-issued identity; its `id` is complete and scoped. "Compared for
@@ -31,15 +31,19 @@ of it: `github` projects scope as `owner/repo`, `sourcehut` projects scope as a
 tracker identifier. The model is never derived from one provider's incidental
 form and patched toward the others.
 
-The forge capability moves to `1.1.0` in place under `schemas/forge-capability/v1/`.
+At ADR acceptance time, this identity-model tightening moved the forge
+capability to `1.1.0` in place under `schemas/forge-capability/v1/`. The
+current v2 major keeps this identity model while renaming the caller-facing
+read operation to `read-work-unit`.
 
 ## Context
 
 ADR-0016 established the connector layer and the opaque `{ id, display }`
 handle, with the engine comparing `id` for equality only. That framing left the
 `id`'s *content* entirely to the connector ("whatever internal provider
-identity they need"), and described the read-ticket reference as carrying no
-provider coordinates. Both were under-specifications rather than decisions.
+identity they need"), and described the historical v1 `read-ticket` reference
+as carrying no provider coordinates. Both were under-specifications rather than
+decisions.
 
 Under that text a number-only handle — `github:issue:42` with no repository — is
 conformant. Passed to a connector configured for a different repository, it
@@ -72,3 +76,7 @@ letting either define it (usage sets a floor, not a ceiling).
   version: connectors own reference→handle resolution and scope validation, and
   the engine's legacy reference parsing (`libagent`) is retired by the later
   epic unit, never duplicated as a second home.
+- The current forge-capability v2 major keeps this identity model and names the
+  caller-facing read operation `read-work-unit`; the v1 `read-ticket` spelling
+  is retained only as historical context for the under-specification this ADR
+  corrected.
