@@ -95,6 +95,8 @@ flowchart TB
         q3_61 --> q3_100
         q3_100 --> q3_516
         q3_100 --> q3_228
+        q3_106["commons#106<br/>neutral op names —<br/>read/create-work-unit (v2.0.0)"]:::ready
+        q3_440 --> q3_106
     end
 
     %% ================= QUEST 4: session composition (host) =================
