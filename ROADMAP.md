@@ -139,13 +139,13 @@ flowchart TB
     q6_adr -. "supersedes on landing" .-> Q3
 
     %% ================= QUEST 7: intent-entry surface =================
-    subgraph Q7["🪄 QUEST · intent-entry surface — wish declares, run dispatches · agentd#160 (off M1)"]
+    subgraph Q7["🪄 QUEST · intent-entry surface — wish declares, run dispatches · agentd#160 ✓ (#165 before M1 · #166–#168 after M1 + Radicle)"]
         direction TB
         q7_160["agentd#160 ✓<br/>spike: reckon the surface from the need —<br/>two acts (declare / dispatch), wish is the declarative home"]:::landed
-        q7_165["agentd#165<br/>wish gains a supplied projection<br/>(noninteractive statement + target)"]:::ready
-        q7_166["agentd#166<br/>desired-state wish copy<br/>(retire the process-framed prompt)"]:::ready
-        q7_167["agentd#167<br/>retire run --intent —<br/>run returns to pure dispatch"]:::blocked
-        q7_168["agentd#168<br/>document the consolidated surface<br/>(two acts, two homes)"]:::open
+        q7_165["agentd#165<br/>wish gains a supplied projection<br/>(noninteractive statement + target)<br/>→ before M1 release (parallel, not gating)"]:::ready
+        q7_166["agentd#166<br/>desired-state wish copy ⏸<br/>after M1 + Radicle"]:::blocked
+        q7_167["agentd#167<br/>retire run --intent ⏸<br/>after M1 + Radicle (dep #165)"]:::blocked
+        q7_168["agentd#168<br/>document consolidated surface ⏸<br/>after M1 + Radicle"]:::blocked
         q7_160 --> q7_165
         q7_160 --> q7_166
         q7_165 -->|"Sequence: projection<br/>before retirement"| q7_167
@@ -339,8 +339,7 @@ line is now **landed**, and the line's front is the implementation it authorized
   and unblocking **commons#50 → #48** (M1).
 - **runa#153** — decompose the cycling capstone against the live substrate (**off the M1 path**; advances the post-M1 runway).
 - **runa#226** — retire the forge-address dyad + engine forge-modeling (connectors line; **off the M1 path**).
-- **agentd#165** — `wish` gains a supplied (noninteractive) projection for statement + target — the declarative act's missing non-interactive home (**off the M1 path**; unblocks agentd#167). *From spike agentd#160.*
-- **agentd#166** — re-derive the `wish` copy to desired-state framing, retiring the process-framed prompt (**off the M1 path**). *From spike agentd#160.*
+- **agentd#165** — `wish` gains a supplied (noninteractive) projection for statement + target. **Greenlit to ship before the M1 release** (parallel, does not gate M1); Radicle-neutral (opaque target). *From spike agentd#160; rest of the arc deferred to after M1 + Radicle.*
 
 Follow-on **babbie-ops#82** (codex runtime, both credential options) is
 unblocked but off the M1 path, targeted the next ecosystem release.
