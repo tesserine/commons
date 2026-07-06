@@ -172,7 +172,7 @@ flowchart TB
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
     AGENTD162["agentd#162<br/>nested transcript path-contract fix (ADR-0020) — resolver + audit finalize<br/>code-approved @ ba5fcbd · PR #163 live<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>live tailer rebased onto #162 for the verification build<br/>operator-evidence → #67 · merges on #67 session pass"]:::blocked --> BO67
-    RUNBOOK96["babbie-ops#96<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::ready --> BO67
+    RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>one agentd wish session on the #122-on-#162 verification build<br/>collects #162 (live+sealed) · #122 (live obs) · #67 (DX judgment)<br/>pass → merge #162 + #122, close #58"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
