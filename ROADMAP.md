@@ -171,7 +171,7 @@ flowchart TB
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
     AGENTD162["agentd#162<br/>nested transcript path-contract fix (ADR-0020) — resolver + audit finalize<br/>code-approved @ ba5fcbd · PR #163 live<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> AGENTD122
-    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>live tailer rebased onto #162 for the verification build<br/>operator-evidence → #67 · merges on #67 session pass"]:::blocked --> BO67
+    AGENTD122["agentd#122<br/>live session progress observation — code-complete<br/>live tailer rebased onto #162 (@ ba5fcbd) → the verification build · READY front<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>one agentd wish session on the #122-on-#162 verification build<br/>collects #162 (live+sealed) · #122 (live obs) · #67 (DX judgment)<br/>pass → merge #162 + #122, close #58"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
@@ -288,12 +288,15 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
+**Refreshed 2026-07-06 (freshen on babbie-ops#67).** The ready front is **agentd#122** — its blocker cleared now that **#162** is code-approved @ `ba5fcbd` (PR #163 clean). #122's remaining work: rebase its live tailer/progress surface onto #162's branch to produce the **#122-on-#162 verification build**, which babbie-ops#67's consolidated operator-eyes session runs on. Predecessor **babbie-ops#96** (runbook lifecycle) landed (PR #97 → `b037e804`). #67 stays blocked on the verification build; the build does not yet exist (`ba5fcbd` is `main` + 2 transcript-fix commits, diverged from #122's stranded `8a68a45`).
+
 **Shape change — 2026-07-05 (operator decision): operator-eyes DX validation consolidated into babbie-ops#67.** The three units needing a human watching a real `agentd wish` session — **#162** (live progress + sealed non-`no_events` record), **#122** (live progress observation), and **#67** (DX/observability judgment) — collect their operator-owned evidence in **one** session on the #122-on-#162 verification build, owned by #67. #162 and #122 keep their automated evidence and **merge on #67's session pass**; #67's acceptance closes epic #58. The runbook (`interactive-tesserine-full-stack.md`, babbie-ops) extends to cover that consolidated lifecycle — filed as **babbie-ops#96**, which #67 depends on. commons#50 (runa interactive→interactive handover, RC refs) stays a separate downstream operator gate. The per-unit bullets below predate this and are superseded by it wherever they describe the operator-evidence gate.
 
 The M1 critical-path front's observability prerequisite deepened, then took its
 first step. The real-session gate exposed that #122's live observation rests on
 a broken transcript path-contract; the sovereignty decision that had to lead the
-line is now **landed**, and the line's front is the implementation it authorized:
+line landed, then the implementation it authorized (**#162**) was code-approved;
+the line's front is now #122's rebase of its live tailer onto #162:
 
 - **commons#102** — ✓ **landed** as **ADR-0020** (run-record storage locus and
   ownership). Session run-records are **owned by the project/deployment** and
@@ -310,7 +313,11 @@ line is now **landed**, and the line's front is the implementation it authorized
   (`deployments/<deployment>/work-units/<wu>/runs/<run_id>/events.jsonl`), so
   live observation streams nothing and sealed audit records come out empty
   (`coverage: no_events`) though the events exist. The fix is now **filed as
-  agentd#162** and is the **ready front** (below); #122 stays blocked on it.
+  agentd#162** (code-approved @ `ba5fcbd`, PR #163 clean), so #122's blocker
+  is cleared: **#122 is now the ready front** — its live tailer/progress surface
+  rebased onto #162's branch produces the **#122-on-#162 verification build**
+  #67's session runs on. The stranded ProgressWriter work (closed PR #161 @
+  `8a68a45`) is salvageable — reachable, six commits diverged from `ba5fcbd`.
 - **agentd#162** — the transcript path-contract fix ADR-0020 named as its
   separate impl: agentd injects a deterministic run/deployment identity and
   reads runa's real project-keyed nested path
