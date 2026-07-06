@@ -154,6 +154,29 @@ flowchart TB
         q7_166 --> q7_168
     end
 
+    %% ================= QUEST 8: Gazette — the production proof =================
+    subgraph Q8["📰 QUEST · Gazette — substrate-primary agent newspaper · gazette#10"]
+        direction TB
+        q8_disc["with-claude#166<br/>design-as-substrate discipline<br/>(_shared methodology)"]:::ready
+        q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::open
+        q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::ready
+        q8_tel["gazette#12<br/>Telemetry contract —<br/>stats co-equal + story-source"]:::open
+        q8_proj["gazette#13<br/>Projection contract —<br/>corpus → byte-identical site"]:::open
+        q8_des["gazette#14<br/>Design contract — declared substrate<br/>+ floor + mandated reckon-gate"]:::open
+        q8_prod["gazette#15 · PRODUCTION<br/>live 24/7 publishing to Radicle —<br/>the advanced integration test ⏸ post-M1"]:::blocked
+        q8_disc --> q8_ds
+        q8_sub --> q8_tel
+        q8_sub --> q8_proj
+        q8_sub --> q8_des
+        q8_ds --> q8_proj
+        q8_ds --> q8_des
+        q8_tel --> q8_prod
+        q8_proj --> q8_prod
+        q8_des --> q8_prod
+    end
+    Q2 == "capstone proves on" ==> q8_prod
+    Q6 == "publication substrate" ==> q8_prod
+
     %% ================= THE STACK =================
     Q4 == "hosts" ==> Q3
     Q3 == "substrate for forge ops" ==> Q2
@@ -262,6 +285,23 @@ dead.
   decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
   deferred off the M1 path.
 
+## The Gazette quest — the production proof (Q8)
+
+**Gazette** (gazette#10) is the ecosystem's first production agent and its
+advanced integration test: a **substrate-primary newspaper** — the
+machine-readable corpus is the product, the website one projection of it, the
+agent reading path canonical. Its **spec arc** — News Substrate (gazette#11)
+→ Telemetry (#12) → Projection (#13) → Design (#14) contracts, with the
+design system (with-claude#166 discipline → commons#110 system) authored
+first, top-down, as the rendering half's prerequisite — runs **now, off the
+M1 path**, graded-relay-friendly. Its **production arc** (gazette#15) —
+live 24/7, publishing to Radicle — is the downstream acceptance of autonomous
+cycling (Q2) on the Radicle substrate (Q6): the true pass is the running
+system. Gazette forces substrate by being a production agent; blockers its
+publish path surfaces are deliverables. Placed by operator decision
+2026-07-06; the SourceHut chronicler line (gazette#1–#3) is retired into the
+program.
+
 ## Release sequencing
 
 Two publications, in order, both through the ecosystem-release ceremony
@@ -288,7 +328,10 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-**Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs.
+**Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs. **Off the M1
+path (2026-07-06):** the Gazette quest (Q8) is filed — the design-as-substrate
+discipline (with-claude#166) and the News Substrate contract (gazette#11) are
+craftable now.
 
 _(prior)_ The ready front was **agentd#122** — its blocker cleared now that **#162** is code-approved @ `ba5fcbd` (PR #163 clean). #122's remaining work: rebase its live tailer/progress surface onto #162's branch to produce the **#122-on-#162 verification build**, which babbie-ops#67's consolidated operator-eyes session runs on. Predecessor **babbie-ops#96** (runbook lifecycle) landed (PR #97 → `b037e804`). #67 stays blocked on the verification build; the build does not yet exist (`ba5fcbd` is `main` + 2 transcript-fix commits, diverged from #122's stranded `8a68a45`).
 
