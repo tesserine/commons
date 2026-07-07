@@ -183,18 +183,23 @@ flowchart TB
     subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (off M1 path)"]
         direction TB
         q9_540["groundwork#540 ✓<br/>spike: reckon verify — PASS, basis sufficient<br/>after migrations (surplus proved generativity)"]:::landed
-        q9_vfix["groundwork#542 #543 #544 #545 #546<br/>verify: migrations (AC1) + deltas (surplus) —<br/>verify's protocol re-derives fully"]:::ready
-        q9_555["groundwork#555<br/>stage-order gate (AC2) — CI gates published<br/>order vs manifest topsort (partial order)"]:::ready
-        q9_ready["groundwork#556 #557 #558<br/>derivation passes: submit · review · land<br/>(workflow contracts exist — ready)"]:::ready
+        q9_vfix["groundwork#542 #543 #544 #545 #546<br/>verify: migrations + deltas — protocol re-derives fully"]:::ready
+        q9_555["groundwork#555<br/>stage-order gate (AC2) — CI gates order vs manifest"]:::ready
+        q9_557["groundwork#557 ✓<br/>review pass — PASS, sufficient after #564;<br/>#548 routing-on-content CONFIRMED typed at the schema"]:::landed
+        q9_rev["groundwork#564 #565 #566 #567 #568<br/>review: migration + deltas (incl. #544's hollow_delivery)"]:::ready
+        q9_ready["groundwork#556 #558<br/>derivation passes: submit · land (ready)"]:::ready
         q9_319["groundwork#319<br/>C-2 coverage — authors the 5 missing<br/>workflow contracts"]:::blocked
         q9_gated["groundwork#559 #560 #561 #562 #563<br/>derivation passes: survey · decompose · define<br/>· plan · implement (gated on their contracts)"]:::blocked
-        q9_find["groundwork#547 #548 #549 #551 · #550 · #552 #553 #554<br/>basis-growth findings — the end-state homes<br/>(routing-on-content · cross-artifact law · freshness)<br/>close the epic last, fed by the passes"]:::open
+        q9_find["groundwork#547 #548 #549 #551 #569 · #550 · #552 #553 #554<br/>basis-growth findings — the end-state homes<br/>(cross-artifact law · identity/substrate binding · freshness)<br/>close the epic last, fed by the passes"]:::open
         q9_540 --> q9_vfix
         q9_540 --> q9_555
+        q9_540 --> q9_557
         q9_540 --> q9_ready
         q9_540 --> q9_gated
+        q9_557 --> q9_rev
         q9_319 --> q9_gated
         q9_vfix --> q9_find
+        q9_rev --> q9_find
         q9_ready --> q9_find
         q9_gated --> q9_find
     end
