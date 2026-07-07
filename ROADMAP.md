@@ -176,25 +176,25 @@ flowchart TB
     end
 
     %% ================= QUEST 9: derived methodology — the basis generates =================
-    subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (stub · off M1 path)"]
+    subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (off M1 path)"]
         direction TB
-        q9_540["groundwork#540 ✓<br/>spike: reckon verify from the basis —<br/>PASS · basis sufficient after migrations<br/>(frame rule held · derivation surplus proved generativity)"]:::landed
-        q9_542["groundwork#542<br/>verify.toml: debug binding, remediation<br/>edge, 3 untyped corruption modes"]:::ready
-        q9_543["groundwork#543<br/>completion-evidence: evidence-home seam"]:::ready
-        q9_verok["verify: every acceptance semantic<br/>single-homed + cited (epic AC1 for verify)"]:::gate
-        q9_544["groundwork#544<br/>gate consumes hollow_delivery"]:::ready
-        q9_545["groundwork#545<br/>authority-defect boundary"]:::ready
-        q9_546["groundwork#546<br/>dimension-agnostic step framing"]:::ready
-        q9_find["groundwork#547 #548 #549 #550 #551<br/>#552 #553 #554<br/>basis findings — gaps · boundary · reorg<br/>(bound the epic end-state; #550 = revision-loop gate)"]:::open
-        q9_reground["⟨not yet filed⟩<br/>epic body re-grounding + full-spec decomposition<br/>(stub clears here · generative act → groundwork#541)"]:::open
-        q9_540 --> q9_542 --> q9_verok
-        q9_540 --> q9_543 --> q9_verok
-        q9_540 --> q9_544
-        q9_540 --> q9_545
-        q9_540 --> q9_546
-        q9_540 --> q9_find
-        q9_540 --> q9_reground
-    end    Q2 == "capstone proves on" ==> q8_prod
+        q9_540["groundwork#540 ✓<br/>spike: reckon verify — PASS, basis sufficient<br/>after migrations (surplus proved generativity)"]:::landed
+        q9_vfix["groundwork#542 #543 #544 #545 #546<br/>verify: migrations (AC1) + deltas (surplus) —<br/>verify's protocol re-derives fully"]:::ready
+        q9_555["groundwork#555<br/>stage-order gate (AC2) — CI gates published<br/>order vs manifest topsort (partial order)"]:::ready
+        q9_ready["groundwork#556 #557 #558<br/>derivation passes: submit · review · land<br/>(workflow contracts exist — ready)"]:::ready
+        q9_319["groundwork#319<br/>C-2 coverage — authors the 5 missing<br/>workflow contracts"]:::blocked
+        q9_gated["groundwork#559 #560 #561 #562 #563<br/>derivation passes: survey · decompose · define<br/>· plan · implement (gated on their contracts)"]:::blocked
+        q9_find["groundwork#547 #548 #549 #551 · #550 · #552 #553 #554<br/>basis-growth findings — the end-state homes<br/>(routing-on-content · cross-artifact law · freshness)<br/>close the epic last, fed by the passes"]:::open
+        q9_540 --> q9_vfix
+        q9_540 --> q9_555
+        q9_540 --> q9_ready
+        q9_540 --> q9_gated
+        q9_319 --> q9_gated
+        q9_vfix --> q9_find
+        q9_ready --> q9_find
+        q9_gated --> q9_find
+    end
+    Q2 == "capstone proves on" ==> q8_prod
     Q6 == "publication substrate" ==> q8_prod
 
     %% ================= THE STACK =================
