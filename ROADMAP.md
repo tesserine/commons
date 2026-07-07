@@ -173,7 +173,7 @@ flowchart TB
         direction TB
         q8_disc["with-claude#166<br/>design-as-substrate discipline<br/>(_shared methodology)"]:::ready
         q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::open
-        q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::ready
+        q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::landed
         q8_tel["gazette#12<br/>Telemetry contract —<br/>stats co-equal + story-source"]:::open
         q8_proj["gazette#13<br/>Projection contract —<br/>corpus → byte-identical site"]:::open
         q8_des["gazette#14<br/>Design contract — declared substrate<br/>+ floor + mandated reckon-gate"]:::open
@@ -376,9 +376,10 @@ Two publications, in order, both through the ecosystem-release ceremony
 ## What's ready right now
 
 **Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs. **Off the M1
-path (2026-07-06):** the Gazette quest (Q8) is filed — the design-as-substrate
-discipline (with-claude#166) and the News Substrate contract (gazette#11) are
-craftable now.
+path (2026-07-07):** the Gazette quest (Q8) backbone is **landed** — the News
+Substrate contract (gazette#11) is merged to trunk (squash `1414517a`), so
+#12/#13/#14 unblock. The design-as-substrate discipline (with-claude#166)
+remains craftable now.
 
 _(prior)_ The ready front was **agentd#122** — its blocker cleared now that **#162** is code-approved @ `ba5fcbd` (PR #163 clean). #122's remaining work: rebase its live tailer/progress surface onto #162's branch to produce the **#122-on-#162 verification build**, which babbie-ops#67's consolidated operator-eyes session runs on. Predecessor **babbie-ops#96** (runbook lifecycle) landed (PR #97 → `b037e804`). #67 stays blocked on the verification build; the build does not yet exist (`ba5fcbd` is `main` + 2 transcript-fix commits, diverged from #122's stranded `8a68a45`).
 
