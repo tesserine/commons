@@ -184,7 +184,7 @@ flowchart TB
         direction TB
         q9_540["groundwork#540 ✓<br/>spike: reckon verify — PASS (surplus proved generativity)"]:::landed
         q9_557["groundwork#557 ✓<br/>review pass — PASS; #548 routing CONFIRMED typed"]:::landed
-        q9_556["groundwork#556 ✓<br/>review pass — PASS; submit default fails-unsafe (→#551)"]:::landed
+        q9_556["groundwork#556 ✓<br/>submit pass — PASS; submit default fails-unsafe (→#551)"]:::landed
         q9_vfix["groundwork#542 #543 #544 #545 #546<br/>verify: migrations + deltas"]:::ready
         q9_rev["groundwork#564 #565 #566 #567 #568<br/>review: migration + deltas"]:::ready
         q9_sub["groundwork#570 #571 #572<br/>submit: migration + deltas"]:::ready
