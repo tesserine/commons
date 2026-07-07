@@ -243,8 +243,8 @@ flowchart TB
     AGENTD122["agentd#122 (consolidated into PR #163)<br/>live tailer reads shared exact-run-id resolver — CORRECT<br/>streams once runa#238 writes under the supplied id · merges on #67 pass"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
-    RUNA238["runa#238<br/>honor supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>runa mints run-{nanos} despite env (pinned at /proc 2026-07-07)<br/>THE load-bearing M1 observability fix · relay parked"]:::open --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate · session SUCCEEDS<br/>#100 wiring fixed · agentd PR #163 correct (env delivered, finalizer reads exact id)<br/>BLOCKED on runa#238: runa ignores supplied run-id, writes minted per-stage<br/>co-verify PR #163 + runa#238 · pass → merge #162+#122, close #58"]:::blocked --> M1INT
+    RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>#100 wiring fixed · agentd PR #163 correct · runa#238 landed @ 53b064ba<br/>BLOCKED on the co-verify run: base image rebuilt at runa 53b064ba + agentd PR #163 head<br/>co-verify PR #163 + runa#238 on the run · pass → merge #162+#122, close #58"]:::blocked --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
