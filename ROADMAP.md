@@ -122,7 +122,8 @@ flowchart TB
         q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule"]:::ready
         q5_573ad["agentd#172<br/>retrofit operator-met help surfaces<br/>(blocked by #573)"]:::open
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
-        q5_cpend["groundwork#531 #488 #486 #487<br/>pending contract-machine improvements —<br/>grounded + sequenced by the re-reckon"]:::open
+        q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>graded relay (define+plan); define stage in flight"]:::ready
+        q5_cpend["groundwork#488 #486 #487<br/>pending contract-machine improvements —<br/>grounded + sequenced by the re-reckon"]:::open
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
@@ -132,6 +133,7 @@ flowchart TB
         q5_494 --> q5_225
         q5_498 --> q5_539
         q5_539 --> q5_573
+        q5_539 --> q5_531
         q5_539 --> q5_cpend
         q5_573 --> q5_573ad
         q5_573 --> q5_573ru
