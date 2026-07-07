@@ -174,6 +174,14 @@ flowchart TB
         q8_proj --> q8_prod
         q8_des --> q8_prod
     end
+
+    %% ================= QUEST 9: derived methodology — the basis generates =================
+    subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (off M1 path)"]
+        direction TB
+        q9_540["groundwork#540<br/>spike: reckon verify from the basis —<br/>generative sufficiency + structural findings<br/>(premium relay · gates the epic)"]:::ready
+        q9_dec["⟨not yet filed⟩<br/>per-protocol derivations · typed-home migrations ·<br/>structural-finding units · DAG stage-order gate<br/>(decompose from the spike's record → groundwork#541)"]:::open
+        q9_540 --> q9_dec
+    end
     Q2 == "capstone proves on" ==> q8_prod
     Q6 == "publication substrate" ==> q8_prod
 
