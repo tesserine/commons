@@ -242,8 +242,8 @@ flowchart TB
     AGENTD162["agentd#162<br/>nested transcript path-contract fix (ADR-0020) — resolver + audit finalize<br/>run-id export landed on PR #163 @ e1c8d2d0 (CI green)<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> AGENTD122
     AGENTD122["agentd#122<br/>live session progress observation — #161 CLI recovered<br/>rebased onto #163 → PR #173 @ 32aa1cf1 (CI green, mergeable clean)<br/>operator-evidence → #67 · merges on #67 session pass"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
-    BO100["babbie-ops#100<br/>converge wires runa go into session agent command,<br/>not the operator adapter → runa go finds no agent command<br/>(installer repair; surfaced by #67 run 2026-07-07)"]:::open --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>one agentd wish session on the PR #173 @ 32aa1cf1 verification build<br/>collects #162 (live+sealed) · #122 (live obs) · #67 (DX judgment)<br/>--progress surface CONFIRMED on 32aa1cf1; BLOCKED on #100<br/>(session runa go has no agent command) · pass → merge #162 + #122, close #58"]:::blocked --> M1INT
+    BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>one agentd wish session on the PR #173 @ 32aa1cf1 verification build<br/>collects #162 (live+sealed) · #122 (live obs) · #67 (DX judgment)<br/>--progress surface CONFIRMED · #100 wiring fixed → re-run ready<br/>pass → merge #162 + #122, close #58"]:::ready --> M1INT
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
