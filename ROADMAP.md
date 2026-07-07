@@ -171,7 +171,7 @@ flowchart TB
     %% ================= QUEST 8: Gazette — the production proof =================
     subgraph Q8["📰 QUEST · Gazette — substrate-primary agent newspaper · gazette#10"]
         direction TB
-        q8_disc["with-claude#166<br/>design-as-substrate discipline<br/>(_shared methodology)"]:::ready
+        q8_disc["commons#111<br/>design-as-substrate discipline<br/>(concepts/ — public home)"]:::ready
         q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::open
         q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::landed
         q8_tel["gazette#12 ✓<br/>Telemetry contract —<br/>stats co-equal + story-source"]:::landed
@@ -340,7 +340,7 @@ advanced integration test: a **substrate-primary newspaper** — the
 machine-readable corpus is the product, the website one projection of it, the
 agent reading path canonical. Its **spec arc** — News Substrate (gazette#11)
 → Telemetry (#12) → Projection (#13) → Design (#14) contracts, with the
-design system (with-claude#166 discipline → commons#110 system) authored
+design system (commons#111 discipline → commons#110 system) authored
 first, top-down, as the rendering half's prerequisite — runs **now, off the
 M1 path**, graded-relay-friendly. Its **production arc** (gazette#15) —
 live 24/7, publishing to Radicle — is the downstream acceptance of autonomous
@@ -379,7 +379,7 @@ Two publications, in order, both through the ecosystem-release ceremony
 **Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs. **Off the M1
 path (2026-07-07):** the Gazette quest (Q8) backbone is **landed** — the News
 Substrate contract (gazette#11) is merged to trunk (squash `1414517a`), so
-#12/#13/#14 unblock. The design-as-substrate discipline (with-claude#166)
+#12/#13/#14 unblock. The design-as-substrate discipline (commons#111)
 remains craftable now.
 
 _(prior)_ The ready front was **agentd#122** — its blocker cleared now that **#162** is code-approved @ `ba5fcbd` (PR #163 clean). #122's remaining work: rebase its live tailer/progress surface onto #162's branch to produce the **#122-on-#162 verification build**, which babbie-ops#67's consolidated operator-eyes session runs on. Predecessor **babbie-ops#96** (runbook lifecycle) landed (PR #97 → `b037e804`). #67 stays blocked on the verification build; the build does not yet exist (`ba5fcbd` is `main` + 2 transcript-fix commits, diverged from #122's stranded `8a68a45`).
