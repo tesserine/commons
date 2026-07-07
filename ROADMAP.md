@@ -176,13 +176,25 @@ flowchart TB
     end
 
     %% ================= QUEST 9: derived methodology — the basis generates =================
-    subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (off M1 path)"]
+    subgraph Q9["📐 QUEST · derived methodology — the protocol layer derives from the typed basis · groundwork#541 (stub · off M1 path)"]
         direction TB
-        q9_540["groundwork#540<br/>spike: reckon verify from the basis —<br/>generative sufficiency + structural findings<br/>(premium relay · gates the epic)"]:::ready
-        q9_dec["⟨not yet filed⟩<br/>per-protocol derivations · typed-home migrations ·<br/>structural-finding units · DAG stage-order gate<br/>(decompose from the spike's record → groundwork#541)"]:::open
-        q9_540 --> q9_dec
-    end
-    Q2 == "capstone proves on" ==> q8_prod
+        q9_540["groundwork#540 ✓<br/>spike: reckon verify from the basis —<br/>PASS · basis sufficient after migrations<br/>(frame rule held · derivation surplus proved generativity)"]:::landed
+        q9_542["groundwork#542<br/>verify.toml: debug binding, remediation<br/>edge, 3 untyped corruption modes"]:::ready
+        q9_543["groundwork#543<br/>completion-evidence: evidence-home seam"]:::ready
+        q9_verok["verify: every acceptance semantic<br/>single-homed + cited (epic AC1 for verify)"]:::gate
+        q9_544["groundwork#544<br/>gate consumes hollow_delivery"]:::ready
+        q9_545["groundwork#545<br/>authority-defect boundary"]:::ready
+        q9_546["groundwork#546<br/>dimension-agnostic step framing"]:::ready
+        q9_find["groundwork#547 #548 #549 #550 #551<br/>#552 #553 #554<br/>basis findings — gaps · boundary · reorg<br/>(bound the epic end-state; #550 = revision-loop gate)"]:::open
+        q9_reground["⟨not yet filed⟩<br/>epic body re-grounding + full-spec decomposition<br/>(stub clears here · generative act → groundwork#541)"]:::open
+        q9_540 --> q9_542 --> q9_verok
+        q9_540 --> q9_543 --> q9_verok
+        q9_540 --> q9_544
+        q9_540 --> q9_545
+        q9_540 --> q9_546
+        q9_540 --> q9_find
+        q9_540 --> q9_reground
+    end    Q2 == "capstone proves on" ==> q8_prod
     Q6 == "publication substrate" ==> q8_prod
 
     %% ================= THE STACK =================
