@@ -191,14 +191,15 @@ flowchart TB
         q9_540["groundwork#540 ✓<br/>spike: reckon verify — PASS (surplus proved generativity)"]:::landed
         q9_557["groundwork#557 ✓<br/>review pass — PASS; #548 routing CONFIRMED typed"]:::landed
         q9_556["groundwork#556 ✓<br/>submit pass — PASS; submit default fails-unsafe (→#551)"]:::landed
+        q9_558["groundwork#558 ✓<br/>land pass — PASS; identity law un-homeable, #547-class (C-2 grammar proven)"]:::landed
         q9_vfix["groundwork#542 #543 #544 #545 #546<br/>verify: migrations + deltas"]:::ready
         q9_rev["groundwork#564 #565 #566 #567 #568<br/>review: migration + deltas"]:::ready
         q9_sub["groundwork#570 #571 #572<br/>submit: migration + deltas"]:::ready
+        q9_land["groundwork#574 #575 #576 #577<br/>land: migration + deltas"]:::ready
         q9_555["groundwork#555<br/>stage-order gate (AC2)"]:::ready
-        q9_558["groundwork#558<br/>derivation pass: land (last ready pass)"]:::ready
         q9_319["groundwork#319<br/>C-2 coverage — authors the 5 missing contracts"]:::blocked
         q9_gated["groundwork#559 #560 #561 #562 #563<br/>passes: survey · decompose · define · plan · implement<br/>(gated on their contracts)"]:::blocked
-        q9_find["groundwork#547 #548 #549 #551 #569 · #550 · #552 #553 #554<br/>basis-growth findings — the end-state homes<br/>(cross-artifact/lifecycle law · identity/substrate binding)<br/>close the epic last, fed by the passes"]:::open
+        q9_find["groundwork#547 #548 #549 #551 #569 · #550 · #552 #553 #554<br/>basis-growth findings — the end-state homes<br/>(cross-artifact/lifecycle law · identity/substrate binding)<br/>frontier now definitively mapped; close the epic last"]:::open
         q9_540 --> q9_vfix
         q9_540 --> q9_555
         q9_540 --> q9_557
@@ -207,11 +208,12 @@ flowchart TB
         q9_540 --> q9_gated
         q9_557 --> q9_rev
         q9_556 --> q9_sub
+        q9_558 --> q9_land
         q9_319 --> q9_gated
         q9_vfix --> q9_find
         q9_rev --> q9_find
         q9_sub --> q9_find
-        q9_558 --> q9_find
+        q9_land --> q9_find
         q9_gated --> q9_find
     end
     Q2 == "capstone proves on" ==> q8_prod
