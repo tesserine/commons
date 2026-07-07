@@ -118,6 +118,8 @@ flowchart TB
         q5_485["groundwork#485<br/>code quality first-class"]:::landed
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
+        q5_539["groundwork#539<br/>re-reckon the whole contract machine from the need<br/>— doc-dimension + structure + retrofit disposition<br/>(activated pre-M1 · premium relay)"]:::ready
+        q5_cpend["groundwork#531 #488 #486 #487<br/>pending contract-machine improvements —<br/>grounded + sequenced by the re-reckon"]:::open
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
@@ -125,6 +127,8 @@ flowchart TB
         q5_494 --> q5_495
         q5_495 --> q5_485
         q5_494 --> q5_225
+        q5_498 --> q5_539
+        q5_539 --> q5_cpend
     end
 
     %% ================= QUEST 6: Radicle-native substrate =================
