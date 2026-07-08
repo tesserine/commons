@@ -9,8 +9,9 @@ extracts every used reference from index.html and derived.css, resolves each
 through member-map.json to a declared member — one used value with no member
 fails — rejects unmapped and stale map entries, scans index.html for raw
 design-value literals, asserts every member family is exercised, drift-checks
-the generated derived.css against a fresh derivation, and runs negative
-self-tests proving a seeded off-substrate value fails.
+the generated derived.css against a fresh derivation, verifies that rendered
+structure cannot inherit UA spacing defaults, and runs negative self-tests
+proving seeded off-substrate values fail.
 
 Usage:
     test-design-closure            run the assay
@@ -23,6 +24,7 @@ import json
 import re
 import sys
 import tempfile
+from html.parser import HTMLParser
 from pathlib import Path
 
 
@@ -45,6 +47,48 @@ LITERAL_PATTERNS = {
     "size literal": re.compile(r"\b\d+(?:\.\d+)?(?:px|rem|em|ch|pt|vw|vh)\b"),
     "font-family declaration": re.compile(r"font-family\s*:"),
 }
+STRUCTURAL_RESET_ELEMENTS = (
+    "html",
+    "body",
+    "header",
+    "main",
+    "section",
+    "article",
+    "aside",
+    "nav",
+    "footer",
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "blockquote",
+    "figure",
+    "figcaption",
+    "ul",
+    "ol",
+    "li",
+    "dl",
+    "dt",
+    "dd",
+    "table",
+    "thead",
+    "tbody",
+    "tfoot",
+    "tr",
+    "th",
+    "td",
+)
+IGNORED_NON_RENDERED_TAGS = {"head", "link", "meta", "script", "style", "title"}
+INLINE_TEXT_TAGS = {"a", "br", "code", "em", "span", "strong"}
+RESET_SPACE_PROPERTIES = ("margin", "padding", "gap")
+SPACE_CLOSED_PROPERTIES = re.compile(
+    r"^(?:margin|padding)(?:-.+)?$|^(?:gap|row-gap|column-gap|border-spacing)$"
+)
+CSS_RULE_PATTERN = re.compile(r"([^{}]+)\{([^{}]+)\}", re.MULTILINE)
+CSS_COMMENT_PATTERN = re.compile(r"/\*.*?\*/", re.DOTALL)
 
 
 def var_name(member_id: str) -> str:
@@ -53,6 +97,22 @@ def var_name(member_id: str) -> str:
 
 def class_name(member_id: str) -> str:
     return "ts-" + member_id.replace(".", "-")
+
+
+def generated_reset_lines() -> list[str]:
+    selectors = [f"{element}," for element in STRUCTURAL_RESET_ELEMENTS[:-1]]
+    selectors.append(f"{STRUCTURAL_RESET_ELEMENTS[-1]} {{")
+    return [
+        "/* Reset UA spacing on rendered structure; every spatial interval below",
+        "   is then either an explicit zero or a space.* member reference. */",
+        *selectors,
+        "  margin: 0;",
+        "  padding: 0;",
+        "  gap: 0;",
+        "}",
+        "",
+        "table { border-collapse: collapse; border-spacing: 0; }",
+    ]
 
 
 def load_members() -> dict[str, dict]:
@@ -90,6 +150,9 @@ def generate_css(members: dict[str, dict]) -> str:
     lines.append("}")
 
     lines.append("")
+    lines.extend(generated_reset_lines())
+
+    lines.append("")
     for step in scale:
         lines.append(
             f".{class_name(step['id'])} {{ font-size: {step['size']}; "
@@ -117,7 +180,6 @@ def generate_css(members: dict[str, dict]) -> str:
                     f"color: var({var_name(ground['ink'])})",
                     f"font-family: var({var_name(ground['face'])})",
                     f"max-inline-size: var({var_name(ground['measure'])})",
-                    "margin-inline: auto",
                     f"padding: var({var_name(ground['inset'])})",
                 ]
             )
@@ -158,6 +220,81 @@ def scan_for_literals(example_dir: Path) -> list[str]:
     ]
 
 
+class RenderedTagParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__()
+        self.tags: set[str] = set()
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.tags.add(tag)
+
+
+def rendered_tags(example_dir: Path) -> set[str]:
+    parser = RenderedTagParser()
+    parser.feed((example_dir / "index.html").read_text(encoding="utf-8"))
+    return parser.tags - IGNORED_NON_RENDERED_TAGS - INLINE_TEXT_TAGS
+
+
+def parse_css_rules(css: str) -> list[tuple[set[str], dict[str, str]]]:
+    rules: list[tuple[set[str], dict[str, str]]] = []
+    for match in CSS_RULE_PATTERN.finditer(CSS_COMMENT_PATTERN.sub("", css)):
+        selector_text, declaration_text = match.groups()
+        selectors = {selector.strip() for selector in selector_text.split(",")}
+        declarations: dict[str, str] = {}
+        for declaration in declaration_text.split(";"):
+            if ":" not in declaration:
+                continue
+            property_name, value = declaration.split(":", 1)
+            declarations[property_name.strip()] = value.strip()
+        rules.append((selectors, declarations))
+    return rules
+
+
+def element_declarations(rules: list[tuple[set[str], dict[str, str]]], element: str) -> dict[str, str]:
+    declarations: dict[str, str] = {}
+    for selectors, rule_declarations in rules:
+        if element in selectors:
+            declarations.update(rule_declarations)
+    return declarations
+
+
+def space_value_is_closed(value: str) -> bool:
+    parts = value.split()
+    return bool(parts) and all(part == "0" or re.fullmatch(r"var\(--ts-space-[a-z0-9-]+\)", part) for part in parts)
+
+
+def check_render_closure(example_dir: Path) -> list[str]:
+    """Reject UA-default or off-substrate spacing in the rendered specimen."""
+    failures: list[str] = []
+    css = (example_dir / "derived.css").read_text(encoding="utf-8")
+    rules = parse_css_rules(css)
+
+    unclassified = rendered_tags(example_dir) - set(STRUCTURAL_RESET_ELEMENTS)
+    for tag in sorted(unclassified):
+        failures.append(f"rendered structural element <{tag}> is not covered by the UA-spacing reset")
+
+    for element in STRUCTURAL_RESET_ELEMENTS:
+        declarations = element_declarations(rules, element)
+        for property_name in RESET_SPACE_PROPERTIES:
+            if declarations.get(property_name) != "0":
+                failures.append(f"<{element}> does not reset {property_name} to explicit zero")
+
+    table_declarations = element_declarations(rules, "table")
+    if table_declarations.get("border-spacing") != "0":
+        failures.append("<table> does not reset border-spacing to explicit zero")
+    if table_declarations.get("border-collapse") != "collapse":
+        failures.append("<table> does not collapse UA table spacing")
+
+    for _, declarations in rules:
+        for property_name, value in declarations.items():
+            if SPACE_CLOSED_PROPERTIES.match(property_name) and not space_value_is_closed(value):
+                failures.append(
+                    f"{property_name} uses {value!r}, not explicit zero or a space.* member"
+                )
+
+    return failures
+
+
 def run_checks(example_dir: Path, members: dict[str, dict]) -> list[str]:
     """Return the list of closure failures for the example at example_dir."""
     failures: list[str] = []
@@ -194,6 +331,7 @@ def run_checks(example_dir: Path, members: dict[str, dict]) -> list[str]:
         failures.append(f"stale member-map entry, reference never used: {reference}")
 
     failures.extend(scan_for_literals(example_dir))
+    failures.extend(check_render_closure(example_dir))
 
     for family in MEMBER_FILES:
         if family not in used_families:
@@ -204,24 +342,54 @@ def run_checks(example_dir: Path, members: dict[str, dict]) -> list[str]:
 
 def run_negative_self_tests(members: dict[str, dict]) -> list[str]:
     """Seed off-substrate values into a temp copy; the assay must fail each."""
-    seeds = {
-        "seeded ad-hoc literal": '<p style="color: #c0ffee">off-substrate</p>',
-        "seeded unmapped reference": '<p class="ts-color-off-substrate">off-substrate</p>',
-    }
+    reset_block = "\n".join(generated_reset_lines()) + "\n"
+    seeds = [
+        {
+            "label": "seeded ad-hoc literal",
+            "mutate_html": lambda html: html.replace(
+                "</body>", '<p style="color: #c0ffee">off-substrate</p>' + "\n</body>"
+            ),
+        },
+        {
+            "label": "seeded unmapped reference",
+            "mutate_html": lambda html: html.replace(
+                "</body>", '<p class="ts-color-off-substrate">off-substrate</p>' + "\n</body>"
+            ),
+        },
+        {
+            "label": "dropped structural reset",
+            "mutate_css": lambda css: css.replace(reset_block, ""),
+            "expect": "does not reset margin",
+        },
+        {
+            "label": "unset structural margin",
+            "mutate_css": lambda css: css.replace("  margin: 0;\n", "", 1),
+            "expect": "does not reset margin",
+        },
+    ]
     failures: list[str] = []
-    for label, seed in seeds.items():
+    for seed in seeds:
         with tempfile.TemporaryDirectory() as scratch:
             copy = Path(scratch)
             for name in ("index.html", "derived.css", "member-map.json"):
                 (copy / name).write_text(
                     (EXAMPLE_DIR / name).read_text(encoding="utf-8"), encoding="utf-8"
                 )
-            html = (copy / "index.html").read_text(encoding="utf-8")
-            (copy / "index.html").write_text(
-                html.replace("</body>", seed + "\n</body>"), encoding="utf-8"
-            )
-            if not run_checks(copy, members):
-                failures.append(f"negative self-test: the assay passed a {label}")
+            if "mutate_html" in seed:
+                html = (copy / "index.html").read_text(encoding="utf-8")
+                (copy / "index.html").write_text(seed["mutate_html"](html), encoding="utf-8")
+            if "mutate_css" in seed:
+                css = (copy / "derived.css").read_text(encoding="utf-8")
+                (copy / "derived.css").write_text(seed["mutate_css"](css), encoding="utf-8")
+
+            seeded_failures = run_checks(copy, members)
+            if not seeded_failures:
+                failures.append(f"negative self-test: the assay passed a {seed['label']}")
+            expected = seed.get("expect")
+            if expected and not any(expected in failure for failure in seeded_failures):
+                failures.append(
+                    f"negative self-test: {seed['label']} did not fail on {expected!r}"
+                )
     return failures
 
 

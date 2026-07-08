@@ -24,6 +24,47 @@
   --ts-font-machine: ui-monospace, 'Cascadia Code', Menlo, Consolas, monospace;
 }
 
+/* Reset UA spacing on rendered structure; every spatial interval below
+   is then either an explicit zero or a space.* member reference. */
+html,
+body,
+header,
+main,
+section,
+article,
+aside,
+nav,
+footer,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+figcaption,
+ul,
+ol,
+li,
+dl,
+dt,
+dd,
+table,
+thead,
+tbody,
+tfoot,
+tr,
+th,
+td {
+  margin: 0;
+  padding: 0;
+  gap: 0;
+}
+
+table { border-collapse: collapse; border-spacing: 0; }
+
 .ts-type-display { font-size: 2.441rem; line-height: 1.15; }
 .ts-type-title { font-size: 1.953rem; line-height: 1.2; }
 .ts-type-heading { font-size: 1.563rem; line-height: 1.3; }
@@ -44,7 +85,7 @@
 .ts-font-text { font-family: var(--ts-font-text); }
 .ts-font-machine { font-family: var(--ts-font-machine); }
 
-.ts-section-surface { background: var(--ts-color-paper); color: var(--ts-color-ink); font-family: var(--ts-font-text); max-inline-size: var(--ts-measure-reading); margin-inline: auto; padding: var(--ts-space-line); }
+.ts-section-surface { background: var(--ts-color-paper); color: var(--ts-color-ink); font-family: var(--ts-font-text); max-inline-size: var(--ts-measure-reading); padding: var(--ts-space-line); }
 .ts-section-masthead { padding-block-end: var(--ts-space-line); border-block-end: var(--ts-stroke-hairline) solid var(--ts-color-rule); }
 .ts-section-lede { margin-block-start: var(--ts-space-double); }
 .ts-section-entry { margin-block-start: var(--ts-space-double); }
