@@ -171,8 +171,8 @@ flowchart TB
     %% ================= QUEST 8: Gazette — the production proof =================
     subgraph Q8["📰 QUEST · Gazette — substrate-primary agent newspaper · gazette#10"]
         direction TB
-        q8_disc["commons#111<br/>design-as-substrate discipline<br/>(concepts/ — public home)"]:::ready
-        q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::open
+        q8_disc["commons#111<br/>design-as-substrate discipline<br/>(concepts/ — public home)"]:::landed
+        q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::ready
         q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::landed
         q8_tel["gazette#12 ✓<br/>Telemetry contract —<br/>stats co-equal + story-source"]:::landed
         q8_proj["gazette#13<br/>Projection contract —<br/>corpus → byte-identical site"]:::open
