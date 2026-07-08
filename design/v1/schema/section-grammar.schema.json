@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Tesserine section grammar",
+  "description": "Structural guard for design/v1/section-grammar.json. Internal to the design system's home; design/v1/SYSTEM.md is the prose authority.",
+  "type": "object",
+  "required": ["family", "version", "governing_fact", "members"],
+  "additionalProperties": false,
+  "properties": {
+    "family": { "const": "section-grammar" },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "governing_fact": { "type": "string", "minLength": 1 },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "purpose", "occurrence", "slots", "derivation"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^section\\.[a-z][a-z0-9-]*$" },
+          "purpose": { "type": "string", "minLength": 1 },
+          "occurrence": { "type": "string", "minLength": 1 },
+          "composition": { "type": "string", "minLength": 1 },
+          "ground": {
+            "type": "object",
+            "required": ["paper", "ink", "face", "measure", "inset"],
+            "additionalProperties": false,
+            "properties": {
+              "paper": { "$ref": "#/$defs/memberId" },
+              "ink": { "$ref": "#/$defs/memberId" },
+              "face": { "$ref": "#/$defs/memberId" },
+              "measure": { "$ref": "#/$defs/memberId" },
+              "inset": { "$ref": "#/$defs/memberId" }
+            }
+          },
+          "separation": {
+            "type": "object",
+            "required": ["space"],
+            "additionalProperties": false,
+            "properties": {
+              "space": { "$ref": "#/$defs/memberId" }
+            }
+          },
+          "frame": {
+            "type": "object",
+            "required": ["edge", "stroke", "color", "gap"],
+            "additionalProperties": false,
+            "properties": {
+              "edge": { "enum": ["before", "after", "around"] },
+              "stroke": { "$ref": "#/$defs/memberId" },
+              "color": { "$ref": "#/$defs/memberId" },
+              "gap": { "$ref": "#/$defs/memberId" }
+            }
+          },
+          "slots": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "content", "set_in"],
+              "additionalProperties": false,
+              "properties": {
+                "name": { "type": "string", "minLength": 1 },
+                "content": { "type": "string", "minLength": 1 },
+                "set_in": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": { "$ref": "#/$defs/memberId" }
+                }
+              }
+            }
+          },
+          "derivation": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "memberId": {
+      "type": "string",
+      "pattern": "^(color|space|stroke|measure|weight|font|type)\\.[a-z][a-z0-9-]*$"
+    }
+  }
+}

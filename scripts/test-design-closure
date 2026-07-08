@@ -1,0 +1,253 @@
+#!/usr/bin/env python3
+"""Assay: the worked consumption example is closed over the design substrate.
+
+Carries the mechanical check for tesserine/commons#110 criterion
+behavior-closure-consumable, in positive form: every design value the example
+surface uses is a member of the declared set. The example consumes by named
+reference only (`ts-*` classes and `--ts-*` custom properties), so the assay
+extracts every used reference from index.html and derived.css, resolves each
+through member-map.json to a declared member — one used value with no member
+fails — rejects unmapped and stale map entries, scans index.html for raw
+design-value literals, asserts every member family is exercised, drift-checks
+the generated derived.css against a fresh derivation, and runs negative
+self-tests proving a seeded off-substrate value fails.
+
+Usage:
+    test-design-closure            run the assay
+    test-design-closure --regen    regenerate design/v1/example/derived.css
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+import tempfile
+from pathlib import Path
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+V1 = REPO_ROOT / "design" / "v1"
+EXAMPLE_DIR = V1 / "example"
+
+MEMBER_FILES = {
+    "tokens": V1 / "tokens.json",
+    "type-scale": V1 / "type-scale.json",
+    "section-grammar": V1 / "section-grammar.json",
+}
+
+REFERENCE_PATTERN = re.compile(r"\bts-[a-z0-9][a-z0-9-]*")
+LITERAL_PATTERNS = {
+    "inline style attribute": re.compile(r"style\s*="),
+    "embedded stylesheet": re.compile(r"<style", re.IGNORECASE),
+    "hex color literal": re.compile(r"#[0-9a-fA-F]{3,8}\b"),
+    "color-function literal": re.compile(r"\b(?:rgb|rgba|hsl|hsla|oklch)\("),
+    "size literal": re.compile(r"\b\d+(?:\.\d+)?(?:px|rem|em|ch|pt|vw|vh)\b"),
+    "font-family declaration": re.compile(r"font-family\s*:"),
+}
+
+
+def var_name(member_id: str) -> str:
+    return "--ts-" + member_id.replace(".", "-")
+
+
+def class_name(member_id: str) -> str:
+    return "ts-" + member_id.replace(".", "-")
+
+
+def load_members() -> dict[str, dict]:
+    try:
+        return {
+            family: json.loads(path.read_text(encoding="utf-8"))
+            for family, path in MEMBER_FILES.items()
+        }
+    except (OSError, json.JSONDecodeError) as error:
+        print(f"design-closure: FAIL: cannot load the substrate: {error}", file=sys.stderr)
+        raise SystemExit(1)
+
+
+def generate_css(members: dict[str, dict]) -> str:
+    """Derive the example stylesheet from the member files.
+
+    Every design value emitted is a member's value or a var() reference to
+    one; this function contributes structure only.
+    """
+    tokens = members["tokens"]["members"]
+    scale = members["type-scale"]["members"]
+    grammar = members["section-grammar"]["members"]
+    version = members["tokens"]["version"]
+
+    lines = [
+        "/* GENERATED FILE - do not edit.",
+        f"   Derived from the design/v1 member files (version {version}) by",
+        "   scripts/test-design-closure --regen; the same script fails the",
+        "   example when this file drifts from a fresh derivation. */",
+        "",
+        ":root {",
+    ]
+    for token in tokens:
+        lines.append(f"  {var_name(token['id'])}: {token['value']};")
+    lines.append("}")
+
+    lines.append("")
+    for step in scale:
+        lines.append(
+            f".{class_name(step['id'])} {{ font-size: {step['size']}; "
+            f"line-height: {step['line_height']}; }}"
+        )
+
+    lines.append("")
+    utility_properties = {"weight": "font-weight", "font": "font-family", "color": "color"}
+    for token in tokens:
+        group = token["id"].split(".", 1)[0]
+        if group in utility_properties:
+            lines.append(
+                f".{class_name(token['id'])} {{ "
+                f"{utility_properties[group]}: var({var_name(token['id'])}); }}"
+            )
+
+    lines.append("")
+    for form in grammar:
+        declarations: list[str] = []
+        ground = form.get("ground")
+        if ground:
+            declarations.extend(
+                [
+                    f"background: var({var_name(ground['paper'])})",
+                    f"color: var({var_name(ground['ink'])})",
+                    f"font-family: var({var_name(ground['face'])})",
+                    f"max-inline-size: var({var_name(ground['measure'])})",
+                    "margin-inline: auto",
+                    f"padding: var({var_name(ground['inset'])})",
+                ]
+            )
+        separation = form.get("separation")
+        if separation:
+            declarations.append(f"margin-block-start: var({var_name(separation['space'])})")
+        frame = form.get("frame")
+        if frame:
+            border = (
+                f"var({var_name(frame['stroke'])}) solid var({var_name(frame['color'])})"
+            )
+            gap = f"var({var_name(frame['gap'])})"
+            if frame["edge"] == "after":
+                declarations.extend([f"padding-block-end: {gap}", f"border-block-end: {border}"])
+            elif frame["edge"] == "before":
+                declarations.extend([f"padding-block-start: {gap}", f"border-block-start: {border}"])
+            else:  # around
+                declarations.extend([f"padding: {gap}", f"border: {border}"])
+        if declarations:
+            lines.append(f".{class_name(form['id'])} {{ {'; '.join(declarations)}; }}")
+
+    return "\n".join(lines) + "\n"
+
+
+def extract_references(example_dir: Path) -> set[str]:
+    references: set[str] = set()
+    for name in ("index.html", "derived.css"):
+        references.update(REFERENCE_PATTERN.findall((example_dir / name).read_text(encoding="utf-8")))
+    return references
+
+
+def scan_for_literals(example_dir: Path) -> list[str]:
+    html = (example_dir / "index.html").read_text(encoding="utf-8")
+    return [
+        f"index.html carries a raw design value ({label}): {pattern.search(html).group(0)!r}"
+        for label, pattern in LITERAL_PATTERNS.items()
+        if pattern.search(html)
+    ]
+
+
+def run_checks(example_dir: Path, members: dict[str, dict]) -> list[str]:
+    """Return the list of closure failures for the example at example_dir."""
+    failures: list[str] = []
+
+    checked_in = (example_dir / "derived.css").read_text(encoding="utf-8")
+    if checked_in != generate_css(members):
+        failures.append("derived.css drifts from a fresh derivation of the member files")
+
+    declared = {
+        family: {member["id"] for member in document["members"]}
+        for family, document in members.items()
+    }
+    member_map = json.loads((example_dir / "member-map.json").read_text(encoding="utf-8"))
+    mapped_references: set[str] = set()
+    used_families: set[str] = set()
+    for mapping in member_map["mappings"]:
+        reference, family, member = mapping["reference"], mapping["family"], mapping["member"]
+        mapped_references.add(reference)
+        if family not in declared:
+            failures.append(f"member-map.json names unknown family {family!r} for {reference}")
+            continue
+        if member not in declared[family]:
+            failures.append(f"{reference} maps to {member}, which is no declared {family} member")
+            continue
+        if reference != class_name(member):
+            failures.append(f"{reference} maps to {member}, whose reference form is {class_name(member)}")
+            continue
+        used_families.add(family)
+
+    used = extract_references(example_dir)
+    for reference in sorted(used - mapped_references):
+        failures.append(f"used reference has no member-map entry: {reference}")
+    for reference in sorted(mapped_references - used):
+        failures.append(f"stale member-map entry, reference never used: {reference}")
+
+    failures.extend(scan_for_literals(example_dir))
+
+    for family in MEMBER_FILES:
+        if family not in used_families:
+            failures.append(f"the example exercises no {family} member")
+
+    return failures
+
+
+def run_negative_self_tests(members: dict[str, dict]) -> list[str]:
+    """Seed off-substrate values into a temp copy; the assay must fail each."""
+    seeds = {
+        "seeded ad-hoc literal": '<p style="color: #c0ffee">off-substrate</p>',
+        "seeded unmapped reference": '<p class="ts-color-off-substrate">off-substrate</p>',
+    }
+    failures: list[str] = []
+    for label, seed in seeds.items():
+        with tempfile.TemporaryDirectory() as scratch:
+            copy = Path(scratch)
+            for name in ("index.html", "derived.css", "member-map.json"):
+                (copy / name).write_text(
+                    (EXAMPLE_DIR / name).read_text(encoding="utf-8"), encoding="utf-8"
+                )
+            html = (copy / "index.html").read_text(encoding="utf-8")
+            (copy / "index.html").write_text(
+                html.replace("</body>", seed + "\n</body>"), encoding="utf-8"
+            )
+            if not run_checks(copy, members):
+                failures.append(f"negative self-test: the assay passed a {label}")
+    return failures
+
+
+def main() -> int:
+    members = load_members()
+
+    if "--regen" in sys.argv[1:]:
+        target = EXAMPLE_DIR / "derived.css"
+        target.write_text(generate_css(members), encoding="utf-8")
+        print(f"design-closure: wrote {target.relative_to(REPO_ROOT)}")
+        return 0
+
+    failures = run_checks(EXAMPLE_DIR, members)
+    failures.extend(run_negative_self_tests(members))
+    if failures:
+        for failure in failures:
+            print(f"design-closure: FAIL: {failure}", file=sys.stderr)
+        return 1
+
+    used = extract_references(EXAMPLE_DIR)
+    print(
+        f"design-closure: PASS ({len(used)} used references, all members; "
+        "no raw literals; drift clean; negative self-tests fail as they must)"
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

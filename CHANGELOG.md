@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `design/` — the Tesserine design system at its single home: a governing
+  fact authored first at the head of `design/v1/SYSTEM.md` with tokens, type
+  scale, and section grammar derived from it top-down (each member carrying
+  its derivation), schema-guarded member files at version `1.0.0`, a worked
+  consumption example that draws every design value from the declared
+  members, a door README stating the closure boundary and citation form, and
+  two assays (`scripts/test-design-substrate`,
+  `scripts/test-design-closure`) holding the system to its claims. The
+  system instantiates the design-as-substrate discipline
+  (`concepts/design-as-substrate.md`) and is consumed by citation with
+  immutable version provenance (tracking:
+  [commons#110](https://github.com/tesserine/commons/issues/110)).
 - Retained forge-capability v1 reached `1.2.0` (additive minor per ADR-0005):
   the ticket snapshot gains an optional ordered `comments` log — the body is
   the work-unit's spec, the log its running record — with entry shape `body`

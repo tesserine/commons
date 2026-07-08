@@ -1,0 +1,147 @@
+{
+  "family": "section-grammar",
+  "version": "1.0.0",
+  "governing_fact": "Every Tesserine surface is a typeset record: the quiet, documentary projection of a machine-readable artifact that remains the product. (design/v1/SYSTEM.md)",
+  "members": [
+    {
+      "id": "section.surface",
+      "purpose": "the projection as a whole: one reading column on the paper ground",
+      "occurrence": "exactly one — it is the page",
+      "composition": "section.masthead section.lede? (section.entry | section.evidence)+ section.colophon",
+      "ground": {
+        "paper": "color.paper",
+        "ink": "color.ink",
+        "face": "font.text",
+        "measure": "measure.reading",
+        "inset": "space.line"
+      },
+      "slots": [],
+      "derivation": "Entailment 4 (composed as a record) fixes the parts and their order; entailment 1 (a document's ground) sets the whole on one book-measured column of warm ink on warm paper — a record is one continuous document, not a layout of panels."
+    },
+    {
+      "id": "section.masthead",
+      "purpose": "opens the surface with the projected record's identity",
+      "occurrence": "exactly one, first within section.surface",
+      "slots": [
+        {
+          "name": "title",
+          "content": "the projected artifact's name",
+          "set_in": ["type.display", "weight.structure"]
+        },
+        {
+          "name": "context",
+          "content": "what kind of record this is and when it was projected",
+          "set_in": ["type.caption", "weight.text", "color.ink-muted"]
+        }
+      ],
+      "frame": {
+        "edge": "after",
+        "stroke": "stroke.hairline",
+        "color": "color.rule",
+        "gap": "space.line"
+      },
+      "derivation": "Entailment 4 (composed as a record): a record opens with its identity — which artifact, projected when — closed by the least rule like a nameplate above the fold (entailment 2)."
+    },
+    {
+      "id": "section.lede",
+      "purpose": "carries the record's own summary",
+      "occurrence": "at most one, immediately after the masthead",
+      "slots": [
+        {
+          "name": "standfirst",
+          "content": "the summary the record itself leads with",
+          "set_in": ["type.subhead", "weight.text"]
+        }
+      ],
+      "separation": {
+        "space": "space.double"
+      },
+      "derivation": "Entailment 4 (composed as a record): when the record carries a summary, the surface leads with it — the record's words, one step above running matter, at reading weight because a summary is read, not announced."
+    },
+    {
+      "id": "section.entry",
+      "purpose": "a titled unit of the record's content",
+      "occurrence": "one or more, mixed freely with section.evidence",
+      "slots": [
+        {
+          "name": "title",
+          "content": "the unit's title, from the record",
+          "set_in": ["type.title", "weight.structure"]
+        },
+        {
+          "name": "heading",
+          "content": "a heading within the unit, where the record's structure descends",
+          "set_in": ["type.heading", "weight.structure"]
+        },
+        {
+          "name": "matter",
+          "content": "the unit's running text",
+          "set_in": ["type.body", "weight.text"]
+        },
+        {
+          "name": "metadata",
+          "content": "the unit's caption-grade matter: dates, authors, references",
+          "set_in": ["type.caption", "weight.text", "color.ink-muted"]
+        }
+      ],
+      "separation": {
+        "space": "space.double"
+      },
+      "derivation": "Entailment 4 (composed as a record): the record's content projects as titled entries in the record's order, separated on the rhythm (entailment 2) rather than boxed."
+    },
+    {
+      "id": "section.evidence",
+      "purpose": "the record's data shown verbatim: tables, statistics, machine output",
+      "occurrence": "zero or more, mixed freely with section.entry; co-equal content, not decoration",
+      "slots": [
+        {
+          "name": "caption",
+          "content": "what the data is and where the record carries it",
+          "set_in": ["type.caption", "weight.text", "color.ink-muted"]
+        },
+        {
+          "name": "data",
+          "content": "the data itself, verbatim",
+          "set_in": ["type.caption", "font.machine"]
+        }
+      ],
+      "separation": {
+        "space": "space.double"
+      },
+      "frame": {
+        "edge": "around",
+        "stroke": "stroke.hairline",
+        "color": "color.rule",
+        "gap": "space.half"
+      },
+      "derivation": "Entailment 4 (composed as a record): a record's data is co-equal content, so evidence stands as its own form — machine-shaped per entailment 3, framed by the least rule (entailment 2) to mark where verbatim matter begins and ends, never restyled into prose."
+    },
+    {
+      "id": "section.colophon",
+      "purpose": "closes every surface with provenance and citation of the projected artifact",
+      "occurrence": "exactly one, last within section.surface",
+      "slots": [
+        {
+          "name": "provenance",
+          "content": "what artifact was projected, at what version, produced how and when",
+          "set_in": ["type.caption", "weight.text", "color.ink-muted"]
+        },
+        {
+          "name": "citation",
+          "content": "the citation back to the machine-readable artifact",
+          "set_in": ["color.reference"]
+        }
+      ],
+      "separation": {
+        "space": "space.double"
+      },
+      "frame": {
+        "edge": "before",
+        "stroke": "stroke.hairline",
+        "color": "color.rule",
+        "gap": "space.line"
+      },
+      "derivation": "Entailment 4 (composed as a record) and the fact's own clause that the artifact remains the product: every projection ends by citing its source — a surface without a colophon would present itself as the product, which the fact forbids."
+    }
+  ]
+}
