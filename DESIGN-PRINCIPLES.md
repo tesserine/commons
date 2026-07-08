@@ -13,3 +13,7 @@ for where each landed. The prior text lives in this file's git history.
 
 This file remains only so existing links resolve; it holds no principle
 content of its own ([Single Home](https://github.com/pentaxis93/principles/blob/main/principles/single-home.md)).
+
+Looking for the **Tesserine design system** — the concrete tokens, type
+scale, and section grammar that rendering surfaces consume? That is a
+different asset, homed at [`design/`](design/README.md).

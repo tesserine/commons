@@ -1,0 +1,181 @@
+#!/usr/bin/env python3
+"""Assay: the Tesserine design system exists at its single home, enumerable and versioned.
+
+Carries the mechanical check for tesserine/commons#110 criterion
+behavior-substrate-at-single-home-versioned: the declared home paths exist,
+every member file validates against its schema guard, members enumerate
+non-empty with globally unique ids, the type scale's sizes follow its one
+declared ratio, the section grammar's references resolve to declared members,
+and one version identifier agrees across SYSTEM.md and every member file.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+import sys
+from pathlib import Path
+
+import jsonschema
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+DESIGN_ROOT = REPO_ROOT / "design"
+V1 = DESIGN_ROOT / "v1"
+
+MEMBER_FILES = {
+    "tokens": V1 / "tokens.json",
+    "type-scale": V1 / "type-scale.json",
+    "section-grammar": V1 / "section-grammar.json",
+}
+SCHEMA_FILES = {
+    "tokens": V1 / "schema" / "tokens.schema.json",
+    "type-scale": V1 / "schema" / "type-scale.schema.json",
+    "section-grammar": V1 / "schema" / "section-grammar.schema.json",
+}
+HOME_PATHS = [
+    DESIGN_ROOT / "README.md",
+    V1 / "SYSTEM.md",
+    *MEMBER_FILES.values(),
+    *SCHEMA_FILES.values(),
+    V1 / "example" / "index.html",
+    V1 / "example" / "derived.css",
+    V1 / "example" / "member-map.json",
+]
+
+SEMVER = re.compile(r"^\d+\.\d+\.\d+$")
+SIZE_TOLERANCE_REM = 0.002
+
+
+def fail(message: str) -> None:
+    print(f"design-substrate: FAIL: {message}", file=sys.stderr)
+    raise SystemExit(1)
+
+
+def load_json(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as error:
+        fail(f"{path.relative_to(REPO_ROOT)}: {error}")
+
+
+def check_home_paths() -> None:
+    for path in HOME_PATHS:
+        if not path.is_file() or path.stat().st_size == 0:
+            fail(f"declared home path missing or empty: {path.relative_to(REPO_ROOT)}")
+
+
+def check_schema_validity(documents: dict[str, dict]) -> None:
+    for family, schema_path in SCHEMA_FILES.items():
+        schema = load_json(schema_path)
+        jsonschema.validators.validator_for(schema).check_schema(schema)
+        try:
+            jsonschema.Draft202012Validator(schema).validate(documents[family])
+        except jsonschema.ValidationError as error:
+            fail(f"{MEMBER_FILES[family].relative_to(REPO_ROOT)}: schema violation: {error.message}")
+
+
+def check_enumeration(documents: dict[str, dict]) -> dict[str, set[str]]:
+    ids_by_family: dict[str, set[str]] = {}
+    all_ids: set[str] = set()
+    for family, document in documents.items():
+        members = document.get("members", [])
+        if not members:
+            fail(f"{family}: no members enumerate")
+        ids = [member["id"] for member in members]
+        duplicates = {i for i in ids if ids.count(i) > 1} | (set(ids) & all_ids)
+        if duplicates:
+            fail(f"{family}: duplicate member ids: {sorted(duplicates)}")
+        all_ids.update(ids)
+        ids_by_family[family] = set(ids)
+    return ids_by_family
+
+
+def check_type_scale_ratio(scale: dict) -> None:
+    base = float(scale["base"].removesuffix("rem"))
+    ratio = float(scale["ratio"])
+    by_power = sorted(scale["members"], key=lambda member: member["power"])
+    powers = [member["power"] for member in by_power]
+    if len(set(powers)) != len(powers):
+        fail("type-scale: duplicate powers")
+    previous_size = 0.0
+    previous_line_height = float("inf")
+    for member in by_power:
+        size = float(member["size"].removesuffix("rem"))
+        expected = base * ratio ** member["power"]
+        if abs(size - expected) > SIZE_TOLERANCE_REM:
+            fail(
+                f"type-scale: {member['id']} size {member['size']} is off the declared "
+                f"ratio (expected ~{expected:.4f}rem = {scale['base']} x {ratio}^{member['power']})"
+            )
+        if size <= previous_size:
+            fail(f"type-scale: {member['id']} does not increase with its power")
+        if float(member["line_height"]) > previous_line_height:
+            fail(f"type-scale: {member['id']} line_height loosens as size grows")
+        previous_size = size
+        previous_line_height = float(member["line_height"])
+
+
+def grammar_value_references(member: dict) -> list[str]:
+    references: list[str] = []
+    for slot in member.get("slots", []):
+        references.extend(slot["set_in"])
+    references.extend(member.get("ground", {}).values())
+    frame = member.get("frame")
+    if frame:
+        references.extend([frame["stroke"], frame["color"], frame["gap"]])
+    separation = member.get("separation")
+    if separation:
+        references.append(separation["space"])
+    return references
+
+
+def check_grammar_references(grammar: dict, ids_by_family: dict[str, set[str]]) -> None:
+    value_ids = ids_by_family["tokens"] | ids_by_family["type-scale"]
+    section_ids = ids_by_family["section-grammar"]
+    for member in grammar["members"]:
+        for reference in grammar_value_references(member):
+            if reference not in value_ids:
+                fail(f"section-grammar: {member['id']} references undeclared member {reference}")
+        composition = member.get("composition")
+        if composition:
+            for referenced in re.findall(r"section\.[a-z][a-z0-9-]*", composition):
+                if referenced not in section_ids:
+                    fail(f"section-grammar: composition references undeclared form {referenced}")
+
+
+def check_version(documents: dict[str, dict]) -> str:
+    versions = {family: document["version"] for family, document in documents.items()}
+    if len(set(versions.values())) != 1:
+        fail(f"member files disagree on version: {versions}")
+    version = versions["tokens"]
+    if not SEMVER.match(version):
+        fail(f"version identifier is not full semver: {version}")
+    system_md = (V1 / "SYSTEM.md").read_text(encoding="utf-8")
+    if f"**Version:** {version}" not in system_md:
+        fail(f"design/v1/SYSTEM.md header does not carry version {version}")
+    readme = (DESIGN_ROOT / "README.md").read_text(encoding="utf-8")
+    if "design/v1/" not in readme:
+        fail("design/README.md does not name the current major design/v1/")
+    if not version.startswith("1."):
+        fail(f"design/v1/ carries semver {version} outside major 1")
+    return version
+
+
+def main() -> int:
+    check_home_paths()
+    documents = {family: load_json(path) for family, path in MEMBER_FILES.items()}
+    check_schema_validity(documents)
+    ids_by_family = check_enumeration(documents)
+    check_type_scale_ratio(documents["type-scale"])
+    check_grammar_references(documents["section-grammar"], ids_by_family)
+    version = check_version(documents)
+    counts = ", ".join(
+        f"{len(ids_by_family[family])} {family}" for family in MEMBER_FILES
+    )
+    print(f"design-substrate: PASS ({counts}; version {version})")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
