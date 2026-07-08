@@ -175,7 +175,7 @@ flowchart TB
         q8_ds["commons#110<br/>Tesserine design system —<br/>tokens · type scale · section grammar"]:::landed
         q8_sub["gazette#11<br/>News Substrate contract<br/>(backbone — the paper as product)"]:::landed
         q8_tel["gazette#12 ✓<br/>Telemetry contract —<br/>stats co-equal + story-source"]:::landed
-        q8_proj["gazette#13<br/>Projection contract —<br/>corpus → byte-identical site"]:::ready
+        q8_proj["gazette#13 ✓<br/>Projection contract —<br/>corpus → byte-identical site"]:::landed
         q8_des["gazette#14<br/>Design contract — declared substrate<br/>+ floor + mandated reckon-gate"]:::ready
         q8_prod["gazette#15 · PRODUCTION<br/>live 24/7 publishing to Radicle —<br/>the advanced integration test ⏸ post-M1"]:::blocked
         q8_disc --> q8_ds
