@@ -34,6 +34,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   explicit and README-visible (tracking: commons#16).
 - ADR-0019 and the release-process documentation gate for capability-specific
   integration verification on minor and major ecosystem releases.
+- `concepts/design-as-substrate.md` — ratified conceptual foundation for the
+  design-as-substrate discipline: contract governance for domains whose
+  quality is reckonable rather than checkable (checkable vs reckonable
+  criteria, substrate closure, the three-layer contract shape,
+  whole-properties authored top-down). Promoted under the `concepts/`
+  promotion discipline with its index row, `SOURCE-OF-TRUTH.md` canonical
+  row, and structural promotion guard
+  (`scripts/test-design-as-substrate-promotion`) in the same change; no ADR
+  derived (tracking: [commons#111](https://github.com/tesserine/commons/issues/111)).
 
 ### Changed
 

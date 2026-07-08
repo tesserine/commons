@@ -9,6 +9,7 @@ project direction.
 | Concept | Status | Tracking |
 | --- | --- | --- |
 | [`cognitive-state-machine.md`](cognitive-state-machine.md) | Ratified conceptual foundation. Establishes Tesserine's operational typed cognitive-state graph and the grounded trajectory toward evidential typing; commits the project to no Layer-2 or Layer-3 implementation direction. | [commons#16](https://github.com/tesserine/commons/issues/16), [commons#92](https://github.com/tesserine/commons/issues/92) |
+| [`design-as-substrate.md`](design-as-substrate.md) | Ratified conceptual foundation. States the design-as-substrate discipline — contract governance for reckonable-quality domains: checkable vs reckonable criteria, substrate closure, the three-layer contract shape, whole-properties authored top-down; commits no project to a token vehicle, gate implementation, or design-system scope. | [commons#111](https://github.com/tesserine/commons/issues/111) |
 
 Relationship to the running system: [`runa`](https://github.com/tesserine/runa)
 is the implemented cognitive runtime, and
@@ -25,3 +26,7 @@ updating this index plus [`SOURCE-OF-TRUTH.md`](../SOURCE-OF-TRUTH.md) in
 the same change. The cognitive-state-machine draft has been promoted by
 [commons#92](https://github.com/tesserine/commons/issues/92); no ADR was
 derived because the ratification creates no specific project commitment.
+The design-as-substrate concept has been promoted by
+[commons#111](https://github.com/tesserine/commons/issues/111) as a direct
+entry — it carried no draft stage and no stated pre-work — and no ADR was
+derived because the discipline creates no specific project commitment.
