@@ -246,7 +246,8 @@ flowchart TB
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
     BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>co-verify RAN: runa#238 works — sealed transcript coverage:full<br/>NOT accepted — operator DX gate: live terminal shows only lifecycle bookends<br/>BLOCKED on agentd DX/hygiene fixes below · pass both routes → merge, close #58"]:::blocked --> M1INT
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::ready --> BO67
-    AGENTD175["agentd#175<br/>work-unit target resolves fail-closed + freshens before define<br/>(hygiene · stage-ownership open in-body)"]:::ready --> BO67
+    AGENTD175["agentd#175<br/>work-unit reference resolves fail-closed<br/>(routes seed through runa's resolving entry · freshen half split to runa#243)"]:::ready --> BO67
+    RUNA243["runa#243<br/>re-entry to a recorded work-unit freshens vs current substrate before define<br/>(freshen half of #175 · runa change — run_bound skips the acquire surface)"]:::ready --> BO67
     AGENTD176["agentd#176<br/>live observation renders transcript usefully to terminal<br/>(untargeted-route DX · render fix — tailer already exists)"]:::ready --> BO67
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
