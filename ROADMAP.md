@@ -239,12 +239,15 @@ flowchart TB
     BO81 -. "reference for" .-> BO82
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
-    AGENTD162["agentd#162 / PR #163 @ dade8ed — CORRECT but insufficient alone<br/>env delivery proven at /proc; finalizer reads exact supplied run-id<br/>HELD open: co-verifies with runa#238 on next #67 run"]:::ready --> AGENTD122
-    AGENTD122["agentd#122 (consolidated into PR #163)<br/>live tailer reads shared exact-run-id resolver — CORRECT<br/>streams once runa#238 writes under the supplied id · merges on #67 pass"]:::ready --> BO67
+    AGENTD162["agentd#162 / PR #163 @ dade8ed — CORRECT · co-verify confirmed runa#238 works<br/>env delivery proven at /proc; finalizer reads exact supplied run-id<br/>HELD open: merges on #67 acceptance (now gated on DX fixes #174/#175/#176)"]:::ready --> AGENTD122
+    AGENTD122["agentd#122 (consolidated into PR #163)<br/>live tailer reads shared exact-run-id resolver — CORRECT · confirmed tailing<br/>render thinness is #176 (not this) · merges on #67 acceptance"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>#100 wiring fixed · agentd PR #163 correct · runa#238 landed @ 53b064ba<br/>BLOCKED on the co-verify run: base image rebuilt at runa 53b064ba + agentd PR #163 head<br/>co-verify PR #163 + runa#238 on the run · pass → merge #162+#122, close #58"]:::blocked --> M1INT
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>co-verify RAN: runa#238 works — sealed transcript coverage:full<br/>NOT accepted — operator DX gate: live terminal shows only lifecycle bookends<br/>BLOCKED on agentd DX/hygiene fixes below · pass both routes → merge, close #58"]:::blocked --> M1INT
+    AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::ready --> BO67
+    AGENTD175["agentd#175<br/>work-unit target resolves fail-closed + freshens before define<br/>(hygiene · stage-ownership open in-body)"]:::ready --> BO67
+    AGENTD176["agentd#176<br/>live observation renders transcript usefully to terminal<br/>(untargeted-route DX · render fix — tailer already exists)"]:::ready --> BO67
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
     M1REL["🏁 M1 publish — commons#48<br/>dual-mode phase 1 (runa#167 terminal)<br/>runa v0.2.0 · commons v0.3.0 · groundwork v0.3.0"]:::gate
