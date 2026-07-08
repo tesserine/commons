@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+  printf 'FAIL: %s\n' "$*" >&2
+  exit 1
+}
+
+doc="concepts/design-as-substrate.md"
+
+[[ -s "$doc" ]] || fail "$doc is missing or empty"
+
+rg -q '\(design-as-substrate\.md\)' concepts/README.md \
+  || fail "concepts index does not link the promoted concept"
+rg -q 'design-as-substrate\.md.*Ratified conceptual foundation' concepts/README.md \
+  || fail "concepts index row does not mark the concept ratified"
+rg -q 'design-as-substrate\.md.*https://github\.com/tesserine/commons/issues/111' concepts/README.md \
+  || fail "concepts index row does not track commons#111"
+
+rg -q '\(concepts/design-as-substrate\.md\)' SOURCE-OF-TRUTH.md \
+  || fail "source-of-truth map does not name the concept canonical"
+
+rg -q 'asset:design-as-substrate' "$doc" \
+  || fail "document does not name the asset:design-as-substrate label"
+rg -q 'https://github\.com/tesserine/commons/issues\?q=label%3A%22asset%3Adesign-as-substrate%22' "$doc" \
+  || fail "document does not link the commons tracker query for the asset label"

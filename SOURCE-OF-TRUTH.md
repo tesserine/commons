@@ -77,6 +77,7 @@ manifests use the five-component release set. See
 | Examples / onboarding | distributed: each repo owns its examples; `example-hello` is the canonical cross-stack integration fixture (per [`ECOSYSTEM-RELEASE.md`](ECOSYSTEM-RELEASE.md)) | each repo | examples demonstrate, they do not redefine contracts |
 | Documentation discipline | [`groundwork/skills/orient/`](https://github.com/tesserine/groundwork/tree/main/skills/orient) (always-on documentation discipline) | `groundwork` | applies wherever the methodology runs |
 | Cognitive-state-machine concept | [`concepts/cognitive-state-machine.md`](concepts/cognitive-state-machine.md) | `commons` | **ratified conceptual foundation** — see [`concepts/README.md`](concepts/README.md), [commons#16](https://github.com/tesserine/commons/issues/16), and [commons#92](https://github.com/tesserine/commons/issues/92); it commits Tesserine to no Layer-2 or Layer-3 implementation direction |
+| Design-as-substrate discipline | [`concepts/design-as-substrate.md`](concepts/design-as-substrate.md) | `commons` | **ratified conceptual foundation** — see [`concepts/README.md`](concepts/README.md) and [commons#111](https://github.com/tesserine/commons/issues/111); consumers — the Tesserine design system ([commons#110](https://github.com/tesserine/commons/issues/110)), the Gazette design contract ([tesserine/gazette#14](https://github.com/tesserine/gazette/issues/14)) — cite it as the discipline's authority and instantiate it locally; they do not restate it |
 
 ## Map, not mirror
 
