@@ -242,6 +242,8 @@ flowchart TB
     AGENTD162["agentd#162 ✓<br/>nested runa transcript events read at the exact supplied run-id<br/>landed @ 01115fe8 (PR #163)"]:::landed --> AGENTD122
     AGENTD122["agentd#122 · code landed in PR #163<br/>live tailer reads the shared exact-run-id resolver<br/>closes on #67 operator evidence + AGENTD180 (suite-green gate)"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
+    BO102["babbie-ops#102<br/>runbook: Drive the fixture states the live-observation<br/>and seed surfaces as present fact (off M1 path)"]:::ready
+    RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
     BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>all four agentd route-fixes LANDED to main @ 08ae5826 (#162 #174 #175 #176)<br/>RUNNABLE: both entry routes live · runa#243 is hygiene, not a dead route<br/>drive both routes → operator accepts → closes #58"]:::ready --> M1INT
