@@ -246,9 +246,11 @@ flowchart TB
     RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>all four agentd route-fixes LANDED to main @ 08ae5826 (#162 #174 #175 #176)<br/>RUNNABLE: both entry routes live · runa#243 is hygiene, not a dead route<br/>drive both routes → operator accepts → closes #58"]:::ready --> M1INT
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-09: live progress WORKS (one run_id, execution phase streams)<br/>HALTED: create-work-unit 403 → silent fallback → false session success<br/>BLOCKED on runa#244 + babbie-ops#103 · then re-run both routes"]:::blocked --> M1INT
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::landed --> BO67
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
+    RUNA244["runa#244<br/>work-unit delivery refuses an artifact whose tracker write failed<br/>(silent 403 → local artifact → session success) · M1 BLOCKER"]:::ready --> BO67
+    BO103["babbie-ops#103<br/>converge credential's resource owner matches --forge-owner<br/>(pentaxis93 PAT paired with tesserine fixture → 403) · M1 BLOCKER"]:::ready --> BO67
     RUNA243["runa#243<br/>re-entry to a recorded work-unit freshens vs current substrate before define<br/>(freshen half of #175 · run_bound skips the acquire surface)<br/>targeted-route hygiene · fixture unit is fresh by construction"]:::ready -. "hygiene for" .-> BO67
     AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence + AGENTD180 (suite-green gate)"]:::ready --> BO67
     AGENTD180["agentd#180<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>main is RED @ 08ae5826 · suite-green gate for #122/#176"]:::ready --> AGENTD122
