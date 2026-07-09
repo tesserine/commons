@@ -119,7 +119,8 @@ flowchart TB
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
         q5_539["groundwork#539<br/>re-reckon of the whole contract machine — DONE<br/>direction: complete + meeting-surface axis;<br/>graded relay, gated + landed"]:::landed
-        q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule"]:::ready
+        q5_582["groundwork#582<br/>ADR: content kinds — behavior + meaning;<br/>checks operational, binding as policy<br/>(check_kind retires)"]:::ready
+        q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule<br/>(re-sequenced after #582)"]:::blocked
         q5_573ad["agentd#172<br/>retrofit operator-met help surfaces<br/>(blocked by #573)"]:::open
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
@@ -133,7 +134,8 @@ flowchart TB
         q5_495 --> q5_485
         q5_494 --> q5_225
         q5_498 --> q5_539
-        q5_539 --> q5_573
+        q5_539 --> q5_582
+        q5_582 --> q5_573
         q5_539 --> q5_531
         q5_531 --> q5_580
         q5_539 --> q5_cpend
