@@ -119,18 +119,18 @@ flowchart TB
         q5_498["groundwork#498<br/>every dimension carries<br/>teeth-bearing criteria"]:::landed
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
         q5_539["groundwork#539<br/>re-reckon of the whole contract machine — DONE<br/>direction: complete + meeting-surface axis;<br/>graded relay, gated + landed"]:::landed
-        q5_582["groundwork#582<br/>ADR-0010: content kinds — behavior + meaning<br/>— LANDED as Proposed (PR #588);<br/>ratification pending"]:::landed
-        q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule<br/>(awaits ADR-0010 ratification)"]:::blocked
+        q5_582["groundwork#582<br/>ADR-0010: content kinds — behavior + meaning<br/>— LANDED (PR #588); Accepted 2026-07-10"]:::landed
+        q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule<br/>(first client of ADR-0010)"]:::ready
         q5_573ad["agentd#172<br/>retrofit operator-met help surfaces<br/>(blocked by #573)"]:::open
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
         q5_cpend["groundwork#488 #486 #487<br/>pending contract-machine improvements —<br/>re-grounded via #587 first"]:::blocked
-        q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5)"]:::blocked
-        q5_584["groundwork#584<br/>binding-policy home: policy.toml<br/>ci/harness/manual + the one CI line"]:::blocked
-        q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::blocked
+        q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5 — sequenced first)"]:::ready
+        q5_584["groundwork#584<br/>binding-policy home: policy.toml<br/>ci/harness/manual + the one CI line"]:::ready
+        q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
         q5_586["groundwork#586<br/>epic: transmission harness —<br/>cold-recipient checks (post-M1)"]:::blocked
-        q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds"]:::blocked
+        q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds"]:::ready
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
