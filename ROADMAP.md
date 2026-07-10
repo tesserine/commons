@@ -125,7 +125,7 @@ flowchart TB
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
-        q5_cpend["groundwork#488 #486 #487<br/>contract-machine enrichments —<br/>re-grounded to ADR-0010 via #587 ✓ ·<br/>blocked by #583 (#486 also #584)"]:::blocked
+        q5_cpend["groundwork#488 #486 #487<br/>contract-machine enrichments —<br/>re-grounded to ADR-0010 via #587 ✓ ·<br/>blocked by #583"]:::blocked
         q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5 — sequenced first)"]:::ready
         q5_584["groundwork#584<br/>binding-policy home: policy.toml —<br/>LANDED (PR #589)"]:::landed
         q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
