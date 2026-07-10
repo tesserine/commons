@@ -271,7 +271,7 @@ flowchart TB
     RUNA243["runa#243 ✓<br/>re-entry serves the acquisition surface unless its record is current<br/>(freshen half of #175 · fires groundwork's freshen before define)<br/>landed @ 4e1c4646 (PR #247)"]:::landed -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
     AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
-    AGENTD186["agentd#186<br/>work-unit-seeded session delivers forge owner/name<br/>to runa's resolving entry (sibling of #175/runa#243,<br/>the identity-delivery half neither covered)"]:::ready --> BO67
+    AGENTD186["agentd#186 ✓<br/>work-unit-seeded session delivers forge owner/name<br/>to runa's resolving entry (RUNA_FORGE_* atoms from agent config)<br/>landed @ cbe88e88 (PR #187) · suite-green verified"]:::landed --> BO67
     AGENTD180["agentd#180 ✓<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>landed @ 53be589b (PR #185) · main CI green · suite-green gate discharged"]:::landed --> AGENTD122
     AGENTD180 --> AGENTD176
     Q5 == "leveling set gates #50" ==> M1INT
