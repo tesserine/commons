@@ -267,6 +267,7 @@ flowchart TB
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
     RUNA244["runa#244 ✓<br/>a protocol whose required forge mutation was refused must not report success<br/>(fail-closed enforcement + work-unit delivery provenance)<br/>M1 BLOCKER cleared · landed @ a27a08ad (PR #249)"]:::landed --> BO67
     BO103["babbie-ops#103 ✓<br/>converge credential resource owner matches --forge-owner<br/>+ target-scoped write probe (422-only pass) · seam gains TESSERINE_OPERATOR_PAT<br/>landed @ 9f4e01bd (PR #106)"]:::landed --> BO67
+    BO107["babbie-ops#107 ✓<br/>host-secret seam provisions exactly the GitHub pair<br/>(WeForge PAT retired · Radicle needs none)<br/>landed @ 9e99bdd9 (PR #108)"]:::landed -. "seam hygiene for" .-> BO67
     RUNA243["runa#243 ✓<br/>re-entry serves the acquisition surface unless its record is current<br/>(freshen half of #175 · fires groundwork's freshen before define)<br/>landed @ 4e1c4646 (PR #247)"]:::landed -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
     AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
