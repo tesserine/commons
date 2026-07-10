@@ -160,8 +160,10 @@ flowchart TB
         direction TB
         q6_mig["commons#109<br/>Tesserine repo homes migrate to Radicle<br/>(commons ✓ live · runa / groundwork / agentd)"]:::ready
         q6_adr["commons#108<br/>ADR: Radicle as native collaboration substrate<br/>(forge neutrality retired · gated on #50)"]:::blocked
+        q6_runa248["runa#248 ✓<br/>supersession disposition — a rejected conforming<br/>output regenerates against unchanged inputs<br/>landed @ f327be9d (PR #250)"]:::landed
         q6_gw["groundwork#538<br/>Radicle-native layer supersedes<br/>the connector system (stub)"]:::blocked
         q6_adr --> q6_gw
+        q6_runa248 --> q6_gw
     end
     M1INT --> q6_adr
     q6_adr -. "supersedes on landing" .-> Q3
