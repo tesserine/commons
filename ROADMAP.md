@@ -128,7 +128,7 @@ flowchart TB
         q5_cpend["groundwork#488 #486 #487<br/>contract-machine enrichments —<br/>re-grounded to ADR-0010 via #587 ✓ ·<br/>blocked by #583"]:::blocked
         q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retired —<br/>LANDED (PR #591); consumer weforge-ops#5"]:::landed
         q5_584["groundwork#584<br/>binding-policy home: policy.toml —<br/>LANDED (PR #589)"]:::landed
-        q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
+        q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results —<br/>LANDED (PR #590)"]:::landed
         q5_586["groundwork#586<br/>epic: transmission harness —<br/>cold-recipient checks (post-M1)"]:::blocked
         q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds<br/>— LANDED 2026-07-10 (station-direct)"]:::landed
         q5_492 --> q5_493
