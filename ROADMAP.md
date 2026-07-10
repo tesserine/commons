@@ -291,7 +291,7 @@ flowchart TB
     RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-10: untargeted route PASS (fail-closed guard proven live);<br/>targeted route RUNNABLE — installer wires forge_owner/forge_name (#109 landed @ 2f2ab40d)<br/>READY: re-run targeted route (agent config now declares the pair)"]:::ready --> M1INT
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-10: untargeted route PASS (full cascade → landed change);<br/>targeted route HALTED — acquisition delivers work-unit but cascade goes<br/>quiescent before define (work_failed); forge-identity + observability proven<br/>BLOCKED on runa#255 (cascade-advance) → then re-run targeted route"]:::blocked --> M1INT
     BO109["babbie-ops#109 ✓<br/>installer: apply-interactive-tesserine wires<br/>forge_owner/forge_name into agentd.toml<br/>(targeted-route forge-identity atom) · landed @ 2f2ab40d (PR #110)"]:::landed --> BO67
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::landed --> BO67
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
@@ -303,6 +303,9 @@ flowchart TB
     AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
     AGENTD188["agentd#188<br/>permission-denial and runtime-path tests report honestly<br/>when their precondition is unmet (surfaced by agentd#186)<br/>off M1 path"]:::ready
     AGENTD186["agentd#186 ✓<br/>work-unit-seeded session delivers forge owner/name<br/>to runa's resolving entry (RUNA_FORGE_* atoms from agent config)<br/>landed @ cbe88e88 (PR #187) · suite-green verified"]:::landed --> BO67
+    RUNA255["runa#255<br/>work-unit-seeded session advances past acquisition —<br/>define fires on the delivered artifact (store-locus join);<br/>acquisition writes work-unit, scoped re-eval reads empty store →<br/>quiescent → work_failed · M1 targeted-route BLOCKER (surfaced @ #67 run 07-10)"]:::ready --> BO67
+    BASE27["base#27<br/>session base image carries python3<br/>for fixture verification (binds at verify,<br/>once #255 clears) · off immediate blocker"]:::ready -. "verify needs" .-> BO67
+    BO111["babbie-ops#111<br/>interactive session delivers Claude Code<br/>config surface (~/.claude.json sibling mount) ·<br/>DX-hygiene, non-blocking"]:::ready -. "session hygiene for" .-> BO67
     AGENTD180["agentd#180 ✓<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>landed @ 53be589b (PR #185) · main CI green · suite-green gate discharged"]:::landed --> AGENTD122
     AGENTD180 --> AGENTD176
     Q5 == "leveling set gates #50" ==> M1INT
@@ -441,7 +444,23 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-**Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs. **Off the M1
+**Refreshed 2026-07-10 (babbie-ops#67 targeted-route run + diagnosis).** The targeted
+route was driven on babbie-dev against the RC (`agentd@cbe88e88 · runa@9b8d8265 ·
+base@30a2aab5 · groundwork@cc8ffd0f`). It **resolved the ticket** (forge-identity
+delivery proven — the prior blocker), ran `decompose` to a clean exit, and **sealed a
+`full`-coverage transcript** — so the forge-identity and observability evidence sets are
+discharged on the targeted route. It then **halted**: acquisition delivered the work-unit,
+but the immediately-following scoped evaluation read an empty store and planned no `define`,
+so the cascade went quiescent → `work_failed` with no protocol executing after acquisition.
+Diagnosed to a **store-locus mismatch** across the acquisition → scoped-re-evaluation
+handoff and filed as **runa#255** — the M1 targeted-route blocker. The untargeted route's
+PASS this session stands. Two follow-on substrate findings filed at their homes: **base#27**
+(session image lacks `python3`; binds at `verify` once #255 clears) and **babbie-ops#111**
+(`~/.claude.json` sibling not mounted; DX-hygiene, non-blocking). **Next:** relay `define`
+on runa#255; land it; then re-run #67's targeted route (with base#27 in the image so it
+reaches `verify`/`land`). Nothing else on the targeted route is station-blocked.
+
+_(prior)_ **Refreshed 2026-07-06 (PR #169 review-passed).** The **#122-on-#162 verification build is built and review-passed** — PR #169 @ `08c9199`, stacked on #162's `ba5fcbd`, draft/not-merge. babbie-ops#67 is now **operator-runnable**: the operator checks out `issue-122-live-progress-on-162` on babbie-dev, converges, and drives the one consolidated `agentd wish` session collecting all three evidence sets. On acceptance, #162 (PR #163) and #122 (PR #169) merge and epic #58 closes. Nothing is station- or agent-actionable until the session runs. **Off the M1
 path (2026-07-07):** the Gazette quest (Q8) backbone is **landed** — the News
 Substrate contract (gazette#11) is merged to trunk (squash `1414517a`), so
 #12/#13/#14 unblock. The design-as-substrate discipline (commons#111)
