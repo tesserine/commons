@@ -260,10 +260,10 @@ flowchart TB
     RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-09: live progress WORKS (one run_id, execution phase streams)<br/>HALTED: create-work-unit 403 → silent fallback → false session success<br/>BLOCKED on runa#244 (babbie-ops#103 ✓ landed) · then re-run both routes"]:::blocked --> M1INT
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-09: live progress WORKS (one run_id, execution phase streams)<br/>prior HALT (create-work-unit 403 → false success) repaired: babbie-ops#103 ✓ + runa#244 ✓<br/>READY: re-run both routes"]:::ready --> M1INT
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::landed --> BO67
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
-    RUNA244["runa#244<br/>work-unit delivery refuses an artifact whose tracker write failed<br/>(silent 403 → local artifact → session success) · M1 BLOCKER"]:::ready --> BO67
+    RUNA244["runa#244 ✓<br/>a protocol whose required forge mutation was refused must not report success<br/>(fail-closed enforcement + work-unit delivery provenance)<br/>M1 BLOCKER cleared · landed @ a27a08ad (PR #249)"]:::landed --> BO67
     BO103["babbie-ops#103 ✓<br/>converge credential resource owner matches --forge-owner<br/>+ target-scoped write probe (422-only pass) · seam gains TESSERINE_OPERATOR_PAT<br/>landed @ 9f4e01bd (PR #106)"]:::landed --> BO67
     RUNA243["runa#243 ✓<br/>re-entry serves the acquisition surface unless its record is current<br/>(freshen half of #175 · fires groundwork's freshen before define)<br/>landed @ 4e1c4646 (PR #247)"]:::landed -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
