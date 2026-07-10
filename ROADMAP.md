@@ -127,7 +127,7 @@ flowchart TB
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
         q5_cpend["groundwork#488 #486 #487<br/>pending contract-machine improvements —<br/>re-grounded via #587 first"]:::blocked
         q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5 — sequenced first)"]:::ready
-        q5_584["groundwork#584<br/>binding-policy home: policy.toml<br/>ci/harness/manual + the one CI line"]:::ready
+        q5_584["groundwork#584<br/>binding-policy home: policy.toml —<br/>LANDED (PR #589)"]:::landed
         q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
         q5_586["groundwork#586<br/>epic: transmission harness —<br/>cold-recipient checks (post-M1)"]:::blocked
         q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds"]:::ready
