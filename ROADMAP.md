@@ -1,17 +1,46 @@
-# Tesserine — Program-Line Map (the quest map)
+# Tesserine — The Parking Map (terminal frame)
 
-*The navigable map of the feature lines that build the Tesserine **system**,
-their work units, how they stack into one critical path, and how far each has
-moved. This is the human's-eye view of the ecosystem's work graph — a single
-legible document, rendered here by standard Mermaid, that you descend to reach
-the live work.*
+> ## ⛳ Terminal state — read this first
+>
+> **Tesserine is being brought to working quiescence and parked here.** It is
+> not being developed further in this codebase. It is the **bootstrap
+> instrument**: the working system with which the operator builds *WeForge* — a
+> completely different architecture, native to Radicle. WeForge is not reached
+> by morphing this code into it; it is reached by **extracting Tesserine's
+> fundamental requirements and deriving the new shape natively on Radicle,
+> once that build reveals its own exigence.** So Tesserine's job now is only to
+> *work*, well enough to build its successor with.
+>
+> This map is therefore no longer a program-line asking *"where is the work
+> going?"* It is the **parking record**, answering three questions:
+>
+> - **What must stay working** — the instrument. The M1 line (interactive
+>   build, proven at `babbie-ops#67`) and the autonomous cycling capstone
+>   (`runa#152` / `#153`). These are driven to *done-and-running*, not closed.
+>   The chosen parking point is: **Tesserine running the operator's agents
+>   autonomously** — a fully working system is the honest place to lay it down.
+> - **What is superseded to WeForge** — every line that is *Tesserine
+>   improving Tesserine*, above all Tesserine rebuilding itself on Radicle
+>   (`groundwork#538` and its child set, `commons#108`/`#109`/`#115`/`#116`,
+>   the connector-retirement units). These carry real reckoning — they *are*
+>   the informal requirements extraction — but as **input to WeForge, not work
+>   to execute here.** They close as superseded; their reckoning is preserved
+>   in the close record and pointed forward from this map (see *Superseded to
+>   WeForge*, below).
+> - **Where it is parked** — the quiescence checklist at the foot of this map.
+>
+> **The discipline of this terminal phase is *subtraction*.** No new lines, no
+> follow-on vectors, no manufactured optionality. The pass closes what is
+> superseded, keeps true what is live, and caps the map. The extraction corpus
+> is **not** built ahead of need — it is created against WeForge's real
+> exigence when that build presses on it; until then, the reckoning rests in
+> the closed issues this map points at.
 
-This map is the ecosystem's answer to **"where is the work going, and what's
-next?"** — and the surface on which the feature lines are *reckoned*: what each
-is made of, how they compose, what gates what, and in what order the releases
-ship. It supersedes the nested-roadmap-in-issues realization (epic #85): the
-graph does not hide inside issue bodies reachable only by descent — it lives
-here, in one place, drawn.
+*Below the terminal frame, the original program-line map is retained as the
+live-and-historical substrate: the quests that built the instrument, drawn in
+one legible Mermaid graph you descend to reach the work. Its node colors stay
+true to the trackers; its **shape is now fixed** — no new quests, only the
+transitions toward quiescence and supersession.*
 
 ## How to read it
 
@@ -510,3 +539,66 @@ next: NEXT / THEN / LATER). A quest lands units continuously here; only when a
 quest is promoted to a shipping release does the release sequence change. Do not
 confuse the two: this map tracks the *lines and their progress*; the release
 roadmap tracks the *order releases ship*.
+
+*In the terminal phase, "keeping current" narrows: the only shape-changes are
+transitions toward quiescence (a live line reaching done-and-running) and
+supersession (a self-improvement line closing to WeForge). No new quests.*
+
+---
+
+## Superseded to WeForge
+
+*The forward-pointer this map owes the successor. The lines below are
+**Tesserine improving Tesserine** — and, above all, Tesserine rebuilding
+itself on Radicle. They are superseded: **not reached by morphing this code,
+but by re-deriving their requirements natively on WeForge's Radicle
+architecture once that build reveals its exigence.** They close as superseded
+here. What they carry is not schedule but **reckoning** — they are the
+ecosystem's own informal requirements extraction, and this section is the one
+place a future WeForge session looks to find it. The extraction corpus proper
+is created against the real exigence when WeForge presses on it; until then,
+each closed issue named below holds its own reckoning intact.*
+
+**Supersession stamp.** Each issue in this cluster closes with a comment of the
+fixed form: *"Superseded to WeForge. Tesserine is parked as a bootstrap
+instrument; its self-succession is re-derived natively on Radicle, not morphed
+from this code. This unit's reckoning is preserved as extraction-input for that
+build. Closed not-done: superseded."* — so the close record itself carries the
+frame, and no archaeology is required to know why a live-looking unit is shut.
+
+| Cluster | Units | What its reckoning gives WeForge |
+|---|---|---|
+| **Radicle-native rebuild** (epic `groundwork#538`) | gw#538, #596–#610, #612, #613; base#26 | The full lifecycle-on-Radicle requirement: identity grammar, replication policy, read-back durable-mutation verification, each lifecycle station native, zero-residue completion. *The most complete extraction present.* |
+| **Radicle substrate constitution** | commons#108 (ADR), #109 (repo homes), #115 (supersede connector docs), #116 (ecosystem release) | Why Radicle, what "native substrate" means, the migration and identity policy. |
+| **Connector retirement** | runa#226, #245, #246, #208; agentd#183, #184; commons#60, #65 | The seam between methodology and forge — the boundary WeForge encodes structurally in COBs instead of as a connector contract. |
+| **Derived-methodology line** (epic `groundwork#541`) | gw#541, #542–#578 (the typed-basis sprawl) | The reckoning that protocols are *derived from* a typed basis — a shape WeForge's COB architecture may realize structurally rather than as generated protocol prose. |
+
+*(Precise membership is confirmed against the tracker as each cluster is swept;
+a unit that turns out to carry live-instrument value is kept, not closed. The
+sweep is a subtraction, not a guillotine.)*
+
+---
+
+## Quiescence — the parking checklist
+
+*Tesserine is parked when the instrument works and the succession is honestly
+laid down. This is the terminal acceptance — the point past which there is no
+more Tesserine development here.*
+
+- [ ] **Interactive build proven.** `babbie-ops#67` accepted — a real change
+      built through the interactive deployment, operator-judged. (Operator-run;
+      not station-actionable.)
+- [ ] **Autonomous cycling running.** The capstone (`runa#152`, on-ramp
+      `runa#153`) drives an end-to-end cycle unattended. *This is the chosen
+      parking point: a fully working autonomous system.*
+- [ ] **The instrument is coherent.** Host/session-composition (agentd#87
+      line) and wish/intent (agentd#152 line) true and working; no live
+      contradiction between what the map says works and what runs.
+- [ ] **Succession laid down.** Every *Superseded to WeForge* cluster closed
+      with the supersession stamp; this map's forward-pointer complete.
+- [ ] **Map capped.** Node colors true to the tracker one final time; shape
+      frozen; this checklist the last thing refreshed.
+
+When every box is checked, the map is the parking record and the work here is
+done. WeForge continues on Radicle — a new architecture, deriving its shape
+from the reckoning this map points back at.
