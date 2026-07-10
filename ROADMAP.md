@@ -14,11 +14,18 @@
 > This map is therefore no longer a program-line asking *"where is the work
 > going?"* It is the **parking record**, answering three questions:
 >
-> - **What must stay working** — the instrument. The M1 line (interactive
->   build, proven at `babbie-ops#67`) and the autonomous cycling capstone
->   (`runa#152` / `#153`). These are driven to *done-and-running*, not closed.
->   The chosen parking point is: **Tesserine running the operator's agents
->   autonomously** — a fully working system is the honest place to lay it down.
+> - **What must stay working** — the instrument. The interactive build,
+>   proven at `babbie-ops#67`: the operator drives real software work through
+>   the deployment to a landed change (untargeted `wish`), and works units
+>   conversationally in **manual mode**. The chosen parking point is:
+>   **Tesserine as a proven interactive instrument** — it works well enough to
+>   build WeForge, which is the whole point of the instrument. *Autonomous
+>   cycling was formerly named the parking point; it is retired to WeForge
+>   (2026-07-10, operator decision): cycling is unbuilt new capability, and the
+>   terminal-phase subtraction discipline routes new building to the successor,
+>   not to this code. Its reckoning (on-ramp `runa#153`, capstone `runa#152`
+>   and the `#256`–`#260` decomposition) is preserved as extraction-input; the
+>   COB architecture realizes the work-unit graph structurally on Radicle.*
 > - **What is superseded to WeForge** — every line that is *Tesserine
 >   improving Tesserine*, above all Tesserine rebuilding itself on Radicle
 >   (`groundwork#538` and its child set, `commons#108`/`#109`/`#115`/`#116`,
@@ -102,20 +109,11 @@ flowchart TB
     end
 
     %% ================= QUEST 2: autonomous cycling (CAPSTONE) =================
-    subgraph Q2["⚙️ QUEST · autonomous cycling — the capstone (demonstrate the capability) · runa#152"]
+    subgraph Q2["⚙️ QUEST · autonomous cycling — RETIRED to WeForge (unbuilt new capability) · runa#152 ⊘"]
         direction TB
-        q2_153["runa#153 ✓ · ON-RAMP<br/>decomposed the cycling work against the live substrate;<br/>manual mode · demo bar set · epic graph filled 2026-07-10"]:::landed
-        q2_256["runa#256<br/>work-unit selection — next eligible<br/>unit or terminal signal (composes<br/>existing libagent readiness/graph)"]:::ready
-        q2_257["runa#257<br/>outer cycling loop — select, drive<br/>cascade, re-evaluate, repeat<br/>(wraps the existing scoped run)"]:::open
-        q2_258["runa#258<br/>autonomous entry point —<br/>kick off an unattended<br/>whole-project run"]:::open
-        q2_259["runa#259<br/>audit trail — reconstruct<br/>the autonomous run"]:::open
-        q2_260["runa#260 · CAPABILITY PROOF<br/>e2e unattended run over a<br/>multi-work-unit fixture —<br/>green = parking box met"]:::open
-        q2_153 --> q2_256 --> q2_257
-        q2_257 --> q2_258
-        q2_257 --> q2_259
-        q2_257 --> q2_260
-        q2_258 --> q2_260
-        q2_259 --> q2_260
+        q2_153["runa#153 ⊘ · ON-RAMP (reckoning preserved)<br/>decomposed cycling against the live substrate; found the<br/>readiness/graph machinery already in libagent. Extraction-input for WeForge."]:::open
+        q2_dec["runa#256–#260 ⊘ superseded to WeForge<br/>selector · outer loop · entry · audit · e2e proof —<br/>the demonstrate-the-capability decomposition.<br/>Closed not-done: cycling is built on Radicle, not here."]:::open
+        q2_153 --> q2_dec
     end
 
     %% ================= QUEST 3: connectors (substrate) =================
@@ -473,11 +471,13 @@ substrate (runa's own store plumbing is self-consistent) — autonomous-executio
 seam WeForge's COB architecture dissolves. Superseded units, stamped and closed not-done:
 **runa#255**, **base#27**, **babbie-ops#111**.
 
-**What remains to park:** autonomous cycling running — on-ramp runa#153 landed (manual mode);
-the capstone is decomposed into runa#256→#257→#258/#259/#260 under the **demonstrate-the-capability**
-bar (one unattended multi-work-unit run proves it, then park; hardening supersedes to WeForge).
-Cycling front is **runa#256** (the selector — composes existing libagent readiness/graph, ready now).
-Then: the Superseded-to-WeForge sweep (succession laid down); map capped.
+**What remains to park:** autonomous cycling is **retired to WeForge** (2026-07-10) — it is unbuilt
+new capability, and the terminal-phase subtraction discipline routes new building to the successor,
+not this code. The capstone (runa#152), on-ramp (runa#153), and the #256–#260 decomposition are
+closed superseded, their reckoning preserved as extraction-input. The instrument's parking bar is
+the **proven interactive build** (met). Remaining: the **Superseded-to-WeForge sweep** (the big
+clusters — gw#538, connector retirement, gw#541 — stamped and closed); then **cap the map**. With
+cycling retired, parking is now *subtraction only* — no build work remains in Tesserine.
 
 _(prior)_ **Refreshed 2026-07-10 (babbie-ops#67 targeted-route run + diagnosis).** The targeted
 route was driven on babbie-dev against the RC (`agentd@cbe88e88 · runa@9b8d8265 ·
@@ -642,9 +642,14 @@ more Tesserine development here.*
 - [x] **Interactive build proven.** `babbie-ops#67` accepted 2026-07-10 — a real
       change built through the interactive deployment via the untargeted `wish`
       route, operator-judged DX/observability sufficient. Epic #58 closed.
-- [ ] **Autonomous cycling running.** The capstone (`runa#152`, on-ramp
-      `runa#153`) drives an end-to-end cycle unattended. *This is the chosen
-      parking point: a fully working autonomous system.*
+- [x] **Autonomous cycling — retired to WeForge, not a Tesserine parking
+      requirement.** Formerly the chosen parking point; retired 2026-07-10
+      (operator decision). Cycling is unbuilt new capability, and the
+      terminal-phase subtraction discipline routes new building to the
+      successor. The capstone (`runa#152`), on-ramp (`runa#153`), and the
+      `#256`–`#260` decomposition are closed superseded, their reckoning
+      preserved as extraction-input. The instrument's parking bar is the
+      proven interactive build above, not an autonomous loop built here.
 - [ ] **The instrument is coherent.** Host/session-composition (agentd#87
       line) and wish/intent (agentd#152 line) true and working; no live
       contradiction between what the map says works and what runs.
