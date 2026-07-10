@@ -265,7 +265,7 @@ flowchart TB
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
     RUNA244["runa#244<br/>work-unit delivery refuses an artifact whose tracker write failed<br/>(silent 403 → local artifact → session success) · M1 BLOCKER"]:::ready --> BO67
     BO103["babbie-ops#103<br/>converge credential's resource owner matches --forge-owner<br/>(pentaxis93 PAT paired with tesserine fixture → 403) · M1 BLOCKER"]:::ready --> BO67
-    RUNA243["runa#243 · IN FLIGHT (station-direct)<br/>re-entry to a recorded work-unit freshens vs current substrate before define<br/>(freshen half of #175 · run_bound skips the acquire surface)<br/>contract posted 2026-07-10 · targeted-route hygiene"]:::ready -. "hygiene for" .-> BO67
+    RUNA243["runa#243 ✓<br/>re-entry serves the acquisition surface unless its record is current<br/>(freshen half of #175 · fires groundwork's freshen before define)<br/>landed @ 4e1c4646 (PR #247)"]:::landed -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
     AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
     AGENTD180["agentd#180 ✓<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>landed @ 53be589b (PR #185) · main CI green · suite-green gate discharged"]:::landed --> AGENTD122
