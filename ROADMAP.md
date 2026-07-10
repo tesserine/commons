@@ -102,11 +102,20 @@ flowchart TB
     end
 
     %% ================= QUEST 2: autonomous cycling (CAPSTONE) =================
-    subgraph Q2["⚙️ QUEST · autonomous cycling — the capstone · runa#152"]
+    subgraph Q2["⚙️ QUEST · autonomous cycling — the capstone (demonstrate the capability) · runa#152"]
         direction TB
-        q2_153["runa#153 · ON-RAMP<br/>decompose the cycling work<br/>against the live substrate"]:::ready
-        q2_more["⟨units #153 emits⟩<br/>the take→…→land cycle engine"]:::open
-        q2_153 -. "emits" .-> q2_more
+        q2_153["runa#153 ✓ · ON-RAMP<br/>decomposed the cycling work against the live substrate;<br/>manual mode · demo bar set · epic graph filled 2026-07-10"]:::landed
+        q2_256["runa#256<br/>work-unit selection — next eligible<br/>unit or terminal signal (composes<br/>existing libagent readiness/graph)"]:::ready
+        q2_257["runa#257<br/>outer cycling loop — select, drive<br/>cascade, re-evaluate, repeat<br/>(wraps the existing scoped run)"]:::open
+        q2_258["runa#258<br/>autonomous entry point —<br/>kick off an unattended<br/>whole-project run"]:::open
+        q2_259["runa#259<br/>audit trail — reconstruct<br/>the autonomous run"]:::open
+        q2_260["runa#260 · CAPABILITY PROOF<br/>e2e unattended run over a<br/>multi-work-unit fixture —<br/>green = parking box met"]:::open
+        q2_153 --> q2_256 --> q2_257
+        q2_257 --> q2_258
+        q2_257 --> q2_259
+        q2_257 --> q2_260
+        q2_258 --> q2_260
+        q2_259 --> q2_260
     end
 
     %% ================= QUEST 3: connectors (substrate) =================
@@ -464,8 +473,11 @@ substrate (runa's own store plumbing is self-consistent) — autonomous-executio
 seam WeForge's COB architecture dissolves. Superseded units, stamped and closed not-done:
 **runa#255**, **base#27**, **babbie-ops#111**.
 
-**What remains to park:** autonomous cycling running (runa#152 capstone, on-ramp runa#153 — the
-chosen parking point); the Superseded-to-WeForge sweep (succession laid down); map capped.
+**What remains to park:** autonomous cycling running — on-ramp runa#153 landed (manual mode);
+the capstone is decomposed into runa#256→#257→#258/#259/#260 under the **demonstrate-the-capability**
+bar (one unattended multi-work-unit run proves it, then park; hardening supersedes to WeForge).
+Cycling front is **runa#256** (the selector — composes existing libagent readiness/graph, ready now).
+Then: the Superseded-to-WeForge sweep (succession laid down); map capped.
 
 _(prior)_ **Refreshed 2026-07-10 (babbie-ops#67 targeted-route run + diagnosis).** The targeted
 route was driven on babbie-dev against the RC (`agentd@cbe88e88 · runa@9b8d8265 ·
