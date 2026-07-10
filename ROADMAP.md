@@ -125,12 +125,12 @@ flowchart TB
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
-        q5_cpend["groundwork#488 #486 #487<br/>pending contract-machine improvements —<br/>re-grounded via #587 first"]:::blocked
+        q5_cpend["groundwork#488 #486 #487<br/>contract-machine enrichments —<br/>re-grounded to ADR-0010 via #587 ✓ ·<br/>blocked by #583 (#486 also #584)"]:::blocked
         q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5 — sequenced first)"]:::ready
         q5_584["groundwork#584<br/>binding-policy home: policy.toml —<br/>LANDED (PR #589)"]:::landed
         q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
         q5_586["groundwork#586<br/>epic: transmission harness —<br/>cold-recipient checks (post-M1)"]:::blocked
-        q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds"]:::ready
+        q5_587["groundwork#587<br/>re-ground #484 frame +<br/>#486/#487/#488 to content kinds<br/>— LANDED 2026-07-10 (station-direct)"]:::landed
         q5_492 --> q5_493
         q5_492 --> q5_494
         q5_493 --> q5_494
@@ -152,6 +152,7 @@ flowchart TB
         q5_582 --> q5_586
         q5_582 --> q5_587
         q5_587 --> q5_cpend
+        q5_583 --> q5_cpend
     end
 
     %% ================= QUEST 6: Radicle-native substrate =================
@@ -328,8 +329,10 @@ dead.
   (babbie-ops#67) supplies in passing.
 - **uniform contract machine** (groundwork#484) is the **cascade's contract
   spine**: one contract surface, one evidence surface, one detectability
-  mechanism — behavior, documentation, and code quality symmetric citizens,
-  criteria typed executable-or-attested, teeth mandatory. The **contract-doctrine
+  mechanism — behavior, documentation, and code quality symmetric citizens as
+  source/coverage lenses; criteria carry a content kind — behavior or meaning —
+  with operational checks, execution binding as policy (ADR-0010), teeth
+  mandatory. The **contract-doctrine
   layer is complete**: the keystone (#492), the skill's uniform form (#493), and
   #498 (teeth on every dimension the change has — correcting #493's doctrine that
   structural symmetry alone had let license a silent/pointer-covered dimension,
@@ -354,7 +357,10 @@ dead.
   **runa#225**, off the M1 gate. **The
   leveling set gates M1 integration verification (commons#50)** by operator
   decision (2026-07-01); the enrichments (#486/#487/#488) are deliberately
-  deferred off the M1 path.
+  deferred off the M1 path. **#587 has landed** (2026-07-10, station-direct):
+  #484's frame and the three enrichment children re-grounded to ADR-0010's
+  content-kind ontology; the enrichments now gate on #583 (schema v-next;
+  #486 also on #584), evidence on groundwork#587.
 
 ## The Gazette quest — the production proof (Q8)
 
