@@ -650,14 +650,38 @@ more Tesserine development here.*
       `#256`–`#260` decomposition are closed superseded, their reckoning
       preserved as extraction-input. The instrument's parking bar is the
       proven interactive build above, not an autonomous loop built here.
-- [ ] **The instrument is coherent.** Host/session-composition (agentd#87
-      line) and wish/intent (agentd#152 line) true and working; no live
-      contradiction between what the map says works and what runs.
-- [ ] **Succession laid down.** Every *Superseded to WeForge* cluster closed
-      with the supersession stamp; this map's forward-pointer complete.
-- [ ] **Map capped.** Node colors true to the tracker one final time; shape
-      frozen; this checklist the last thing refreshed.
+- [x] **The instrument is coherent.** The interactive instrument runs as
+      proven at `babbie-ops#67`: host/session-composition and wish/intent are
+      true and working, and the map states no capability the instrument does
+      not have. Every open line that implied further development is closed;
+      what the map says works is what runs.
+- [x] **Succession laid down.** Every open issue across the ecosystem is
+      dispositioned: the *Superseded to WeForge* clusters and every remaining
+      open unit are closed with the supersession stamp (2026-07-10), their
+      reckoning preserved as extraction-input in the close records. All eight
+      trackers (commons, groundwork, runa, agentd, gazette, base,
+      example-hello, babbie-ops) hold zero open issues. This map's
+      forward-pointer is complete.
+- [x] **Map capped.** Node colors true to the tracker one final time; shape
+      frozen; this checklist the last thing refreshed. 2026-07-10.
 
 When every box is checked, the map is the parking record and the work here is
 done. WeForge continues on Radicle — a new architecture, deriving its shape
 from the reckoning this map points back at.
+
+---
+
+## ⛳ PARKED — 2026-07-10
+
+**Tesserine is parked.** All five quiescence boxes are checked. The instrument
+works: an operator drives real software work through the interactive deployment
+to a landed change (untargeted `wish`), and works units conversationally in
+manual mode. Autonomous cycling is retired to WeForge as unbuilt new
+capability. Every tracker across the ecosystem is empty; every superseded line
+carries its reckoning forward in its close record. The map's shape is frozen as
+the parking record.
+
+There is no more Tesserine development here. WeForge continues on Radicle,
+re-deriving its shape natively from the reckoning this map and these closed
+issues preserve. The bootstrap instrument did its job: it was the working
+system with which its successor is built.
