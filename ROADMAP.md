@@ -121,7 +121,7 @@ flowchart TB
         q5_539["groundwork#539<br/>re-reckon of the whole contract machine — DONE<br/>direction: complete + meeting-surface axis;<br/>graded relay, gated + landed"]:::landed
         q5_582["groundwork#582<br/>ADR-0010: content kinds — behavior + meaning<br/>— LANDED (PR #588); Accepted 2026-07-10"]:::landed
         q5_573["groundwork#573<br/>meeting-surface axis: invocation-surface<br/>outcome with teeth; retrofit trigger rule —<br/>LANDED (PR #592); first client of ADR-0010<br/>on the live v-next schema"]:::landed
-        q5_573ad["agentd#172<br/>retrofit operator-met help surfaces"]:::ready
+        q5_573ad["agentd#172<br/>retrofit operator-met help surfaces —<br/>LANDED (PR #182)"]:::landed
         q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions"]:::ready
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
