@@ -254,7 +254,7 @@ flowchart TB
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
     AGENTD162["agentd#162 ✓<br/>nested runa transcript events read at the exact supplied run-id<br/>landed @ 01115fe8 (PR #163)"]:::landed --> AGENTD122
-    AGENTD122["agentd#122 · code landed in PR #163<br/>live tailer reads the shared exact-run-id resolver<br/>closes on #67 operator evidence + AGENTD180 (suite-green gate)"]:::ready --> BO67
+    AGENTD122["agentd#122 · code landed in PR #163<br/>live tailer reads the shared exact-run-id resolver<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO102["babbie-ops#102<br/>runbook: Drive the fixture states the live-observation<br/>and seed surfaces as present fact (off M1 path)"]:::ready
     RUNBOOK96 -. "revised by" .-> BO102
@@ -267,8 +267,8 @@ flowchart TB
     BO103["babbie-ops#103<br/>converge credential's resource owner matches --forge-owner<br/>(pentaxis93 PAT paired with tesserine fixture → 403) · M1 BLOCKER"]:::ready --> BO67
     RUNA243["runa#243 · IN FLIGHT (station-direct)<br/>re-entry to a recorded work-unit freshens vs current substrate before define<br/>(freshen half of #175 · run_bound skips the acquire surface)<br/>contract posted 2026-07-10 · targeted-route hygiene"]:::ready -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
-    AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence + AGENTD180 (suite-green gate)"]:::ready --> BO67
-    AGENTD180["agentd#180<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>main is RED @ 08ae5826 · suite-green gate for #122/#176"]:::ready --> AGENTD122
+    AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
+    AGENTD180["agentd#180 ✓<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>landed @ 53be589b (PR #185) · main CI green · suite-green gate discharged"]:::landed --> AGENTD122
     AGENTD180 --> AGENTD176
     Q5 == "leveling set gates #50" ==> M1INT
     M1INT["commons#50<br/>M1 integration verification"]:::blocked --> M1REL
