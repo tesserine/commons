@@ -285,13 +285,13 @@ flowchart TB
     BO82["babbie-ops#82<br/>codex runtime — both credential<br/>options (next release, off M1)"]:::ready
     COMMONS102["commons#102 ✓<br/>ADR-0020: run-record storage locus + ownership<br/>(sovereignty — project owns, executor projects)"]:::landed -- "decision authorizes →" --> AGENTD162
     AGENTD162["agentd#162 ✓<br/>nested runa transcript events read at the exact supplied run-id<br/>landed @ 01115fe8 (PR #163)"]:::landed --> AGENTD122
-    AGENTD122["agentd#122 · code landed in PR #163<br/>live tailer reads the shared exact-run-id resolver<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
+    AGENTD122["agentd#122 ✓<br/>live tailer reads the shared exact-run-id resolver<br/>closed on #67 operator evidence 2026-07-10 (suite-green ✓ via AGENTD180)"]:::landed --> BO67
     RUNBOOK96["babbie-ops#96 ✓<br/>runbook: consolidated operator-eyes<br/>evidence lifecycle (single home; #67 proves)"]:::landed --> BO67
     BO102["babbie-ops#102<br/>runbook: Drive the fixture states the live-observation<br/>and seed surfaces as present fact (off M1 path)"]:::ready
     RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-10: untargeted route PASS (full cascade → landed change);<br/>targeted route HALTED — acquisition delivers work-unit but cascade goes<br/>quiescent before define (work_failed); forge-identity + observability proven<br/>BLOCKED on runa#255 (cascade-advance) → then re-run targeted route"]:::blocked --> M1INT
+    BO67["babbie-ops#67 ✓ · CONSOLIDATED operator-eyes gate — ACCEPTED 2026-07-10<br/>interactive mode proven via untargeted wish (prose → full cascade → landed change<br/>@ example-hello#5); operator judged DX + observability sufficient. Quiescence box 1 MET.<br/>Targeted route superseded to WeForge (container/host workspace seam). Epic #58 closed."]:::landed --> M1INT
     BO109["babbie-ops#109 ✓<br/>installer: apply-interactive-tesserine wires<br/>forge_owner/forge_name into agentd.toml<br/>(targeted-route forge-identity atom) · landed @ 2f2ab40d (PR #110)"]:::landed --> BO67
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::landed --> BO67
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
@@ -300,12 +300,12 @@ flowchart TB
     BO107["babbie-ops#107 ✓<br/>host-secret seam provisions exactly the GitHub pair<br/>(WeForge PAT retired · Radicle needs none)<br/>landed @ 9e99bdd9 (PR #108)"]:::landed -. "seam hygiene for" .-> BO67
     RUNA243["runa#243 ✓<br/>re-entry serves the acquisition surface unless its record is current<br/>(freshen half of #175 · fires groundwork's freshen before define)<br/>landed @ 4e1c4646 (PR #247)"]:::landed -. "hygiene for" .-> BO67
     GW595["groundwork#595<br/>acquire delivery states re-entry semantics<br/>(already-recorded work-unit · seam runa#243 exercises)<br/>off M1 path"]:::ready -. "consulted by" .-> RUNA243
-    AGENTD176["agentd#176 · code landed in PR #177<br/>live observation renders the transcript usefully to the terminal<br/>closes on #67 operator evidence (suite-green gate ✓ via AGENTD180)"]:::ready --> BO67
+    AGENTD176["agentd#176 ✓<br/>live observation renders the transcript usefully to the terminal<br/>closed on #67 operator evidence 2026-07-10"]:::landed --> BO67
     AGENTD188["agentd#188<br/>permission-denial and runtime-path tests report honestly<br/>when their precondition is unmet (surfaced by agentd#186)<br/>off M1 path"]:::ready
     AGENTD186["agentd#186 ✓<br/>work-unit-seeded session delivers forge owner/name<br/>to runa's resolving entry (RUNA_FORGE_* atoms from agent config)<br/>landed @ cbe88e88 (PR #187) · suite-green verified"]:::landed --> BO67
-    RUNA255["runa#255<br/>work-unit-seeded session advances past acquisition —<br/>define fires on the delivered artifact (store-locus join);<br/>acquisition writes work-unit, scoped re-eval reads empty store →<br/>quiescent → work_failed · M1 targeted-route BLOCKER (surfaced @ #67 run 07-10)"]:::ready --> BO67
-    BASE27["base#27<br/>session base image carries python3<br/>for fixture verification (binds at verify,<br/>once #255 clears) · off immediate blocker"]:::ready -. "verify needs" .-> BO67
-    BO111["babbie-ops#111<br/>interactive session delivers Claude Code<br/>config surface (~/.claude.json sibling mount) ·<br/>DX-hygiene, non-blocking"]:::ready -. "session hygiene for" .-> BO67
+    RUNA255["runa#255 ⊘ superseded to WeForge<br/>targeted-route halt diagnosed to agentd container/host workspace_dir<br/>mismatch (runa plumbing self-consistent); autonomous-route seam COBs dissolve.<br/>Closed not-done: superseded 2026-07-10"]:::open
+    BASE27["base#27 ⊘ superseded to WeForge<br/>session image python3 for fixture verify —<br/>container-substrate provisioning; carried as extraction-input"]:::open
+    BO111["babbie-ops#111 ⊘ superseded to WeForge<br/>~/.claude.json session config surface —<br/>container-session config delivery; extraction-input"]:::open
     AGENTD180["agentd#180 ✓<br/>daemon shutdown-ordering tests assert ordering, not wall-clock<br/>landed @ 53be589b (PR #185) · main CI green · suite-green gate discharged"]:::landed --> AGENTD122
     AGENTD180 --> AGENTD176
     Q5 == "leveling set gates #50" ==> M1INT
@@ -444,7 +444,30 @@ Two publications, in order, both through the ecosystem-release ceremony
 
 ## What's ready right now
 
-**Refreshed 2026-07-10 (babbie-ops#67 targeted-route run + diagnosis).** The targeted
+**Refreshed 2026-07-10 (interactive mode accepted; manual mode landed; targeted route superseded).**
+**Quiescence box 1 is MET.** Interactive-mode Tesserine is proven: the operator drove real
+software work through the deployment to a landed change against `tesserine/example-hello#5`
+via the **untargeted `wish`** route (prose intent → survey → decompose → … → land), with live
+progress observed and a faithful sealed record (`coverage: full`), and judged DX and
+observability sufficient. babbie-ops#67 is **accepted and closed**; epic #58 closed;
+agentd#122 and agentd#176 closed on that operator evidence.
+
+Untargeted `wish` is a first-class entry surface, not a fallback. Alongside it, **manual mode**
+(operating-model, `pentaxis93/with-claude@80287e3`) is now a named peer of relay and
+station-direct: the operator works a unit by direct conversation with the agent, keeping the
+methodology skills as cognition and dropping the automated-execution plumbing — the honest
+surface for present, conversational work on a parked instrument.
+
+The **targeted (`--work-unit`) route is superseded to WeForge, not fixed.** Its halt was
+diagnosed to a cross-process container/host `workspace_dir` mismatch in agentd's ephemeral-session
+substrate (runa's own store plumbing is self-consistent) — autonomous-execution plumbing whose
+seam WeForge's COB architecture dissolves. Superseded units, stamped and closed not-done:
+**runa#255**, **base#27**, **babbie-ops#111**.
+
+**What remains to park:** autonomous cycling running (runa#152 capstone, on-ramp runa#153 — the
+chosen parking point); the Superseded-to-WeForge sweep (succession laid down); map capped.
+
+_(prior)_ **Refreshed 2026-07-10 (babbie-ops#67 targeted-route run + diagnosis).** The targeted
 route was driven on babbie-dev against the RC (`agentd@cbe88e88 · runa@9b8d8265 ·
 base@30a2aab5 · groundwork@cc8ffd0f`). It **resolved the ticket** (forge-identity
 delivery proven — the prior blocker), ran `decompose` to a clean exit, and **sealed a
@@ -604,9 +627,9 @@ sweep is a subtraction, not a guillotine.)*
 laid down. This is the terminal acceptance — the point past which there is no
 more Tesserine development here.*
 
-- [ ] **Interactive build proven.** `babbie-ops#67` accepted — a real change
-      built through the interactive deployment, operator-judged. (Operator-run;
-      not station-actionable.)
+- [x] **Interactive build proven.** `babbie-ops#67` accepted 2026-07-10 — a real
+      change built through the interactive deployment via the untargeted `wish`
+      route, operator-judged DX/observability sufficient. Epic #58 closed.
 - [ ] **Autonomous cycling running.** The capstone (`runa#152`, on-ramp
       `runa#153`) drives an end-to-end cycle unattended. *This is the chosen
       parking point: a fully working autonomous system.*
