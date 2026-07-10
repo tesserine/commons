@@ -120,13 +120,13 @@ flowchart TB
         q5_225["runa#225<br/>persist path enforces the<br/>contract/evidence join (off M1 gate)"]:::open
         q5_539["groundwork#539<br/>re-reckon of the whole contract machine — DONE<br/>direction: complete + meeting-surface axis;<br/>graded relay, gated + landed"]:::landed
         q5_582["groundwork#582<br/>ADR-0010: content kinds — behavior + meaning<br/>— LANDED (PR #588); Accepted 2026-07-10"]:::landed
-        q5_573["groundwork#573<br/>machine correction: meeting-surface axis,<br/>invocation-surface outcome with teeth,<br/>retrofit trigger rule<br/>(first client of ADR-0010)"]:::ready
-        q5_573ad["agentd#172<br/>retrofit operator-met help surfaces<br/>(blocked by #573)"]:::open
-        q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions (blocked by #573)"]:::open
+        q5_573["groundwork#573<br/>meeting-surface axis: invocation-surface<br/>outcome with teeth; retrofit trigger rule —<br/>LANDED (PR #592); first client of ADR-0010<br/>on the live v-next schema"]:::landed
+        q5_573ad["agentd#172<br/>retrofit operator-met help surfaces"]:::ready
+        q5_573ru["runa#237<br/>audit first-contact surfaces incl.<br/>runa-mcp self-descriptions"]:::ready
         q5_531["groundwork#531<br/>principle-derived contracts for open-ended units —<br/>landed (PR #579)"]:::landed
         q5_580["groundwork#580<br/>reconcile acceptance_criterion field authority<br/>(schema+protocol) with body-ground dual use<br/>— landed (PR #581)"]:::landed
         q5_cpend["groundwork#488 #486 #487<br/>contract-machine enrichments —<br/>re-grounded to ADR-0010 via #587 ✓ ·<br/>blocked by #583"]:::blocked
-        q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retires<br/>(consumer: weforge-ops#5 — sequenced first)"]:::ready
+        q5_583["groundwork#583<br/>contract schema v-next: kind +<br/>operational check; check_kind retired —<br/>LANDED (PR #591); consumer weforge-ops#5"]:::landed
         q5_584["groundwork#584<br/>binding-policy home: policy.toml —<br/>LANDED (PR #589)"]:::landed
         q5_585["groundwork#585<br/>completion-evidence v-next:<br/>binding-stamped results"]:::ready
         q5_586["groundwork#586<br/>epic: transmission harness —<br/>cold-recipient checks (post-M1)"]:::blocked
