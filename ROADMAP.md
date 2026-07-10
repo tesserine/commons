@@ -262,8 +262,8 @@ flowchart TB
     RUNBOOK96 -. "revised by" .-> BO102
     BO100["babbie-ops#100 ✓<br/>converge wires the operator adapter into the session<br/>agent command (was runa go → no agent command)<br/>installer repair landed @ 094e10a8 (PR #101)"]:::landed --> BO67
     RUNA238["runa#238 ✓<br/>honors supplied RUNA_TRANSCRIPT_RUN_ID on per-stage write path<br/>single effective-settings home → writer + agent env + MCP env<br/>THE M1 observability fix · landed @ 53b064ba (PR #239)"]:::landed --> BO67
-    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-10: untargeted route PASS (fail-closed guard proven live);<br/>targeted route: installer does not wire forge_owner/forge_name<br/>into agentd.toml (#109) — MUST land before targeted route re-run"]:::blocked --> M1INT
-    BO109["babbie-ops#109<br/>installer: apply-interactive-tesserine wires<br/>forge_owner/forge_name into agentd.toml<br/>(targeted-route forge-identity atom)"]:::ready --> BO67
+    BO67["babbie-ops#67 · CONSOLIDATED operator-eyes gate<br/>run 2026-07-10: untargeted route PASS (fail-closed guard proven live);<br/>targeted route RUNNABLE — installer wires forge_owner/forge_name (#109 landed @ 2f2ab40d)<br/>READY: re-run targeted route (agent config now declares the pair)"]:::ready --> M1INT
+    BO109["babbie-ops#109 ✓<br/>installer: apply-interactive-tesserine wires<br/>forge_owner/forge_name into agentd.toml<br/>(targeted-route forge-identity atom) · landed @ 2f2ab40d (PR #110)"]:::landed --> BO67
     AGENTD174["agentd#174<br/>wish takes prose intent XOR work-unit ref, not both<br/>(targeted-route entry surface)"]:::landed --> BO67
     AGENTD175["agentd#175 ✓<br/>work-unit seed routed through runa's resolving entry (fail-closed)<br/>landed @ 662b6d32 (PR #179) · freshen half split to runa#243"]:::landed --> BO67
     RUNA244["runa#244 ✓<br/>a protocol whose required forge mutation was refused must not report success<br/>(fail-closed enforcement + work-unit delivery provenance)<br/>M1 BLOCKER cleared · landed @ a27a08ad (PR #249)"]:::landed --> BO67
